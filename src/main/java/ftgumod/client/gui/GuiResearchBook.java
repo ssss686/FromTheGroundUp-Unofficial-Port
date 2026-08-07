@@ -520,29 +520,27 @@ public class GuiResearchBook extends Screen {
 				if (!hovered) {
 					String name = item.getHoverName().getString().replace("[", "").replace("]", "");
 					guiGraphics.drawString(this.font, name, 35, 45 + (pos * 28), 0xFFFFFF);
-				}
-
-				if (hovered) {
+				} else {
 					int r = 0;
 					var level = player.level();
 					for (RecipeHolder<?> holder : level.getRecipeManager().getRecipes()) {
 						var recipe = holder.value();
 						if (!(recipe instanceof net.minecraft.world.item.crafting.CraftingRecipe))
 							continue;
-					if (ItemStack.isSameItem(item, recipe.getResultItem(level.registryAccess()))) {
-						int recipeWidth = 3;
-						int recipeHeight = 3;
-						if (recipe instanceof ShapedRecipe shaped) {
-							recipeWidth = shaped.getWidth();
-							recipeHeight = shaped.getHeight();
-						}
+						if (ItemStack.isSameItem(item, recipe.getResultItem(level.registryAccess()))) {
+							int recipeWidth = 3;
+							int recipeHeight = 3;
+							if (recipe instanceof ShapedRecipe shaped) {
+								recipeWidth = shaped.getWidth();
+								recipeHeight = shaped.getHeight();
+							}
 
-						int xp = 31 + (r * 25);
-						int yp = 38 + (pos * 28);
+							int xp = 31 + (r * 25);
+							int yp = 38 + (pos * 28);
 
-						guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("recipe_book/crafting_overlay"), xp, yp, 24, 24);
+							guiGraphics.blitSprite(ResourceLocation.withDefaultNamespace("recipe_book/crafting_overlay"), xp, yp, 24, 24);
 
-						Iterator<Ingredient> iterator = recipe.getIngredients().iterator();
+							Iterator<Ingredient> iterator = recipe.getIngredients().iterator();
 
 							outer: for (int yi = 0; yi < recipeHeight; ++yi) {
 								int py = 3 + yi * 7;
@@ -563,9 +561,13 @@ public class GuiResearchBook extends Screen {
 									} else
 										break outer;
 								}
-								r++;
 							}
+							r++;
 						}
+					}
+					if (r == 0) {
+						String name = item.getHoverName().getString().replace("[", "").replace("]", "");
+						guiGraphics.drawString(this.font, name, 35, 45 + (pos * 28), 0xFFFFFF);
 					}
 				}
 			}
