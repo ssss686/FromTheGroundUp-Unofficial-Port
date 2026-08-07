@@ -62,6 +62,10 @@ public class StackUtils implements IStackUtils {
 		ORE_DICT_TO_TAG.put("oreGold", "c:ores/gold");
 		ORE_DICT_TO_TAG.put("dustRedstone", "c:dusts/redstone");
 		ORE_DICT_TO_TAG.put("paper", "c:paper");
+		ORE_DICT_TO_TAG.put("leather", "c:leathers");
+		ORE_DICT_TO_TAG.put("feather", "c:feathers");
+		ORE_DICT_TO_TAG.put("dye", "c:dyes");
+		ORE_DICT_TO_TAG.put("record", "c:music_discs");
 
 		// 1.12.2 -> 1.21.1 item name remapping
 		ITEM_REMAP.put("minecraft:stonebrick", "minecraft:stone_brick");

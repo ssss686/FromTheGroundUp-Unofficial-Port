@@ -32,6 +32,8 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 
 public class ContainerResearchTable extends ContainerResearch {
 
@@ -138,15 +140,25 @@ public class ContainerResearchTable extends ContainerResearch {
 				Technology tech = StackUtils.INSTANCE.getTechnology(slots.get(parchment).getItem());
 				if (tech != null && tech.hasResearchRecipe()
 						&& (invInput.puzzle == null || invInput.puzzle.getRecipe().getTechnology() != tech)) {
-					if (invInput.puzzle != null)
+					if (invInput.puzzle != null) {
 						invInput.puzzle.onRemove(invPlayer.player, invInput.getLevel(), invInput.getBlockPos());
+						invPlayer.player.level().playSound(null, invInput.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+					}
 					invInput.puzzle = tech.getResearchRecipe().createInstance();
 					invInput.puzzle.onStart(this);
 					invInput.puzzle.onInventoryChange(this);
 				}
 			} else if (invInput.puzzle != null) {
+				boolean hadItems = false;
+				for (int i = 3; i <= 11; i++)
+					if (!invInput.getItem(i).isEmpty()) {
+						hadItems = true;
+						break;
+					}
 				invInput.puzzle.onRemove(invPlayer.player, invInput.getLevel(), invInput.getBlockPos());
 				invInput.puzzle = null;
+				if (hadItems && invPlayer.player instanceof ServerPlayer sp)
+					sp.connection.send(new ClientboundSoundPacket(SoundEvents.ARMOR_EQUIP_GENERIC, net.minecraft.sounds.SoundSource.PLAYERS, sp.getX(), sp.getY(), sp.getZ(), 1.0F, 1.0F, sp.level().getRandom().nextLong()));
 			}
 
 			if (invInput.puzzle != null) {
@@ -172,6 +184,7 @@ public class ContainerResearchTable extends ContainerResearch {
 			invInput.puzzle.onFinish();
 			invInput.puzzle.onRemove(player, invInput.getLevel(), invInput.getBlockPos());
 			invInput.puzzle = null;
+			player.level().playSound(null, invInput.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 		super.clicked(index, mouse, mode, player);
 	}
