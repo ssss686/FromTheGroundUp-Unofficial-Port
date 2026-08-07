@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "GPG",
+    "SG "
+  ],
+  "key": {
+    "G": {
+      "tag": "c:nuggets/gold"
+    },
+    "P": {
+      "tag": "c:glass_panes/colorless"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
+  },
+  "result": {
+    "id": "ftgumod:magnifying_glass",
+    "count": 1
+  }
+}

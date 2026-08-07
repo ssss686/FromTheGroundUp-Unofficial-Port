@@ -1,0 +1,46 @@
+{
+  "pools": [
+    {
+      "name": "ftgumod:bibliography",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "ftgumod:parchment_research",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{FTGU:\"ftgumod:research/bibliography\"}"
+            }
+          ]
+        },
+        {
+          "type": "empty",
+          "weight": 7
+        }
+      ]
+    },
+    {
+      "name": "ftgumod:enchanting",
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "item",
+          "name": "ftgumod:parchment_research",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_custom_data",
+              "tag": "{FTGU:\"ftgumod:research/enchanting\"}"
+            }
+          ]
+        },
+        {
+          "type": "empty",
+          "weight": 7
+        }
+      ]
+    }
+  ]
+}
