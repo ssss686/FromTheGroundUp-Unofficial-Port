@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "research_book",
+  "result": {
+    "id": "ftgumod:research_book",
+    "count": 1
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "ftgumod:parchment_research"
+    }
+  ]
+}

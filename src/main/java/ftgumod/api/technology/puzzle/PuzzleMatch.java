@@ -1,0 +1,157 @@
+package ftgumod.api.technology.puzzle;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import ftgumod.api.FTGUAPI;
+import ftgumod.api.inventory.ContainerResearch;
+import ftgumod.api.inventory.InventoryCraftingPersistent;
+import ftgumod.api.technology.puzzle.gui.PuzzleGuiMatch;
+import ftgumod.api.technology.recipe.IPuzzle;
+import ftgumod.api.util.BlockSerializable;
+import ftgumod.inventory.ContainerResearchTable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
+
+public class PuzzleMatch implements IPuzzle {
+
+	private final List<ContainerResearch> registry = new LinkedList<>();
+	private final ResearchMatch research;
+	private List<Component> hints;
+	private ContainerResearchTable container;
+
+	public PuzzleMatch(ResearchMatch research) {
+		this.research = research;
+	}
+
+	private Container inventory() {
+		return new InventoryCraftingPersistent(container.invInput, 3, 3, 3);
+	}
+
+	@Override
+	public Tag write(HolderLookup.Provider registries) {
+		ListTag items = new ListTag();
+		Container inv = inventory();
+		for (int i = 0; i < 9; ++i) {
+			if (!inv.getItem(i).isEmpty()) {
+				CompoundTag compound = new CompoundTag();
+				compound.putByte("Slot", (byte) i);
+				inv.getItem(i).save(registries, compound);
+				items.add(compound);
+			}
+		}
+		return items;
+	}
+
+	@Override
+	public void read(Tag tag, HolderLookup.Provider registries) {
+		ListTag items = (ListTag) tag;
+		Container inv = inventory();
+		for (int i = 0; i < items.size(); ++i) {
+			CompoundTag compound = items.getCompound(i);
+			byte slot = compound.getByte("Slot");
+			if (slot >= 0 && slot < 9)
+				inv.setItem(slot, ItemStack.parseOptional(registries, compound));
+		}
+	}
+
+	@Override
+	public ResearchMatch getRecipe() {
+		return research;
+	}
+
+	@Override
+	public boolean test() {
+		Container inv = inventory();
+		for (int i = 0; i < 9; i++) {
+			if (research.ingredients[i].test(inv.getItem(i)))
+				continue;
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void onStart(ContainerResearch container) {
+		registry.add(container);
+		this.container = (ContainerResearchTable) container;
+	}
+
+	@Override
+	public void onInventoryChange(ContainerResearch container) {
+		if (!container.isClient()) {
+			hints = new ArrayList<>();
+			List<BlockSerializable> inspected = Collections.emptyList();
+			if (container.getSlot(2).hasItem())
+				inspected = FTGUAPI.stackUtils.getInspected(container.getSlot(2).getItem());
+			for (int i = 0; i < 9; i++)
+				if (research.hasHint(i))
+					hints.add(research.getHint(i).getHint(inspected));
+				else
+					hints.add(null);
+
+			container.refreshHints(hints);
+		}
+	}
+
+	@Override
+	public void onFinish() {
+		Container inv = inventory();
+		for (int i = 0; i < 9; i++) {
+			if (research.consume[i] != null)
+				if (research.consume[i])
+					inv.setItem(i, ItemStack.EMPTY);
+				else
+					inv.setItem(i, inv.getItem(i).copy());
+			else {
+				ItemStack stack = inv.getItem(i);
+				if (!stack.isEmpty())
+					inv.setItem(i, stack.copy());
+			}
+		}
+	}
+
+	@Override
+	public void onRemove(@Nullable Player player, Level world, BlockPos pos) {
+		if (player != null && world != null && !world.isClientSide) {
+			Container inv = inventory();
+			for (int i = 0; i < 9; i++) {
+				ItemStack stack = inv.getItem(i);
+				if (!stack.isEmpty() && !player.addItem(stack))
+					player.drop(stack, false);
+			}
+		} else if (world != null)
+			Containers.dropContents(world, pos, inventory());
+
+		registry.clear();
+	}
+
+	@Override
+	public void setHints(List<Component> hints) {
+		this.hints = hints;
+	}
+
+	@Override
+	public List<Component> getHints() {
+		return hints;
+	}
+
+	@Override
+	public Object getGui() {
+		return new PuzzleGuiMatch(this, inventory());
+	}
+
+}
