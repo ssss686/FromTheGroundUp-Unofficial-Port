@@ -1,6 +1,5 @@
 package ftgumod.api.technology.puzzle.gui;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,8 +39,7 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					graphics.renderTooltip(gui.getMinecraft().font,
-							Arrays.stream(hint.getString().split("\n")).map(Component::literal).map(Component::getVisualOrderText).toList(), mouseX, mouseY);
+					graphics.renderTooltip(gui.getMinecraft().font, gui.getMinecraft().font.split(hint, 200), mouseX, mouseY);
 			}
 		} else if (b && mouseX >= 90 && mouseX < 112 && mouseY >= 35 && mouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(

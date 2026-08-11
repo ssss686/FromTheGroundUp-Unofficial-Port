@@ -19,14 +19,14 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class ItemMagnifyingGlass extends Item {
@@ -61,12 +61,16 @@ public class ItemMagnifyingGlass extends Item {
 				PlayerInspectEvent event = new PlayerInspectEvent(player, context.getHand(), pos, state, context.getClickedFace());
 				event.setCanceled(true);
 
-				for (Technology tech : TechnologyManager.INSTANCE)
-					if (tech.hasResearchRecipe() && tech.canResearch(player))
-						if (tech.getResearchRecipe().inspect(block, list)) {
+				for (Technology tech : TechnologyManager.INSTANCE) {
+					if (tech.hasResearchRecipe()) {
+						boolean canR = tech.canResearch(player);
+						boolean insp = canR && tech.getResearchRecipe().inspect(block, list);
+						if (insp) {
 							event.setCanceled(false);
 							break;
 						}
+					}
+				}
 
 				NeoForge.EVENT_BUS.post(event);
 				Content.c_inspect.get().trigger((ServerPlayer) player, pos, state, !event.isCanceled());
@@ -81,10 +85,13 @@ public class ItemMagnifyingGlass extends Item {
 					world.playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
 							SoundSource.PLAYERS, 0.75F, 1.0F);
 
-					CompoundTag tag = StackUtils.INSTANCE.getItemData(item);
-					ListTag nbt = tag.getList("FTGU", Tag.TAG_COMPOUND);
-					nbt.add(block.serialize());
-					tag.put("FTGU", nbt);
+					item.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, data -> {
+						CompoundTag tag = data.copyTag();
+						ListTag nbt = tag.getList("FTGU", Tag.TAG_COMPOUND);
+						nbt.add(block.serialize());
+						tag.put("FTGU", nbt);
+						return CustomData.of(tag);
+					});
 				}
 			}
 			return InteractionResult.SUCCESS;

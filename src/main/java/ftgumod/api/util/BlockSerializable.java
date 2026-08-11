@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class BlockSerializable {
@@ -96,7 +97,10 @@ public class BlockSerializable {
 		var server = ServerLifecycleHooks.getCurrentServer();
 		if (server == null)
 			return false;
-		return predicate.test(server.getLevel(dimension), pos, block, properties);
+		ServerLevel level = server.getLevel(dimension);
+		if (level == null)
+			return false;
+		return predicate.test(level, pos, block, properties);
 	}
 
 }

@@ -4,6 +4,7 @@ import ftgumod.packet.client.HintMessage;
 import ftgumod.packet.client.TechnologyInfoMessage;
 import ftgumod.packet.client.TechnologyMessage;
 import ftgumod.packet.server.CopyTechMessage;
+import ftgumod.packet.server.RequestHintsMessage;
 import ftgumod.packet.server.RequestMessage;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
@@ -23,6 +24,7 @@ public final class PacketDispatcher {
 			registrar.playToClient(HintMessage.TYPE, HintMessage.STREAM_CODEC, HintMessage::handle);
 
 			registrar.playToServer(CopyTechMessage.TYPE, CopyTechMessage.STREAM_CODEC, CopyTechMessage::handle);
+			registrar.playToServer(RequestHintsMessage.TYPE, RequestHintsMessage.STREAM_CODEC, RequestHintsMessage::handle);
 			registrar.playToServer(RequestMessage.TYPE, RequestMessage.STREAM_CODEC, RequestMessage::handle);
 		});
 	}

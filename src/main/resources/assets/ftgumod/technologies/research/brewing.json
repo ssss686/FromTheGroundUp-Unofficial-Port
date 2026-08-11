@@ -94,7 +94,9 @@
               "biome": "swampland"
             }
           },
-          "hint": "Cauldron"
+          "hint": {
+            "translate": "block.minecraft.cauldron"
+          }
         }
       }
     }
