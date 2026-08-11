@@ -53,7 +53,9 @@
           "decipher": {
             "block": "minecraft:soul_sand"
           },
-          "hint": "Nether Star"
+          "hint": {
+            "translate": "item.minecraft.nether_star"
+          }
         }
       },
       "P": {
@@ -73,7 +75,9 @@
               "block": "minecraft:bed"
             }
           ],
-          "hint": "Crafting Table"
+          "hint": {
+            "translate": "block.minecraft.crafting_table"
+          }
         }
       },
       "D": {

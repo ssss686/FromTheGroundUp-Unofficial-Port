@@ -57,8 +57,7 @@ public class Hint {
 		for (Pair<BlockPredicate, Component> hint : hints) {
 			for (BlockSerializable block : inspected) {
 				if (block.test(hint.getLeft())) {
-					Component sibling = hint.getRight().copy();
-					sibling.getStyle().withColor(ChatFormatting.GOLD);
+					Component sibling = hint.getRight().copy().withStyle(ChatFormatting.YELLOW);
 					text = Component.literal("").append(text).append("\n - ").append(sibling);
 				}
 			}
@@ -67,19 +66,22 @@ public class Hint {
 	}
 
 	public Component getObfuscatedHint() {
-		Component hint = this.hint.copy();
-		hint.getStyle().withObfuscated(true);
-		return hint;
+		return this.hint.copy().withStyle(style -> style.withObfuscated(true));
 	}
 
 	public boolean inspect(BlockSerializable block, List<BlockSerializable> inspected) {
-		a: for (Pair<BlockPredicate, Component> hint : hints) {
-			if (block.test(hint.getLeft()))
+		for (Pair<BlockPredicate, Component> hint : hints) {
+			if (block.test(hint.getLeft())) {
+				boolean already = false;
 				for (BlockSerializable b : inspected) {
-					if (b.test(hint.getLeft()))
-						continue a;
-					return true;
+					if (b.test(hint.getLeft())) {
+						already = true;
+						break;
+					}
 				}
+				if (!already)
+					return true;
+			}
 		}
 		return false;
 	}

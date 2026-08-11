@@ -287,12 +287,8 @@ public class Technology implements ITechnology {
 				ServerPlayer playerMP = (ServerPlayer) player;
 
 				unregisterListeners(playerMP);
-				if (!done && progress.isDone() && unlockedStage(player)) {
+				if (!done && progress.isDone() && unlockedStage(player))
 					unlock(playerMP);
-					if (research == null)
-						setResearched(playerMP, true);
-				} else if (!hasCustomUnlock() && research == null)
-					setResearched(playerMP, true);
 			}
 
 			return true;

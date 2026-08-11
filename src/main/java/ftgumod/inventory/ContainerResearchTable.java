@@ -14,6 +14,7 @@ import ftgumod.api.technology.puzzle.PuzzleMatch;
 import ftgumod.packet.PacketDispatcher;
 import ftgumod.packet.client.HintMessage;
 import ftgumod.packet.client.TechnologyMessage;
+import ftgumod.packet.server.RequestHintsMessage;
 import ftgumod.technology.Technology;
 import ftgumod.tileentity.TileEntityInventory;
 import ftgumod.tileentity.TileEntityResearchTable;
@@ -74,7 +75,10 @@ public class ContainerResearchTable extends ContainerResearch {
 
 		if (invInput.puzzle != null) {
 			invInput.puzzle.onStart(this);
-			invInput.puzzle.onInventoryChange(this);
+			if (invPlayer.player.level().isClientSide())
+				PacketDispatcher.sendToServer(new RequestHintsMessage());
+			else
+				invInput.puzzle.onInventoryChange(this);
 		}
 
 		slotsChanged(null);
@@ -207,6 +211,9 @@ public class ContainerResearchTable extends ContainerResearch {
 						return ItemStack.EMPTY;
 				} else if (itemStack2.is(FEATHERS)) {
 					if (!moveItemStackTo(itemStack2, feather, feather + 1, false))
+						return ItemStack.EMPTY;
+				} else if (itemStack2.getItem() == Content.i_magnifyingGlass.get()) {
+					if (!moveItemStackTo(itemStack2, glass, glass + 1, false))
 						return ItemStack.EMPTY;
 				}
 				return ItemStack.EMPTY;

@@ -82,7 +82,9 @@
           "decipher": {
             "block": "minecraft:end_rod"
           },
-          "hint": "End Rod"
+          "hint": {
+            "translate": "block.minecraft.end_rod"
+          }
         }
       },
       "T": {
