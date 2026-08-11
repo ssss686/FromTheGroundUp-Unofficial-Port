@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
@@ -61,9 +62,10 @@ public class BlockSerializable {
 		}
 
 		var server = ServerLifecycleHooks.getCurrentServer();
-		display = server != null
-				? ItemStack.parseOptional(server.registryAccess(), compound.getCompound("display"))
-				: ItemStack.EMPTY;
+		RegistryAccess registryAccess = server != null
+				? server.registryAccess()
+				: RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+		display = ItemStack.parseOptional(registryAccess, compound.getCompound("display"));
 	}
 
 	public CompoundTag serialize() {
