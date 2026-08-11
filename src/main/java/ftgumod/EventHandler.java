@@ -110,7 +110,7 @@ public class EventHandler {
 
 				if (can && !tech.isResearched(evt.getEntity())) {
 					evt.getToolTip().add(Component.empty());
-					evt.getToolTip().add(Component.translatable("item.parchment_research.complete")
+					evt.getToolTip().add(Component.translatable("item.ftgumod.parchment_research.complete")
 							.withStyle(ChatFormatting.DARK_RED));
 				}
 			}
