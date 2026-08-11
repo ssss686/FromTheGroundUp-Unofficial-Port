@@ -123,8 +123,11 @@ public class ContainerIdeaTable extends AbstractContainerMenu {
 	public void clicked(int index, int mouse, ClickType mode, Player player) {
 		if (index == output && slots.get(output).hasItem()) {
 			slots.get(parchment).remove(1);
-			for (int i = 0; i < craftMatrix.getContainerSize(); i++)
-				craftMatrix.setItem(i, remaining.get(i));
+			// Client-side container never runs hasRecipe() (slots not synced yet at
+			// construction), so remaining is null there; the server handles the rest.
+			if (remaining != null)
+				for (int i = 0; i < craftMatrix.getContainerSize(); i++)
+					craftMatrix.setItem(i, remaining.get(i));
 		}
 
 		super.clicked(index, mouse, mode, player);
