@@ -17,7 +17,7 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "minecraft:wool",
+      "#wool",
       {
         "type": "forge:ore_dict",
         "ore": "plankWood"
@@ -38,7 +38,7 @@
       "type": "forge:ore_dict",
       "ore": "plankWood"
     },
-    "right": "minecraft:wool"
+    "right": "#wool"
   },
   "unlock": [
     "#door",
@@ -49,7 +49,7 @@
     "minecraft:sign",
     "minecraft:ladder",
     "minecraft:painting",
-    "minecraft:wool",
+    "#wool",
     "minecraft:bed",
     "minecraft:carpet",
     "minecraft:banner"

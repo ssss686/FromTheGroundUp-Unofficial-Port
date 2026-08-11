@@ -24,25 +24,26 @@ import net.minecraft.network.chat.Component;
 
 public class CommandTechnology {
 
-	private static final SimpleCommandExceptionType TECH_NOT_FOUND =
-			new SimpleCommandExceptionType(Component.translatable("commands.technology.technologyNotFound"));
 	private static final SimpleCommandExceptionType PLAYER_NOT_FOUND =
 			new SimpleCommandExceptionType(Component.translatable("commands.technology.playerNotFound"));
-	private static final SimpleCommandExceptionType INVALID_MODE =
-			new SimpleCommandExceptionType(Component.translatable("commands.technology.invalidMode"));
+
+	private static CommandSyntaxException techNotFound(String id) {
+		return new SimpleCommandExceptionType(Component.translatable(
+				"commands.technology.technologyNotFound", id)).create();
+	}
 
 	public static Technology findTechnology(String id) throws CommandSyntaxException {
 		ResourceLocation rl = ResourceLocation.tryParse(id);
 		if (rl == null)
-			throw TECH_NOT_FOUND.create();
+			throw techNotFound(id);
 		Technology tech = TechnologyManager.INSTANCE.getTechnology(rl);
 		if (tech == null)
-			throw TECH_NOT_FOUND.create();
+			throw techNotFound(id);
 		return tech;
 	}
 
-	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-		dispatcher.register(Commands.literal("ftgu")
+	private static com.mojang.brigadier.tree.CommandNode<CommandSourceStack> buildCommandTree() {
+		return Commands.literal("technology")
 				.requires(s -> s.hasPermission(2))
 				.then(Commands.literal("reload")
 						.executes(ctx -> reload(ctx.getSource())))
@@ -114,7 +115,11 @@ public class CommandTechnology {
 												getPlayer(ctx, "player"),
 												StringArgumentType.getString(ctx, "technology"),
 												getCriterionArgOrEmpty(ctx))))))
-		);
+				.build();
+	}
+
+	public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+		dispatcher.getRoot().addChild(buildCommandTree());
 	}
 
 	private static final SuggestionProvider<CommandSourceStack> PLAYER_SUGGEST =
@@ -142,6 +147,7 @@ public class CommandTechnology {
 
 	private static int reload(CommandSourceStack sender) throws CommandSyntaxException {
 		TechnologyManager.player = sender;
+		TechnologyManager.INSTANCE.setRegistryAccess(sender.getServer().registryAccess());
 		TechnologyManager.INSTANCE.reload(sender.getServer().getWorldPath(
 				net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
 		PacketDispatcher.sendToAll(new TechnologyInfoMessage(TechnologyManager.INSTANCE.cache));
@@ -173,8 +179,8 @@ public class CommandTechnology {
 		Set<Technology> set = getTechnologies(tech, mode);
 		type.perform(player, set);
 		if (set.isEmpty())
-			throw mode.fail(type, tech.getRegistryName(), player.getName());
-		mode.success(sender, type, tech.getRegistryName(), player.getName(), set.size());
+			throw mode.fail(type, tech.getRegistryName().toString(), player.getName());
+		mode.success(sender, type, tech.getRegistryName().toString(), player.getName(), set.size());
 
 		if (type == ActionType.GRANT)
 			PacketDispatcher.sendTo(new TechnologyMessage(player, true, set.toArray(new Technology[0])), player);
@@ -203,24 +209,24 @@ public class CommandTechnology {
 			// test criterion
 			if (!tech.hasCustomUnlock())
 				throw new SimpleCommandExceptionType(Component.translatable(
-						"commands.technology.criterionNotFound", tech.getRegistryName(), criterion)).create();
+						"commands.technology.criterionNotFound", tech.getRegistryName().toString(), criterion)).create();
 
 			Boolean progress = TechnologyManager.INSTANCE.getProgress(player, tech).getCriterionProgress(criterion);
 			if (progress == null)
 				throw new SimpleCommandExceptionType(Component.translatable(
-						"commands.technology.criterionNotFound", tech.getRegistryName(), criterion)).create();
+						"commands.technology.criterionNotFound", tech.getRegistryName().toString(), criterion)).create();
 			if (!progress)
 				throw new SimpleCommandExceptionType(Component.translatable(
-						"commands.technology.test.criterion.notDone", player.getName(), tech.getRegistryName(), criterion)).create();
+						"commands.technology.test.criterion.notDone", player.getName(), tech.getRegistryName().toString(), criterion)).create();
 			sender.sendSuccess(() -> Component.translatable("commands.technology.test.criterion.success",
-					player.getName(), tech.getRegistryName(), criterion), true);
+					player.getName(), tech.getRegistryName().toString(), criterion), true);
 		} else {
 			// test technology
 			if (!tech.isResearched(player))
 				throw new SimpleCommandExceptionType(Component.translatable(
-						"commands.technology.test.technology.notDone", player.getName(), tech.getRegistryName())).create();
+						"commands.technology.test.technology.notDone", player.getName(), tech.getRegistryName().toString())).create();
 			sender.sendSuccess(() -> Component.translatable("commands.technology.test.technology.success",
-					player.getName(), tech.getRegistryName()), true);
+					player.getName(), tech.getRegistryName().toString()), true);
 		}
 		return 1;
 	}

@@ -35,6 +35,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 
+
 public class ContainerResearchTable extends ContainerResearch {
 
 	private static final TagKey<Item> FEATHERS = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "feathers"));
@@ -140,13 +141,13 @@ public class ContainerResearchTable extends ContainerResearch {
 				Technology tech = StackUtils.INSTANCE.getTechnology(slots.get(parchment).getItem());
 				if (tech != null && tech.hasResearchRecipe()
 						&& (invInput.puzzle == null || invInput.puzzle.getRecipe().getTechnology() != tech)) {
-					if (invInput.puzzle != null) {
+					if (invInput.puzzle != null)
 						invInput.puzzle.onRemove(invPlayer.player, invInput.getLevel(), invInput.getBlockPos());
-						invPlayer.player.level().playSound(null, invInput.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
-					}
 					invInput.puzzle = tech.getResearchRecipe().createInstance();
 					invInput.puzzle.onStart(this);
 					invInput.puzzle.onInventoryChange(this);
+				} else if (invInput.puzzle != null) {
+					invInput.puzzle.onStart(this);
 				}
 			} else if (invInput.puzzle != null) {
 				boolean hadItems = false;
@@ -184,7 +185,6 @@ public class ContainerResearchTable extends ContainerResearch {
 			invInput.puzzle.onFinish();
 			invInput.puzzle.onRemove(player, invInput.getLevel(), invInput.getBlockPos());
 			invInput.puzzle = null;
-			player.level().playSound(null, invInput.getBlockPos(), SoundEvents.ARMOR_EQUIP_GENERIC.value(), net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 		super.clicked(index, mouse, mode, player);
 	}
@@ -201,7 +201,7 @@ public class ContainerResearchTable extends ContainerResearch {
 			if (slotIndex == output) {
 				if (!moveItemStackTo(itemStack2, sizeInventory, sizeInventory + 36, true))
 					return ItemStack.EMPTY;
-			} else if (slotIndex > output && slotIndex < sizeInventory + 36) {
+			} else if (slotIndex >= sizeInventory && slotIndex < sizeInventory + 36) {
 				if (itemStack2.getItem() == Content.i_parchmentIdea.get()) {
 					if (!moveItemStackTo(itemStack2, parchment, parchment + 1, false))
 						return ItemStack.EMPTY;

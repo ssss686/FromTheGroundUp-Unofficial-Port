@@ -42,19 +42,21 @@ public class PuzzleConnect implements IPuzzle {
 		this.research = research;
 	}
 
+	@Nullable
 	private Container inventory() {
-		return new InventoryCraftingPersistent(container.invInput, 3, 3, 1);
+		return container != null ? new InventoryCraftingPersistent(container.invInput, 3, 3, 1) : null;
 	}
 
 	@Override
 	public Tag write(HolderLookup.Provider registries) {
 		ListTag items = new ListTag();
 		Container inv = inventory();
+		if (inv == null)
+			return items;
 		for (int i = 0; i < 3; ++i) {
 			if (!inv.getItem(i).isEmpty()) {
-				CompoundTag compound = new CompoundTag();
+				CompoundTag compound = (CompoundTag) inv.getItem(i).save(registries);
 				compound.putByte("Slot", (byte) i);
-				inv.getItem(i).save(registries, compound);
 				items.add(compound);
 			}
 		}
@@ -65,6 +67,8 @@ public class PuzzleConnect implements IPuzzle {
 	public void read(Tag tag, HolderLookup.Provider registries) {
 		ListTag items = (ListTag) tag;
 		Container inv = inventory();
+		if (inv == null)
+			return;
 		for (int i = 0; i < items.size(); ++i) {
 			CompoundTag compound = items.getCompound(i);
 			byte slot = compound.getByte("Slot");
@@ -133,13 +137,16 @@ public class PuzzleConnect implements IPuzzle {
 
 	@Override
 	public void onStart(ContainerResearch container) {
-		registry.add(container);
+		if (!registry.contains(container))
+			registry.add(container);
 		this.container = (ContainerResearchTable) container;
 	}
 
 	@Override
 	public boolean test() {
 		Container inv = inventory();
+		if (inv == null)
+			return false;
 		for (int i = 0; i < 3; i++)
 			if (inv.getItem(i).isEmpty())
 				return false;
@@ -152,6 +159,8 @@ public class PuzzleConnect implements IPuzzle {
 
 	private boolean fits(ItemStack stack, int index) {
 		Container inv = inventory();
+		if (inv == null)
+			return false;
 		if (research.left.test(stack) || research.right.test(stack))
 			return false;
 		for (int i = 0; i < 3; i++)
@@ -172,24 +181,28 @@ public class PuzzleConnect implements IPuzzle {
 	@Override
 	public void onFinish() {
 		Container inv = inventory();
+		if (inv == null)
+			return;
 		for (int i = 0; i < 3; i++) {
 			ItemStack stack = inv.getItem(i);
 			if (!stack.isEmpty())
-				inv.setItem(i, stack.copy());
+				inv.setItem(i, stack.getCraftingRemainingItem());
 		}
 	}
 
 	@Override
 	public void onRemove(@Nullable Player player, Level world, BlockPos pos) {
-		if (player != null && world != null && !world.isClientSide) {
-			Container inv = inventory();
-			for (int i = 0; i < 3; i++) {
-				ItemStack stack = inv.getItem(i);
-				if (!stack.isEmpty() && !player.addItem(stack))
-					player.drop(stack, false);
-			}
-		} else if (world != null)
-			Containers.dropContents(world, pos, inventory());
+		Container inv = inventory();
+		if (inv != null) {
+			if (player != null && world != null && !world.isClientSide) {
+				for (int i = 0; i < 3; i++) {
+					ItemStack stack = inv.getItem(i);
+					if (!stack.isEmpty() && !player.addItem(stack))
+						player.drop(stack, false);
+				}
+			} else if (world != null)
+				Containers.dropContents(world, pos, inv);
+		}
 
 		registry.clear();
 	}

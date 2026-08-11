@@ -11,6 +11,10 @@ public class ItemPredicate {
 
 	private final Ingredient ingredient;
 
+	protected ItemPredicate() {
+		this.ingredient = null;
+	}
+
 	public ItemPredicate(Ingredient ingredient) {
 		this.ingredient = ingredient;
 	}

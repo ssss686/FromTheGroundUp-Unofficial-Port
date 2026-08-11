@@ -370,6 +370,10 @@ public class GuiResearchBook extends Screen {
 		return false;
 	}
 
+	@Override
+	protected void renderBlurredBackground(float partialTick) {
+	}
+
 	private void drawTitle(GuiGraphics guiGraphics) {
 		int i = (width - imageWidth) / 2;
 		int j = (height - imageHeight) / 2;
@@ -384,7 +388,7 @@ public class GuiResearchBook extends Screen {
 
 		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
-		poseStack.translate(i1, j1, -200F);
+		poseStack.translate(i1, j1, 0F);
 
 		ResourceLocation bg = root.getDisplayInfo().getBackground().orElse(STAINED_CLAY);
 		RenderSystem.setShaderTexture(0, bg);
@@ -416,20 +420,37 @@ public class GuiResearchBook extends Screen {
 			Set<Technology> tech = new HashSet<>();
 			root.getChildren(tech, true);
 
+			// Pre-compute techs that have at least one researched descendant,
+			// so intermediate techs on the path to a granted tech stay visible
+			Set<Technology> hasResearchedDescendant = new HashSet<>();
+			for (Technology t : tech) {
+				if (t.isResearched(player)) {
+					for (Technology p = t.getParent(); p != null && tech.contains(p); p = p.getParent()) {
+						if (!p.isResearched(player) && !p.isUnlocked(player))
+							hasResearchedDescendant.add(p);
+					}
+				}
+			}
+
 			try {
 				for (Technology t1 : tech) {
-					if (!t1.canResearchIgnoreResearched(player))
+					boolean t1visible = t1.isResearched(player) || t1.isUnlocked(player)
+							|| hasResearchedDescendant.contains(t1);
+					if (!t1visible)
 						continue;
-					if (!t1.isResearched(player) && !t1.isUnlocked(player))
+					if (t1.getDisplayInfo().isHidden() && !t1.hasProgress(player))
 						continue;
-					if (t1.getDisplayInfo().isHidden() && !t1.isResearched(player))
+					Technology parent = t1.getParent();
+					if (parent == null || !tech.contains(parent))
 						continue;
-					if (t1.getParent() == null || !tech.contains(t1.getParent()))
+					boolean parentVisible = parent.isResearched(player) || parent.isUnlocked(player)
+							|| hasResearchedDescendant.contains(parent);
+					if (!parentVisible)
 						continue;
 					int xStart = (int) ((t1.getDisplayInfo().getX() * 24 - i) + 11);
 					int yStart = (int) ((t1.getDisplayInfo().getY() * 24 - j) + 11);
-					int xStop = (int) ((t1.getParent().getDisplayInfo().getX() * 24 - i) + 11);
-					int yStop = (int) ((t1.getParent().getDisplayInfo().getY() * 24 - j) + 11);
+					int xStop = (int) ((parent.getDisplayInfo().getX() * 24 - i) + 11);
+					int yStop = (int) ((parent.getDisplayInfo().getY() * 24 - j) + 11);
 
 					boolean flag = t1.isResearched(player);
 
@@ -458,11 +479,11 @@ public class GuiResearchBook extends Screen {
 				float f4 = (mouseY - j1) * zoomVal;
 
 				for (Technology t2 : tech) {
-					if (!t2.canResearchIgnoreResearched(player))
+					boolean t2visible = t2.isResearched(player) || t2.isUnlocked(player)
+							|| hasResearchedDescendant.contains(t2);
+					if (!t2visible)
 						continue;
-					if (!t2.isResearched(player) && !t2.isUnlocked(player))
-						continue;
-					if (t2.getDisplayInfo().isHidden() && !t2.isResearched(player))
+					if (t2.getDisplayInfo().isHidden() && !t2.hasProgress(player))
 						continue;
 					int l6 = (int) (t2.getDisplayInfo().getX() * 24 - i);
 					int j7 = (int) (t2.getDisplayInfo().getY() * 24 - j);

@@ -119,9 +119,9 @@
       "ore": "blockRedstone"
     },
     "minecraft:slime_ball",
+    "minecraft:slime",
     {
-      "item": "minecraft:dye",
-      "data": 15
+      "item": "minecraft:bone_meal"
     },
     "minecraft:bone_block"
   ]

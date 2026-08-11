@@ -5,6 +5,22 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
+import net.minecraft.advancements.critereon.EffectsChangedTrigger;
+import net.minecraft.advancements.critereon.KilledTrigger;
+import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.JsonOps;
@@ -157,9 +173,12 @@ public class EventHandler {
 				cap.setOld();
 			}
 
-			for (Technology tech : TechnologyManager.INSTANCE)
-				if (tech.hasCustomUnlock() && tech.canResearchIgnoreCustomUnlock(player))
+			for (Technology tech : TechnologyManager.INSTANCE) {
+				boolean hasCU = tech.hasCustomUnlock();
+				boolean canRI = tech.canResearchIgnoreCustomUnlock(player);
+				if (hasCU && canRI)
 					tech.registerListeners(player);
+			}
 
 			PacketDispatcher.sendTo(new TechnologyInfoMessage(TechnologyManager.INSTANCE.cache), player);
 		}
@@ -190,7 +209,7 @@ public class EventHandler {
 	@SubscribeEvent
 	public void onPlayerCloseContainer(PlayerContainerEvent.Close evt) {
 		if (!evt.getEntity().level().isClientSide()) {
-			evt.getContainer().addSlotListener(new CraftingListener(evt.getEntity()));
+			evt.getEntity().containerMenu.addSlotListener(new CraftingListener(evt.getEntity()));
 		}
 	}
 
@@ -250,6 +269,119 @@ public class EventHandler {
 	public void onEntityJoinLevel(EntityJoinLevelEvent event) {
 		if (event.getLevel().isClientSide() && event.getEntity() == Minecraft.getInstance().player)
 			PacketDispatcher.sendToServer(new RequestMessage());
+	}
+
+	@SubscribeEvent
+	public void onServerTick(ServerTickEvent.Post event) {
+		for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+			var fakeMap = TechnologyManager.INSTANCE.getFakeAdvancements().get(player);
+			if (fakeMap != null && !fakeMap.isEmpty()) {
+				List<Pair<Technology, String>> toGrant = new ArrayList<>();
+				for (var entry : fakeMap.entrySet()) {
+					if (player.getAdvancements().getOrStartProgress(entry.getKey()).isDone())
+						toGrant.add(entry.getValue());
+				}
+				for (var pair : toGrant)
+					pair.getLeft().grantCriterion(player, pair.getRight());
+			}
+		}
+
+		// Periodically check pending criteria for PlayerTrigger (location) and item_inventory
+		if (event.getServer().getTickCount() % 20 == 0) {
+			for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+				List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
+				if (pending != null && !pending.isEmpty()) {
+					List<TechnologyManager.PendingCriterion> matched = new ArrayList<>();
+					for (TechnologyManager.PendingCriterion pc : pending) {
+						if (pc.instance() instanceof PlayerTrigger.TriggerInstance pi) {
+							var playerPred = pi.player();
+							if (playerPred.isPresent()) {
+								LootParams lootParams = new LootParams.Builder(player.serverLevel())
+									.withParameter(LootContextParams.THIS_ENTITY, player)
+									.withParameter(LootContextParams.ORIGIN, player.position())
+									.withParameter(LootContextParams.BLOCK_STATE, player.getBlockStateOn())
+									.withParameter(LootContextParams.TOOL, player.getMainHandItem())
+									.create(LootContextParamSets.ADVANCEMENT_LOCATION);
+								LootContext ctx = new LootContext.Builder(lootParams).create(Optional.empty());
+								if (playerPred.get().matches(ctx))
+									matched.add(pc);
+							} else {
+								matched.add(pc);
+							}
+						}
+					}
+					for (TechnologyManager.PendingCriterion pc : matched)
+						pc.tech().grantCriterion(player, pc.criterionName());
+				}
+			}
+
+			if (ftgumod.criterion.TriggerItemInventory.INSTANCE != null) {
+				for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
+					ftgumod.criterion.TriggerItemInventory.INSTANCE.trigger(player);
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onLivingDeath(LivingDeathEvent event) {
+		if (event.getEntity().level().isClientSide())
+			return;
+
+		Entity killed = event.getEntity();
+		Entity killer = event.getSource().getEntity();
+		if (!(killer instanceof ServerPlayer player))
+			return;
+
+		List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
+		if (pending == null || pending.isEmpty())
+			return;
+
+		List<TechnologyManager.PendingCriterion> matched = new ArrayList<>();
+		for (TechnologyManager.PendingCriterion pc : pending) {
+			if (pc.instance() instanceof KilledTrigger.TriggerInstance ki) {
+				var entityPred = ki.entityPredicate();
+				if (entityPred.isPresent()) {
+					LootParams lootParams = new LootParams.Builder(player.serverLevel())
+						.withParameter(LootContextParams.THIS_ENTITY, killed)
+						.withParameter(LootContextParams.ORIGIN, player.position())
+						.withParameter(LootContextParams.DAMAGE_SOURCE, event.getSource())
+						.create(LootContextParamSets.ADVANCEMENT_ENTITY);
+					LootContext ctx = new LootContext.Builder(lootParams).create(Optional.empty());
+					if (entityPred.get().matches(ctx))
+						matched.add(pc);
+				} else {
+					matched.add(pc);
+				}
+			}
+		}
+
+		for (TechnologyManager.PendingCriterion pc : matched)
+			pc.tech().grantCriterion(player, pc.criterionName());
+	}
+
+	@SubscribeEvent
+	public void onMobEffect(MobEffectEvent.Added event) {
+		if (!(event.getEntity() instanceof ServerPlayer player))
+			return;
+		if (player.level().isClientSide())
+			return;
+
+		List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
+		if (pending == null || pending.isEmpty())
+			return;
+
+		List<TechnologyManager.PendingCriterion> matched = new ArrayList<>();
+		for (TechnologyManager.PendingCriterion pc : pending) {
+			if (pc.instance() instanceof EffectsChangedTrigger.TriggerInstance ei) {
+				var effects = ei.effects();
+				if (effects.isEmpty() || effects.get().matches(player))
+					matched.add(pc);
+			}
+		}
+
+		for (TechnologyManager.PendingCriterion pc : matched)
+			pc.tech().grantCriterion(player, pc.criterionName());
 	}
 
 	@SubscribeEvent

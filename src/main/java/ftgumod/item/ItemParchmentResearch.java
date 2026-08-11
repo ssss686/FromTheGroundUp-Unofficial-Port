@@ -23,13 +23,7 @@ public class ItemParchmentResearch extends Item {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		ItemStack result = research(stack.copy(), player, true);
-		if (result.getItem() == Content.i_parchmentEmpty.get()) {
-			stack.shrink(1);
-			if (!player.addItem(result))
-				player.drop(result, true);
-		}
-		return InteractionResultHolder.success(stack);
+		return InteractionResultHolder.success(research(stack, player, true));
 	}
 
 	public ItemStack research(ItemStack item, Player player, boolean already) {

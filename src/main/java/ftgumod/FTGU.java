@@ -18,7 +18,8 @@ import ftgumod.util.StackUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
@@ -45,10 +46,11 @@ public class FTGU {
 		Content.BLOCK_ENTITY_TYPES.register(modEventBus);
 		Content.MENU_TYPES.register(modEventBus);
 		Content.CREATIVE_MODE_TABS.register(modEventBus);
+		Content.TRIGGER_TYPES.register(modEventBus);
 
 		StackUtils.INSTANCE.registerItemPredicate(ResourceLocation.fromNamespaceAndPath(MODID, "fluid"), new ItemFluid.Factory());
 		StackUtils.INSTANCE.registerItemPredicate(ResourceLocation.fromNamespaceAndPath(MODID, "enchantment"),
-				new ItemLambda.Factory(i -> net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(i).isEmpty()));
+				new ItemLambda.Factory(i -> !net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentsForCrafting(i).isEmpty()));
 		StackUtils.INSTANCE.registerItemPredicate(ResourceLocation.fromNamespaceAndPath(MODID, "mod"), new ItemMod.Factory());
 
 		TechnologyManager.INSTANCE.registerPuzzle(ResourceLocation.fromNamespaceAndPath(MODID, "match"), new ResearchMatch.Factory());
@@ -68,7 +70,7 @@ public class FTGU {
 
 		modEventBus.addListener(this::loadComplete);
 
-		NeoForge.EVENT_BUS.addListener(this::serverAboutToStart);
+		NeoForge.EVENT_BUS.addListener(this::serverStarted);
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
 	}
 
@@ -76,7 +78,8 @@ public class FTGU {
 		TechnologyManager.INSTANCE.loadClient();
 	}
 
-	private void serverAboutToStart(ServerAboutToStartEvent event) {
+	private void serverStarted(ServerStartedEvent event) {
+		TechnologyManager.INSTANCE.setRegistryAccess(event.getServer().registryAccess());
 		TechnologyManager.INSTANCE.reload(event.getServer().getWorldPath(
 				net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
 	}

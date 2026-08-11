@@ -6,6 +6,7 @@ import java.util.List;
 
 import ftgumod.api.inventory.InventoryCraftingPersistent;
 import ftgumod.api.technology.puzzle.PuzzleMatch;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -35,7 +36,7 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 		Slot slot = gui.getSlotUnderMouse();
 		if (slot != null && !slot.hasItem()) {
-			int index = slot.getContainerSlot();
+			int index = slot.getSlotIndex();
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
@@ -62,6 +63,10 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 		else
 			graphics.blit(TEXTURE, 90 + guiLeft, 35 + guiTop, 54, 181, 22, 15);
 
+		RenderSystem.enableBlend();
+		RenderSystem.blendFunc(
+				com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA,
+				com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		for (int y = 0; y < 3; y++)
 			for (int x = 0; x < 3; x++)
 				if (puzzle.getRecipe().hasHint(x + y * 3) && inventory.getItem(x + y * 3).isEmpty())

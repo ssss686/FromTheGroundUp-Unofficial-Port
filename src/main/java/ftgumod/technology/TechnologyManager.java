@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +45,10 @@ import ftgumod.util.StackUtils;
 import ftgumod.util.SubCollection;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.advancements.CriterionTriggerInstance;
+import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
@@ -63,6 +68,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import net.minecraft.advancements.AdvancementHolder;
 
 public class TechnologyManager implements ITechnologyManager, Iterable<Technology> {
 
@@ -89,6 +95,22 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 	private final List<Runnable> createCallback = new LinkedList<>();
 
 	public Map<String, Pair<String, Map<ResourceLocation, String>>> cache;
+
+private net.minecraft.core.RegistryAccess registryAccess = net.minecraft.core.RegistryAccess.EMPTY;
+
+public net.minecraft.core.RegistryAccess getRegistryAccess() {
+	return registryAccess;
+}
+
+public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) {
+	this.registryAccess = registryAccess;
+}
+
+	private final Map<ServerPlayer, List<PendingCriterion>> pendingCriteria = new HashMap<>();
+
+	private final Map<ServerPlayer, Map<AdvancementHolder, org.apache.commons.lang3.tuple.Pair<Technology, String>>> fakeAdvancements = new HashMap<>();
+
+	public record PendingCriterion(Technology tech, String criterionName, CriterionTriggerInstance instance, CriterionTrigger<?> trigger) {}
 
 	private Map<JsonContextPublic, Map<ResourceLocation, String>> loadBuiltin() {
 		Map<JsonContextPublic, Map<ResourceLocation, String>> json = new HashMap<>();
@@ -521,7 +543,41 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 		return technologies.values().iterator();
 	}
 
-	// 对应旧版 ProxyCommon.autoResearch() — 服务端自动为所有在线玩家研究 start 科技
+
+	public void trackCriterion(ServerPlayer player, Technology tech, String name, CriterionTriggerInstance instance, CriterionTrigger<?> trigger) {
+		pendingCriteria.computeIfAbsent(player, k -> new ArrayList<>()).add(new PendingCriterion(tech, name, instance, trigger));
+	}
+
+	public void untrackCriterion(ServerPlayer player, Technology tech, String name) {
+		List<PendingCriterion> list = pendingCriteria.get(player);
+		if (list != null) {
+			list.removeIf(pc -> pc.tech.equals(tech) && pc.criterionName.equals(name));
+			if (list.isEmpty())
+				pendingCriteria.remove(player);
+		}
+	}
+
+	public void trackFakeAdvancement(ServerPlayer player, AdvancementHolder holder, Technology tech, String criterionName) {
+		fakeAdvancements.computeIfAbsent(player, k -> new HashMap<>()).put(holder, org.apache.commons.lang3.tuple.Pair.of(tech, criterionName));
+	}
+
+	public void untrackFakeAdvancement(ServerPlayer player, AdvancementHolder holder) {
+		Map<AdvancementHolder, org.apache.commons.lang3.tuple.Pair<Technology, String>> map = fakeAdvancements.get(player);
+		if (map != null) {
+			map.remove(holder);
+			if (map.isEmpty())
+				fakeAdvancements.remove(player);
+		}
+	}
+
+	public Map<ServerPlayer, Map<AdvancementHolder, org.apache.commons.lang3.tuple.Pair<Technology, String>>> getFakeAdvancements() {
+		return fakeAdvancements;
+	}
+
+	public Map<ServerPlayer, List<PendingCriterion>> getPendingCriteria() {
+		return pendingCriteria;
+	}
+
 	public static void autoResearch(Technology tech) {
 		var server = ServerLifecycleHooks.getCurrentServer();
 		if (server != null)

@@ -29,10 +29,7 @@
           "type": "forge:ore_dict",
           "ore": "feather"
         },
-        {
-          "item": "minecraft:dye",
-          "data": 0
-        }
+        "minecraft:ink_sac"
       ]
     ]
   },

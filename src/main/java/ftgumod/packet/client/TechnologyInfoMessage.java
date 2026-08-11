@@ -2,18 +2,17 @@ package ftgumod.packet.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import ftgumod.ClientHooks;
 import ftgumod.FTGU;
 import ftgumod.FTGUConfig;
-import ftgumod.client.gui.GuiResearchBook;
 import ftgumod.packet.server.RequestMessage;
 import ftgumod.technology.Technology;
 import ftgumod.technology.TechnologyManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.MinecraftServer;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -79,24 +78,29 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 
 	public static void handle(TechnologyInfoMessage message, IPayloadContext ctx) {
 		ctx.enqueueWork(() -> {
-			if (ctx.player().level().isClientSide) {
-				FTGUConfig.cachedLoadDefaultTechnologies = message.loadDefaultTechnologies();
-				FTGUConfig.cachedAllowResearchCopy = message.allowResearchCopy();
-				FTGUConfig.cachedJeiHide = message.jeiHide();
+			FTGUConfig.cachedLoadDefaultTechnologies = message.loadDefaultTechnologies();
+			FTGUConfig.cachedAllowResearchCopy = message.allowResearchCopy();
+			FTGUConfig.cachedJeiHide = message.jeiHide();
 
-				TechnologyManager.INSTANCE.clear();
+			net.minecraft.core.RegistryAccess ra;
+			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+			if (server != null)
+				ra = server.registryAccess();
+			else if (Minecraft.getInstance().getConnection() != null)
+				ra = Minecraft.getInstance().getConnection().registryAccess();
+			else
+				ra = net.minecraft.core.RegistryAccess.EMPTY;
+			TechnologyManager.INSTANCE.setRegistryAccess(ra);
 
-				TechnologyManager.INSTANCE.cache = message.json();
-				TechnologyManager.INSTANCE.load();
+			TechnologyManager.INSTANCE.clear();
 
-				Supplier<Stream<Technology>> stream = TechnologyManager.INSTANCE.getRoots()::stream;
-				GuiResearchBook.zoom = stream.get().collect(Collectors.toMap(Technology::getRegistryName, tech -> 1.0F));
-				GuiResearchBook.xScrollO = stream.get().collect(Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
-				GuiResearchBook.yScrollO = stream.get().collect(Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
+			TechnologyManager.INSTANCE.cache = message.json();
+			TechnologyManager.INSTANCE.load();
 
-				Minecraft.getInstance().getToasts().clear();
-				PacketDistributor.sendToServer(new RequestMessage());
-			}
+			ClientHooks.initResearchBookGui.run();
+			ClientHooks.clearToasts.run();
+
+			PacketDistributor.sendToServer(new RequestMessage());
 		});
 	}
 
