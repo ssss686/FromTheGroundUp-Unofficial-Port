@@ -186,9 +186,12 @@ public class ContainerResearchTable extends ContainerResearch {
 	public void clicked(int index, int mouse, ClickType mode, Player player) {
 		if (mode != ClickType.CLONE && index == output && slots.get(output).hasItem()) {
 			slots.get(parchment).remove(1);
-			invInput.puzzle.onFinish();
-			invInput.puzzle.onRemove(player, invInput.getLevel(), invInput.getBlockPos());
-			invInput.puzzle = null;
+			// Client-side puzzle may be null until TE data syncs; the server handles it.
+			if (invInput.puzzle != null) {
+				invInput.puzzle.onFinish();
+				invInput.puzzle.onRemove(player, invInput.getLevel(), invInput.getBlockPos());
+				invInput.puzzle = null;
+			}
 		}
 		super.clicked(index, mouse, mode, player);
 	}
