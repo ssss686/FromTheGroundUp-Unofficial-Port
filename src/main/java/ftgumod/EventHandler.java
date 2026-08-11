@@ -65,7 +65,7 @@ public class EventHandler {
 	@OnlyIn(Dist.CLIENT)
 	public void onItemTooltip(ItemTooltipEvent evt) {
 		Item item = evt.getItemStack().getItem();
-		if (item == Content.i_magnifyingGlass) {
+		if (item == Content.i_magnifyingGlass.get()) {
 			List<BlockSerializable> blocks = ItemMagnifyingGlass.getInspected(evt.getItemStack());
 			long window = Minecraft.getInstance().getWindow().getWindow();
 			if (InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SHIFT)
@@ -83,7 +83,7 @@ public class EventHandler {
 
 			evt.getToolTip().add(Component.translatable("technology.decipher.tooltip")
 					.withStyle(ChatFormatting.DARK_RED));
-		} else if (item == Content.i_parchmentIdea) {
+		} else if (item == Content.i_parchmentIdea.get()) {
 			Technology tech = StackUtils.INSTANCE.getTechnology(evt.getItemStack());
 			if (tech != null) {
 				boolean hide = !tech.isResearched(evt.getEntity())
@@ -95,7 +95,7 @@ public class EventHandler {
 								ChatFormatting.OBFUSCATED }
 								: new ChatFormatting[] { ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC }));
 			}
-		} else if (item == Content.i_parchmentResearch) {
+		} else if (item == Content.i_parchmentResearch.get()) {
 			Technology tech = StackUtils.INSTANCE.getTechnology(evt.getItemStack());
 			if (tech != null) {
 				boolean can = tech.isResearched(evt.getEntity())
