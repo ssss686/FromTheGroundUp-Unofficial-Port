@@ -442,7 +442,7 @@ public class GuiResearchBook extends Screen {
 
 			try {
 				for (Technology t1 : tech) {
-					boolean t1visible = t1.isResearched(player) || t1.isUnlocked(player)
+					boolean t1visible = t1.canResearchIgnoreResearched(player)
 							|| hasResearchedDescendant.contains(t1);
 					if (!t1visible)
 						continue;
@@ -451,7 +451,7 @@ public class GuiResearchBook extends Screen {
 					Technology parent = t1.getParent();
 					if (parent == null || !tech.contains(parent))
 						continue;
-					boolean parentVisible = parent.isResearched(player) || parent.isUnlocked(player)
+					boolean parentVisible = parent.canResearchIgnoreResearched(player)
 							|| hasResearchedDescendant.contains(parent);
 					if (!parentVisible)
 						continue;
@@ -487,7 +487,7 @@ public class GuiResearchBook extends Screen {
 				float f4 = (mouseY - j1) * zoomVal;
 
 				for (Technology t2 : tech) {
-					boolean t2visible = t2.isResearched(player) || t2.isUnlocked(player)
+					boolean t2visible = t2.canResearchIgnoreResearched(player)
 							|| hasResearchedDescendant.contains(t2);
 					if (!t2visible)
 						continue;
