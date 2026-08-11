@@ -273,6 +273,10 @@ public class GuiResearchBook extends Screen {
 			if (selected.isResearched(player) || children > 0)
 				i9 += 12;
 
+			// Draw the panel at z=400 like vanilla tooltips, so item icons
+			// (rendered at z=150 with depth write) don't cover the text.
+			guiGraphics.pose().pushPose();
+			guiGraphics.pose().translate(0.0F, 0.0F, 400.0F);
 			guiGraphics.fillGradient(i7 - 3, k7 - 3, i7 + j8 + 3, k7 + i9 + 3 + 12, 0xc0000000, 0xc0000000);
 			guiGraphics.drawWordWrap(this.font, desc, i7, k7 + 12, j8, 0xffa0a0a0);
 			if (selected.isResearched(player))
@@ -283,9 +287,12 @@ public class GuiResearchBook extends Screen {
 						Component.translatable(children == 1 ? "technology.tab" : "technology.tabs"), i7, k7 + i9 + 4,
 						0xffff5555);
 			guiGraphics.drawString(this.font, title, i7, k7, -1);
+			guiGraphics.pose().popPose();
 		} else if (selected != null && !state) {
 			Component title = selected.getDisplayInfo().getTitle();
 			int x1 = (width - this.font.width(title)) / 2;
+			guiGraphics.pose().pushPose();
+			guiGraphics.pose().translate(0.0F, 0.0F, 400.0F);
 			guiGraphics.drawString(this.font, title, x1, (height - imageHeight) / 2 + 22, 0xffffff);
 
 			Component desc = selected.getDisplayInfo().getDescription();
@@ -296,6 +303,7 @@ public class GuiResearchBook extends Screen {
 				guiGraphics.drawString(this.font, line, x2 - (this.font.width(line) / 2), y2, 0xffa0a0a0);
 				y2 += this.font.lineHeight;
 			}
+			guiGraphics.pose().popPose();
 
 			String s3 = scroll + "/" + pages;
 			int x3 = (width + imageWidth) / 2 - this.font.width(s3);
