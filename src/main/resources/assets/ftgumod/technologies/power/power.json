@@ -72,9 +72,9 @@
             "item": "minecraft:stone_slab",
             "data": 0
           },
-          "minecraft:wool",
-          "minecraft:stained_hardened_clay",
-          "minecraft:concrete"
+          "#wool",
+          "#stainedHardenedClay",
+          "#concrete"
         ],
         "hint": {
           "translate": "technology.hint.circuit"

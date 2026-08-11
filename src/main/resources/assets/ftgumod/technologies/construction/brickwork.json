@@ -46,6 +46,6 @@
     "minecraft:red_nether_brick",
     "minecraft:end_bricks",
     "minecraft:clay",
-    "minecraft:stained_hardened_clay"
+    "#stainedHardenedClay"
   ]
 }

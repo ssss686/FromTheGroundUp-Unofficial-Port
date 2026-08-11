@@ -69,7 +69,7 @@ public class ItemMagnifyingGlass extends Item {
 						}
 
 				NeoForge.EVENT_BUS.post(event);
-				Content.c_inspect.trigger((ServerPlayer) player, pos, state, !event.isCanceled());
+				Content.c_inspect.get().trigger((ServerPlayer) player, pos, state, !event.isCanceled());
 
 				if (event.isCanceled()) {
 					player.sendSystemMessage(Component.translatable("technology.decipher.understand"));

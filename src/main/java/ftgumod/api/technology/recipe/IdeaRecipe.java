@@ -68,7 +68,8 @@ public class IdeaRecipe implements IIdeaRecipe {
 							remaining.set(i, ItemStack.EMPTY);
 						else
 							remaining.set(i, stack.copy());
-					}
+					} else
+						remaining.get(i).shrink(1);
 					continue loop;
 				}
 			}

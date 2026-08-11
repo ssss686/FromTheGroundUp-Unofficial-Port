@@ -33,6 +33,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import com.mojang.serialization.JsonOps;
 
@@ -66,6 +67,7 @@ public class StackUtils implements IStackUtils {
 		ORE_DICT_TO_TAG.put("feather", "c:feathers");
 		ORE_DICT_TO_TAG.put("dye", "c:dyes");
 		ORE_DICT_TO_TAG.put("record", "c:music_discs");
+		ORE_DICT_TO_TAG.put("blockGlass", "c:glass_blocks");
 
 		// 1.12.2 -> 1.21.1 item name remapping
 		ITEM_REMAP.put("minecraft:stonebrick", "minecraft:stone_brick");
@@ -86,7 +88,8 @@ public class StackUtils implements IStackUtils {
 		ITEM_REMAP.put("minecraft:stone_slab2", "minecraft:red_sandstone_slab");
 		ITEM_REMAP.put("minecraft:melon", "minecraft:melon_slice");
 		ITEM_REMAP.put("minecraft:melon_block", "minecraft:melon");
-		ITEM_REMAP.put("minecraft:slime", "minecraft:slime_ball");
+		ITEM_REMAP.put("minecraft:slime", "minecraft:slime_block");
+		ITEM_REMAP.put("minecraft:snow", "minecraft:snow_block");
 		ITEM_REMAP.put("minecraft:snow_layer", "minecraft:snow");
 		ITEM_REMAP.put("minecraft:golden_rail", "minecraft:powered_rail");
 		ITEM_REMAP.put("minecraft:lit_pumpkin", "minecraft:jack_o_lantern");
@@ -227,7 +230,7 @@ public class StackUtils implements IStackUtils {
 		DATA_REMAP.put("minecraft:prismarine", prismarineData);
 
 		Map<Integer, String> stoneSlabData = new HashMap<>();
-		stoneSlabData.put(0, "minecraft:smooth_stone_slab");
+		stoneSlabData.put(0, "minecraft:stone_slab");
 		stoneSlabData.put(1, "minecraft:sandstone_slab");
 		stoneSlabData.put(2, "minecraft:petrified_oak_slab");
 		stoneSlabData.put(3, "minecraft:cobblestone_slab");
@@ -310,10 +313,9 @@ public class StackUtils implements IStackUtils {
 				return constant;
 			}
 			JsonObject object = new JsonObject();
-			String remapped = remapItem(item, 0);
-			if ("minecraft:tipped_arrow".equals(remapped))
+			if ("minecraft:tipped_arrow".equals(item))
 				return new ItemPredicate(Ingredient.of(getTippedArrowStacks()));
-			object.addProperty("item", remapped);
+			object.addProperty("item", item);
 			return new ItemIngredient(parseIngredient(object));
 		}
 		if (element.isJsonArray())
@@ -385,7 +387,11 @@ public class StackUtils implements IStackUtils {
 	@Override
 	public Technology getTechnology(ItemStack parchment) {
 		CompoundTag tag = getItemData(parchment);
+		if (!tag.contains("FTGU", CompoundTag.TAG_STRING))
+			return null;
 		String ftguTag = tag.getString("FTGU");
+		if (ftguTag.isEmpty())
+			return null;
 		return TechnologyManager.INSTANCE.getTechnology(ResourceLocation.parse(ftguTag));
 	}
 
@@ -400,10 +406,21 @@ public class StackUtils implements IStackUtils {
 			String item = GsonHelper.getAsString(object, "item");
 			int data = object.has("data") ? GsonHelper.getAsInt(object, "data") : 0;
 			String remapped = remapItem(item, data);
+			// Use direct registry lookup instead of CODEC to avoid JsonOps/RegistryOps issues
+			ResourceLocation itemId = ResourceLocation.parse(remapped);
+			if (BuiltInRegistries.ITEM.containsKey(itemId)) {
+				return Ingredient.of(new ItemStack(BuiltInRegistries.ITEM.get(itemId)));
+			}
 			object.addProperty("item", remapped);
 			object.remove("data");
 		}
-		return Ingredient.CODEC.parse(JsonOps.INSTANCE, object).getOrThrow(JsonSyntaxException::new);
+		com.mojang.serialization.DynamicOps<JsonElement> ops;
+		var server = ServerLifecycleHooks.getCurrentServer();
+		if (server != null)
+			ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
+		else
+			ops = JsonOps.INSTANCE;
+		return Ingredient.CODEC.parse(ops, object).getOrThrow(JsonSyntaxException::new);
 	}
 
 }

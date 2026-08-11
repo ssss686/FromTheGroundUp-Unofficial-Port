@@ -50,9 +50,15 @@ public class ResearchConnect implements IResearchRecipe {
 
 		private static ItemPredicate getStack(JsonElement json, String name, JsonContextPublic context) {
 			if (json.isJsonPrimitive()) {
+				String item = GsonHelper.convertToString(json, name);
+				if (item.startsWith("#")) {
+					ItemPredicate constant = context.getConstant(item.substring(1));
+					if (constant == null)
+						throw new JsonSyntaxException("Predicate referenced invalid constant: " + item);
+					return constant;
+				}
 				JsonObject object = new JsonObject();
-				object.addProperty("item", GsonHelper.convertToString(json, name));
-				object.addProperty("data", 0);
+				object.addProperty("item", item);
 				return FTGUAPI.stackUtils.getItemPredicate(object, context);
 			} else {
 				return FTGUAPI.stackUtils.getItemPredicate(json.getAsJsonObject(), context);

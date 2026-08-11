@@ -216,10 +216,10 @@ public class Technology implements ITechnology {
 				rewards.grant(playerMP);
 
 			for (Technology child : children)
-				if (child.hasCustomUnlock())
+				if (!child.isResearched(playerMP))
 					child.registerListeners(playerMP);
 
-			Content.c_technologyResearched.trigger((ServerPlayer) player, this);
+			Content.c_technologyResearched.get().trigger((ServerPlayer) player, this);
 			NeoForge.EVENT_BUS.post(new TechnologyEvent.Research(player, this));
 		}
 		if (announce) {
@@ -249,8 +249,7 @@ public class Technology implements ITechnology {
 
 				unlock.forEach(unlock -> unlock.lock(playerMP));
 				for (Technology child : children)
-					if (child.hasCustomUnlock())
-						child.unregisterListeners(playerMP);
+					child.unregisterListeners(playerMP);
 
 				NeoForge.EVENT_BUS.post(new TechnologyEvent.Revoke(player, this));
 			}
@@ -288,8 +287,12 @@ public class Technology implements ITechnology {
 				ServerPlayer playerMP = (ServerPlayer) player;
 
 				unregisterListeners(playerMP);
-				if (!done && progress.isDone() && unlockedStage(player))
+				if (!done && progress.isDone() && unlockedStage(player)) {
 					unlock(playerMP);
+					if (research == null)
+						setResearched(playerMP, true);
+				} else if (!hasCustomUnlock() && research == null)
+					setResearched(playerMP, true);
 			}
 
 			return true;
@@ -306,7 +309,7 @@ public class Technology implements ITechnology {
 		player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS,
 				1.0F, 1.0F);
 
-		Content.c_technologyUnlocked.trigger(player, this);
+		Content.c_technologyUnlocked.get().trigger(player, this);
 	}
 
 	@Override
@@ -340,6 +343,9 @@ public class Technology implements ITechnology {
 							if (trigger instanceof TriggerFTGU)
 								((TriggerFTGU) trigger).addTechListener(player.getAdvancements(), instance,
 									new ListenerTechnology(this, entry.getKey()));
+							else {
+								TechnologyManager.INSTANCE.trackCriterion(player, this, entry.getKey(), instance, trigger);
+							}
 					}
 				}
 			}
@@ -359,6 +365,8 @@ public class Technology implements ITechnology {
 						if (trigger instanceof TriggerFTGU)
 						((TriggerFTGU) trigger).removeTechListener(player.getAdvancements(), instance,
 								new ListenerTechnology(this, entry.getKey()));
+						else
+							TechnologyManager.INSTANCE.untrackCriterion(player, this, entry.getKey());
 				}
 			}
 		}
@@ -525,7 +533,10 @@ public class Technology implements ITechnology {
 					JsonObject criteriaJson = GsonHelper.getAsJsonObject(json, "criteria");
 					for (Map.Entry<String, JsonElement> entry : criteriaJson.entrySet()) {
 						try {
-							criteria.put(entry.getKey(), Criterion.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, entry.getValue()).getOrThrow(JsonSyntaxException::new));
+							net.minecraft.resources.RegistryOps<JsonElement> ops = net.minecraft.resources.RegistryOps
+									.create(com.mojang.serialization.JsonOps.INSTANCE, TechnologyManager.INSTANCE.getRegistryAccess());
+							Criterion<?> c = Criterion.CODEC.parse(ops, entry.getValue()).getOrThrow(JsonSyntaxException::new);
+							criteria.put(entry.getKey(), c);
 						} catch (JsonSyntaxException e) {
 							if (e.getMessage() == null || !e.getMessage().contains("Can't access registry"))
 								LOGGER.warn("Skipping unparseable criterion '{}': {}", entry.getKey(), e.getMessage());

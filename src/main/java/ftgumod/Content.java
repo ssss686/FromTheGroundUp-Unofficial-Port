@@ -1,8 +1,11 @@
 package ftgumod;
 
+import java.util.function.Supplier;
+
 import ftgumod.block.BlockIdeaTable;
 import ftgumod.block.BlockResearchTable;
 import ftgumod.criterion.TriggerInspect;
+import ftgumod.criterion.TriggerItemInventory;
 import ftgumod.criterion.TriggerRecipeLocked;
 import ftgumod.criterion.TriggerTechnology;
 import ftgumod.item.ItemMagnifyingGlass;
@@ -12,6 +15,7 @@ import ftgumod.item.ItemParchmentResearch;
 import ftgumod.item.ItemResearchBook;
 import ftgumod.tileentity.TileEntityIdeaTable;
 import ftgumod.tileentity.TileEntityResearchTable;
+import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
@@ -90,9 +94,12 @@ public final class Content {
 					})
 					.build());
 
-	public static final TriggerTechnology c_technologyUnlocked = new TriggerTechnology("technology_unlocked");
-	public static final TriggerTechnology c_technologyResearched = new TriggerTechnology("technology_researched");
-	public static final TriggerRecipeLocked c_itemLocked = new TriggerRecipeLocked("recipe_locked");
-	public static final TriggerInspect c_inspect = new TriggerInspect("block_inspected");
+	public static final DeferredRegister<CriterionTrigger<?>> TRIGGER_TYPES = DeferredRegister.create(Registries.TRIGGER_TYPE, FTGU.MODID);
+
+	public static final Supplier<TriggerTechnology> c_technologyUnlocked = TRIGGER_TYPES.register("technology_unlocked", () -> new TriggerTechnology("technology_unlocked"));
+	public static final Supplier<TriggerTechnology> c_technologyResearched = TRIGGER_TYPES.register("technology_researched", () -> new TriggerTechnology("technology_researched"));
+	public static final Supplier<TriggerRecipeLocked> c_itemLocked = TRIGGER_TYPES.register("recipe_locked", () -> new TriggerRecipeLocked("recipe_locked"));
+	public static final Supplier<TriggerInspect> c_inspect = TRIGGER_TYPES.register("block_inspected", () -> new TriggerInspect("block_inspected"));
+	public static final Supplier<TriggerItemInventory> c_itemInventory = TRIGGER_TYPES.register("item_inventory", () -> new TriggerItemInventory("item_inventory"));
 
 }

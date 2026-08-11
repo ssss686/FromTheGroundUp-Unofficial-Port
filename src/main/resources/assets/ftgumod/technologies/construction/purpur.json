@@ -17,7 +17,17 @@
     "city": {
       "trigger": "minecraft:location",
       "conditions": {
-        "feature": "EndCity"
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": ["minecraft:end_city"]
+              }
+            }
+          }
+        ]
       }
     }
   },

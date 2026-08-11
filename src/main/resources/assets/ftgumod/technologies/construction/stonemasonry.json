@@ -29,7 +29,7 @@
     ],
     "key": {
       "S": {
-        "item": "minecraft:stone_slab",
+        "item": "#stoneSlab",
         "hint": {
           "translate": "technology.hint.slab"
         }

@@ -24,7 +24,7 @@
             "predicate": {
               "type": ["minecraft:enderman"],
               "location": {
-                "dimension": "the_nether"
+                "dimension": "minecraft:the_nether"
               }
             }
           }

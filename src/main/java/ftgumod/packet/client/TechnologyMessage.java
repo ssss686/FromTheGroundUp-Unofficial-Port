@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import ftgumod.ClientHooks;
 import ftgumod.FTGU;
 import ftgumod.api.event.FTGUClientSyncEvent;
 import ftgumod.api.technology.ITechnology;
-import ftgumod.client.gui.toast.ToastTechnology;
 import ftgumod.technology.CapabilityTechnology;
 import ftgumod.technology.Technology;
 import ftgumod.technology.TechnologyManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -105,7 +104,7 @@ public record TechnologyMessage(Collection<String> tech, boolean force, ITechnol
 				}
 
 			for (ITechnology toast : message.toasts())
-				Minecraft.getInstance().getToasts().addToast(new ToastTechnology(toast));
+				ClientHooks.displayToast.accept(toast);
 
 			NeoForge.EVENT_BUS.post(new FTGUClientSyncEvent.Post());
 		});

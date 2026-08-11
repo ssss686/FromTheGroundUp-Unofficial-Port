@@ -165,6 +165,10 @@
   {
     "ingredient": [
       "minecraft:furnace",
+      "minecraft:smoker",
+      "minecraft:blast_furnace",
+      "minecraft:campfire",
+      "minecraft:soul_campfire",
       "minecraft:coal",
       "minecraft:fire_charge"
     ],
@@ -173,11 +177,11 @@
   {
     "ingredient": [
       {
-        "item": "minecraft:fish",
+        "item": "minecraft:cod",
         "data": 0
       },
       {
-        "item": "minecraft:fish",
+        "item": "minecraft:salmon",
         "data": 3
       },
       "minecraft:porkchop",
@@ -197,14 +201,8 @@
   },
   {
     "ingredient": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "gemDiamond"
-      },
-      {
-        "type": "forge:ore_dict",
-        "ore": "gemEmerald"
-      }
+      "minecraft:diamond",
+      "minecraft:emerald"
     ],
     "name": "gem"
   },
@@ -273,37 +271,118 @@
   },
   {
     "ingredient": [
-      {
-        "item": "minecraft:stone",
-        "data": 0
-      },
-      {
-        "item": "minecraft:stone",
-        "data": 2
-      },
-      {
-        "item": "minecraft:stone",
-        "data": 4
-      },
-      {
-        "item": "minecraft:stone",
-        "data": 6
-      }
+      "minecraft:stone",
+      "minecraft:polished_granite",
+      "minecraft:polished_diorite",
+      "minecraft:polished_andesite",
+      "minecraft:polished_deepslate",
+      "minecraft:polished_tuff",
+      "minecraft:smooth_basalt",
+      "minecraft:polished_blackstone"
     ],
     "name": "smoothStone"
   },
   {
     "ingredient": [
       "minecraft:stone_stairs",
-      "minecraft:brick_stairs",
-      "minecraft:stone_brick_stairs",
-      "minecraft:nether_brick_stairs",
       "minecraft:sandstone_stairs",
-      "minecraft:quartz_stairs",
+      "minecraft:smooth_sandstone_stairs",
       "minecraft:red_sandstone_stairs",
-      "minecraft:purpur_stairs"
+      "minecraft:smooth_red_sandstone_stairs",
+      "minecraft:granite_stairs",
+      "minecraft:polished_granite_stairs",
+      "minecraft:diorite_stairs",
+      "minecraft:polished_diorite_stairs",
+      "minecraft:andesite_stairs",
+      "minecraft:polished_andesite_stairs",
+      "minecraft:cobblestone_stairs",
+      "minecraft:mossy_cobblestone_stairs",
+      "minecraft:stone_brick_stairs",
+      "minecraft:mossy_stone_brick_stairs",
+      "minecraft:brick_stairs",
+      "minecraft:mud_brick_stairs",
+      "minecraft:nether_brick_stairs",
+      "minecraft:red_nether_brick_stairs",
+      "minecraft:end_stone_brick_stairs",
+      "minecraft:purpur_stairs",
+      "minecraft:quartz_stairs",
+      "minecraft:smooth_quartz_stairs",
+      "minecraft:prismarine_stairs",
+      "minecraft:prismarine_brick_stairs",
+      "minecraft:dark_prismarine_stairs",
+      "minecraft:blackstone_stairs",
+      "minecraft:polished_blackstone_stairs",
+      "minecraft:polished_blackstone_brick_stairs",
+      "minecraft:cobbled_deepslate_stairs",
+      "minecraft:polished_deepslate_stairs",
+      "minecraft:deepslate_brick_stairs",
+      "minecraft:deepslate_tile_stairs",
+      "minecraft:tuff_stairs",
+      "minecraft:polished_tuff_stairs",
+      "minecraft:tuff_brick_stairs",
+      "minecraft:cut_copper_stairs",
+      "minecraft:exposed_cut_copper_stairs",
+      "minecraft:weathered_cut_copper_stairs",
+      "minecraft:oxidized_cut_copper_stairs",
+      "minecraft:waxed_cut_copper_stairs",
+      "minecraft:waxed_exposed_cut_copper_stairs",
+      "minecraft:waxed_weathered_cut_copper_stairs",
+      "minecraft:waxed_oxidized_cut_copper_stairs"
     ],
     "name": "stairsStone"
+  },
+  {
+    "ingredient": [
+      "minecraft:stone_slab",
+      "minecraft:smooth_stone_slab",
+      "minecraft:sandstone_slab",
+      "minecraft:cut_sandstone_slab",
+      "minecraft:smooth_sandstone_slab",
+      "minecraft:red_sandstone_slab",
+      "minecraft:cut_red_sandstone_slab",
+      "minecraft:smooth_red_sandstone_slab",
+      "minecraft:granite_slab",
+      "minecraft:polished_granite_slab",
+      "minecraft:diorite_slab",
+      "minecraft:polished_diorite_slab",
+      "minecraft:andesite_slab",
+      "minecraft:polished_andesite_slab",
+      "minecraft:cobblestone_slab",
+      "minecraft:mossy_cobblestone_slab",
+      "minecraft:stone_brick_slab",
+      "minecraft:mossy_stone_brick_slab",
+      "minecraft:brick_slab",
+      "minecraft:mud_brick_slab",
+      "minecraft:nether_brick_slab",
+      "minecraft:red_nether_brick_slab",
+      "minecraft:end_stone_brick_slab",
+      "minecraft:purpur_slab",
+      "minecraft:quartz_slab",
+      "minecraft:smooth_quartz_slab",
+      "minecraft:prismarine_slab",
+      "minecraft:prismarine_brick_slab",
+      "minecraft:dark_prismarine_slab",
+      "minecraft:blackstone_slab",
+      "minecraft:polished_blackstone_slab",
+      "minecraft:polished_blackstone_brick_slab",
+      "minecraft:cobbled_deepslate_slab",
+      "minecraft:polished_deepslate_slab",
+      "minecraft:deepslate_brick_slab",
+      "minecraft:deepslate_tile_slab",
+      "minecraft:tuff_slab",
+      "minecraft:polished_tuff_slab",
+      "minecraft:tuff_brick_slab",
+      "minecraft:cut_copper_slab",
+      "minecraft:exposed_cut_copper_slab",
+      "minecraft:weathered_cut_copper_slab",
+      "minecraft:oxidized_cut_copper_slab",
+      "minecraft:waxed_cut_copper_slab",
+      "minecraft:waxed_exposed_cut_copper_slab",
+      "minecraft:waxed_weathered_cut_copper_slab",
+      "minecraft:waxed_oxidized_cut_copper_slab",
+      "minecraft:petrified_oak_slab"
+    ],
+    "name": "stoneSlab"
   },
   {
     "ingredient": [
@@ -336,5 +415,97 @@
       }
     ],
     "name": "dragon"
+  },
+  {
+    "ingredient": [
+      "minecraft:white_wool",
+      "minecraft:orange_wool",
+      "minecraft:magenta_wool",
+      "minecraft:light_blue_wool",
+      "minecraft:yellow_wool",
+      "minecraft:lime_wool",
+      "minecraft:pink_wool",
+      "minecraft:gray_wool",
+      "minecraft:light_gray_wool",
+      "minecraft:cyan_wool",
+      "minecraft:purple_wool",
+      "minecraft:blue_wool",
+      "minecraft:brown_wool",
+      "minecraft:green_wool",
+      "minecraft:red_wool",
+      "minecraft:black_wool"
+    ],
+    "name": "wool"
+  },
+  {
+    "ingredient": [
+      "minecraft:prismarine",
+      "minecraft:prismarine_bricks",
+      "minecraft:dark_prismarine"
+    ],
+    "name": "prismarine"
+  },
+  {
+    "ingredient": [
+      "minecraft:white_terracotta",
+      "minecraft:orange_terracotta",
+      "minecraft:magenta_terracotta",
+      "minecraft:light_blue_terracotta",
+      "minecraft:yellow_terracotta",
+      "minecraft:lime_terracotta",
+      "minecraft:pink_terracotta",
+      "minecraft:gray_terracotta",
+      "minecraft:light_gray_terracotta",
+      "minecraft:cyan_terracotta",
+      "minecraft:purple_terracotta",
+      "minecraft:blue_terracotta",
+      "minecraft:brown_terracotta",
+      "minecraft:green_terracotta",
+      "minecraft:red_terracotta",
+      "minecraft:black_terracotta"
+    ],
+    "name": "stainedHardenedClay"
+  },
+  {
+    "ingredient": [
+      "minecraft:white_concrete",
+      "minecraft:orange_concrete",
+      "minecraft:magenta_concrete",
+      "minecraft:light_blue_concrete",
+      "minecraft:yellow_concrete",
+      "minecraft:lime_concrete",
+      "minecraft:pink_concrete",
+      "minecraft:gray_concrete",
+      "minecraft:light_gray_concrete",
+      "minecraft:cyan_concrete",
+      "minecraft:purple_concrete",
+      "minecraft:blue_concrete",
+      "minecraft:brown_concrete",
+      "minecraft:green_concrete",
+      "minecraft:red_concrete",
+      "minecraft:black_concrete"
+    ],
+    "name": "concrete"
+  },
+  {
+    "ingredient": [
+      "minecraft:ink_sac",
+      "minecraft:red_dye",
+      "minecraft:green_dye",
+      "minecraft:cocoa_beans",
+      "minecraft:lapis_lazuli",
+      "minecraft:purple_dye",
+      "minecraft:cyan_dye",
+      "minecraft:light_gray_dye",
+      "minecraft:gray_dye",
+      "minecraft:pink_dye",
+      "minecraft:lime_dye",
+      "minecraft:yellow_dye",
+      "minecraft:light_blue_dye",
+      "minecraft:magenta_dye",
+      "minecraft:orange_dye",
+      "minecraft:bone_meal"
+    ],
+    "name": "dye"
   }
 ]

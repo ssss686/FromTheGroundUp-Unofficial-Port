@@ -1,9 +1,8 @@
 package ftgumod.item;
 
-import ftgumod.client.gui.GuiResearchBook;
 import ftgumod.packet.PacketDispatcher;
+import ftgumod.ClientHooks;
 import ftgumod.packet.client.TechnologyMessage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
@@ -21,7 +20,7 @@ public class ItemResearchBook extends Item {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 		if (world.isClientSide)
-			Minecraft.getInstance().setScreen(new GuiResearchBook(player));
+			ClientHooks.openResearchBook.accept(player);
 		else
 			PacketDispatcher.sendTo(new TechnologyMessage(player, false), (ServerPlayer) player);
 		return InteractionResultHolder.success(player.getItemInHand(hand));
