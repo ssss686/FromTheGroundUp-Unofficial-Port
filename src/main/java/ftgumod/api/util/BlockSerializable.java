@@ -68,9 +68,10 @@ public class BlockSerializable {
 				LOGGER.warn("BlockSerializable: unknown property '{}' for block '{}', skipping", name, compound.getString("block"));
 				continue;
 			}
-			var value = property.getValue(name);
+			String valueName = state.getString(name);
+			var value = property.getValue(valueName);
 			if (value.isEmpty()) {
-				LOGGER.warn("BlockSerializable: invalid value '{}' for property '{}' on block '{}', skipping", name,
+				LOGGER.warn("BlockSerializable: invalid value '{}' for property '{}' on block '{}', skipping", valueName,
 						name, compound.getString("block"));
 				continue;
 			}
