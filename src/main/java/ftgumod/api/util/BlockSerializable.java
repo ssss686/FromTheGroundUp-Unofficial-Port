@@ -3,6 +3,10 @@ package ftgumod.api.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
+
 import javax.annotation.Nullable;
 
 import ftgumod.api.util.predicate.BlockPredicate;
@@ -22,6 +26,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 public class BlockSerializable {
+
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	private final ResourceKey<Level> dimension;
 	private final BlockPos pos;
@@ -58,7 +64,17 @@ public class BlockSerializable {
 
 		for (String name : state.getAllKeys()) {
 			Property<?> property = container.getProperty(name);
-			properties.put(property, property.getValue(name).get());
+			if (property == null) {
+				LOGGER.warn("BlockSerializable: unknown property '{}' for block '{}', skipping", name, compound.getString("block"));
+				continue;
+			}
+			var value = property.getValue(name);
+			if (value.isEmpty()) {
+				LOGGER.warn("BlockSerializable: invalid value '{}' for property '{}' on block '{}', skipping", name,
+						name, compound.getString("block"));
+				continue;
+			}
+			properties.put(property, value.get());
 		}
 
 		var server = ServerLifecycleHooks.getCurrentServer();

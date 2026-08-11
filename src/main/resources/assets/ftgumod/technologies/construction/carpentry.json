@@ -50,7 +50,7 @@
     "minecraft:ladder",
     "minecraft:painting",
     "#wool",
-    "minecraft:bed",
+    "#bed",
     "minecraft:carpet",
     "minecraft:banner"
   ]

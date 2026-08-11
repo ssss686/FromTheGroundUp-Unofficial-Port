@@ -11,8 +11,10 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.advancements.critereon.LocationPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,20 +29,26 @@ public class BlockPredicate {
 		BLOCK_REMAP.put("minecraft:bed", "minecraft:white_bed");
 	}
 
-	public static final BlockPredicate ANY = new BlockPredicate(null, null, null);
+	public static final BlockPredicate ANY = new BlockPredicate(null, null, null, null);
 
 	private final Block block;
 	private final Map<Property<?>, Object> properties;
 	private final LocationPredicate location;
+	private final TagKey<Block> tag;
 
 	public BlockPredicate(Block block, Map<Property<?>, Object> properties, LocationPredicate location) {
+		this(block, properties, location, null);
+	}
+
+	public BlockPredicate(Block block, Map<Property<?>, Object> properties, LocationPredicate location, TagKey<Block> tag) {
 		this.block = block;
 		this.properties = properties;
 		this.location = location;
+		this.tag = tag;
 	}
 
 	public static BlockPredicate deserialize(JsonObject object) {
-		if (!object.has("block") && !object.has("state") && !object.has("location"))
+		if (!object.has("block") && !object.has("state") && !object.has("location") && !object.has("tag"))
 			return ANY;
 
 		Block block = null;
@@ -51,6 +59,14 @@ public class BlockPredicate {
 			if (location == null || !BuiltInRegistries.BLOCK.containsKey(location))
 				throw new JsonSyntaxException("Unknown block type '" + remapped + "'");
 			block = BuiltInRegistries.BLOCK.get(location);
+		}
+
+		TagKey<Block> tag = null;
+		if (object.has("tag")) {
+			ResourceLocation location = ResourceLocation.tryParse(GsonHelper.getAsString(object, "tag"));
+			if (location == null)
+				throw new JsonSyntaxException("Invalid tag name");
+			tag = TagKey.create(Registries.BLOCK, location);
 		}
 
 		Map<Property<?>, Object> properties = null;
@@ -87,13 +103,15 @@ public class BlockPredicate {
 				location = result.get();
 		}
 
-		return new BlockPredicate(block, properties, location);
+		return new BlockPredicate(block, properties, location, tag);
 	}
 
 	public boolean test(ServerLevel world, BlockPos pos, BlockState state) {
 		if (this == ANY)
 			return true;
 		if (this.block != null && state.getBlock() != this.block)
+			return false;
+		if (this.tag != null && !state.is(this.tag))
 			return false;
 		if (this.properties != null)
 			for (var entry : this.properties.entrySet())
@@ -106,6 +124,8 @@ public class BlockPredicate {
 		if (this == ANY)
 			return true;
 		if (this.block != null && block != this.block)
+			return false;
+		if (this.tag != null && !world.getBlockState(pos).is(this.tag))
 			return false;
 		if (this.properties != null)
 			for (var entry : this.properties.entrySet())

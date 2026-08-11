@@ -61,7 +61,7 @@
       "P": {
         "item": [
           "minecraft:crafting_table",
-          "minecraft:bed"
+          "#bed"
         ],
         "hint": {
           "translate": "technology.hint.man"
@@ -72,7 +72,7 @@
               "block": "minecraft:crafting_table"
             },
             {
-              "block": "minecraft:bed"
+              "tag": "minecraft:beds"
             }
           ],
           "hint": {
