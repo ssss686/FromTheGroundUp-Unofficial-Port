@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "ftgumod:research_book"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.root.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.root.description"
+    },
+    "background": "ftgumod:textures/gui/advancements/backgrounds/parchment.png",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "research": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ftgumod:research_book"
+          }
+        ]
+      }
+    }
+  }
+}
