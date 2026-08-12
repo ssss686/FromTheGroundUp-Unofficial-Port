@@ -39,14 +39,14 @@ displayName="${mod_name}" #mandatory
 #logoFile="examplemod.png" #optional
 
 # A text field displayed in the mod UI
-#credits="" #optional
+credits="Original mod \"From the Ground Up\" by Astavie (https://minecraft.curseforge.com/projects/from-the-ground-up), licensed under CC BY-NC 3.0. This is a modified port for 1.21.1, also licensed under CC BY-NC 3.0."
 
 # The authors of the mod, displayed in the mod UI (optional)
 authors="Fuxingcheng"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-A Minecraft mod that adds research. Ported from the 1.12.2 mod "From the Ground Up".
+A Minecraft mod that adds research. This is a 1.21.1 port/adaptation of the 1.12.2 mod "From the Ground Up" by Astavie (https://minecraft.curseforge.com/projects/from-the-ground-up). The original work has been modified. Licensed under CC BY-NC 3.0 (https://creativecommons.org/licenses/by-nc/3.0/).
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
