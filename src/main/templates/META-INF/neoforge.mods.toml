@@ -46,7 +46,7 @@ authors="Fuxingcheng"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-A Minecraft mod that adds research. This is a 1.21.1 port/adaptation of the 1.12.2 mod "From the Ground Up" by Astavie (https://minecraft.curseforge.com/projects/from-the-ground-up). The original work has been modified. Licensed under CC BY-NC 3.0 (https://creativecommons.org/licenses/by-nc/3.0/).
+A Minecraft mod that adds research. This is a 1.21.1 port/adaptation of the 1.12.2 mod "From the Ground Up" by Astavie (https://www.curseforge.com/minecraft/mc-mods/from-the-ground-up). The original work has been modified. Licensed under CC BY-NC 3.0 (https://creativecommons.org/licenses/by-nc/3.0/).
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
