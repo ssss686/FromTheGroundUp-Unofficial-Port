@@ -1,7 +1,12 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:potion"
+      "id": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:regeneration"
+        }
+      }
     },
     "title": {
       "translate": "technology.brewing.name"
