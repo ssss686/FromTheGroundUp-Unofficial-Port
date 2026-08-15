@@ -150,6 +150,194 @@ power Power  (prerequisite = construction/activation)
 
 ---
 
+## Research Recipes (Idea Table & Research Table)
+
+Besides meeting the **research criteria**, most technologies require two "recipe" steps before they fully unlock:
+
+1. **Idea Table**: place the specified items into the Idea Table (order doesn't matter) to spark an **idea**, then write it onto a parchment.
+2. **Research Table**: put the parchment into the Research Table and solve the puzzle — either a **match** (place the right items in a 3×3 grid) or a **connect** (place 3 items forming a production chain).
+
+> Notes: `#xxx` is a mod-defined tag (any one of the listed items); `.` means an empty cell. Items are listed by registry name; in-game they display in your language.
+
+### Construction
+
+- **Stoneworking**
+  - Idea Table: stick / any wooden tool + cobblestone
+  - Puzzle (match):
+    ```
+    .   [string/reeds]  cobblestone
+    .   stick         [string/reeds]
+    stick  .            .
+    ```
+- **Construction**
+  - Idea Table: `#stone` (stone or sandstone)
+- **Stonemasonry**
+  - Idea Table: `#smoothStone`
+  - Puzzle (match):
+    ```
+    #stoneSlab  #stoneSlab  #stoneSlab
+    #smoothStone  .        #smoothStone
+    #smoothStone  #stairsStone  #smoothStone
+    ```
+- **Activation**
+  - Idea Table: stick + any door / fence gate / trapdoor / iron door / iron trapdoor + redstone dust
+  - Puzzle (connect): iron door → lever
+- **Brickwork**
+  - Idea Table: clay / clay ball + `#heat`
+  - Puzzle (connect): hardened clay → brick block
+- **Quartz**
+  - Idea Table: quartz + glowstone dust / magma block / magma cream
+- **Purpur**
+  - Idea Table: popped chorus fruit + purpur block/pillar/stairs/slab/end rod
+  - Puzzle (match):
+    ```
+    purpur slab   purpur slab   purpur slab
+    purpur pillar  end rod     purpur pillar
+    [purpur block/end bricks] purpur stairs [purpur block/end bricks]
+    ```
+- **Carpentry**
+  - Idea Table: wool + planks + wooden slab + wooden stairs
+  - Puzzle (connect): planks → wool
+- **Glassworking**
+  - Idea Table: sand + glass block
+- **Prismarine**
+  - Idea Table: prismarine / sea lantern + prismarine shard + prismarine crystals
+
+### Power
+
+- **Power**
+  - Idea Table: redstone dust + any switch (button / pressure plate / lever / stick)
+  - Puzzle (match):
+    ```
+    redstone dust  .   .
+    stick      redstone dust  redstone dust
+    [circuit board] [circuit board] [circuit board]
+    ```
+    > `[circuit board]` = stone / stone slab / wool / terracotta / concrete, any one.
+- **Cartography**
+  - Idea Table: paper + redstone dust / feather / ink sac
+- **Circuitry**
+  - Idea Table: redstone dust / redstone torch + quartz / stone / stone slab
+  - Puzzle (match):
+    ```
+    .  .  .
+    redstone dust  stone  redstone torch
+    [circuit board] [circuit board] [circuit board]
+    ```
+- **Redstone Machinery**
+  - Idea Table: bow + redstone dust
+  - Puzzle (match):
+    ```
+    .  .  .
+    redstone dust  stone  repeater
+    [circuit board] sticky piston [circuit board]
+    ```
+- **Music**
+  - Idea Table: redstone dust + diamond + planks
+  - Puzzle (match):
+    ```
+    .  [iron nugget/gold nugget/diamond]  [stick/iron ingot]
+    .  music disc                    .
+    [planks/wooden slab] [planks/wooden slab] [planks/wooden slab]
+    ```
+
+### Research
+
+- **Bibliography**
+  - Idea Table: paper + leather
+- **Enchanting**
+  - Idea Table: any enchanted item
+  - Puzzle (connect): book → iron sword
+- **Glowing Eyes**
+  - Idea Table: ender pearl + blaze powder
+- **Ender Knowledge**
+  - Idea Table: `#dragon` (dragon egg / dragon's breath / dragon head) + nether star
+  - Puzzle (match):
+    ```
+    .  nether star  .
+    .  [crafting table/bed]  .
+    .  #dragon   .
+    ```
+- **Brewing**
+  - Idea Table: water bottle (or water bucket) + nether wart / sugar
+  - Puzzle (match):
+    ```
+    .  sugar     .
+    .  nether wart  .
+    .  water bottle .
+    ```
+
+### Survival
+
+- **Agriculture**
+  - Idea Table: `#crop` + dirt
+  - Puzzle (match):
+    ```
+    .  .  .
+    stick  #crop  stick
+    dirt  dirt  dirt
+    ```
+- **Cooking**
+  - Idea Table: `#heat` + raw meat / potato / carrot / wheat
+  - Puzzle (match):
+    ```
+    .  .  .
+    [carrot/potato/beetroot]  #rawMeat  [apple/melon/chorus fruit]
+    .  bowl  .
+    ```
+- **Gilded Cuisine**
+  - Idea Table: gold block/ingot/nugget + apple/carrot/melon
+  - Puzzle (match):
+    ```
+    gold nugget  gold nugget  gold nugget
+    gold nugget  [apple/carrot/melon]  gold nugget
+    gold nugget  gold nugget  gold nugget
+    ```
+- **Dyes**
+  - Idea Table: `#flower` + dye + cactus
+  - Puzzle (connect): flint → ink sac
+- **Refinement**
+  - Idea Table: `#ore` (iron/gold ore) + `#heat` + `#pickaxe`
+  - Puzzle (match):
+    ```
+    cobblestone  cobblestone  cobblestone
+    cobblestone  #ore       cobblestone
+    cobblestone  #heat      cobblestone
+    ```
+- **Smithing**
+  - Idea Table: `#metal` (iron/gold nugget/ingot/block)
+  - Puzzle (connect): planks → anvil
+- **Lapidary**
+  - Idea Table: diamond + emerald
+  - Puzzle (connect): iron ingot → diamond
+- **Explosives**
+  - Idea Table: gunpowder + sand + flint and steel + dye
+- **Carts**
+  - Idea Table: iron ingot + stick / boat
+  - Puzzle (match):
+    ```
+    [iron ingot/planks]  .  [iron ingot/planks]
+    [iron ingot/planks]  [iron ingot/planks]  [iron ingot/planks]
+    iron ingot  [stick/wooden slab]  iron ingot
+    ```
+- **Transportation**
+  - Idea Table: redstone dust + minecart/boat/rail + chest
+  - Puzzle (connect): rail → redstone dust
+- **Defense**
+  - Idea Table: `#sword` + `#armor`/leather + iron ingot + planks
+- **Metal Armor**
+  - Idea Table: `#armor` + `#metal`
+  - Puzzle (connect): armor stand → iron ingot
+- **Crystalline Armor**
+  - Idea Table: `#armor` + `#gem`
+  - Puzzle (connect): leather → diamond
+- **Boats**
+  - Idea Table: bowl
+
+> **Survival** and **Research** are root technologies — they have no Idea Table / Research Table steps and unlock directly once their research criteria are met.
+
+---
+
 ## Command Reference
 
 All commands start with `/technology` (registered by this mod).
