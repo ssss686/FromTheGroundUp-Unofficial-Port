@@ -2,6 +2,8 @@
 
 > This wiki covers gameplay, the technology tree, commands, installation, and FAQ for this mod.
 > Chinese and English tech names are both listed; English original names appear in parentheses where they differ.
+>
+> 🌐 [中文 Wiki](WIKI_CN.md)
 
 ---
 

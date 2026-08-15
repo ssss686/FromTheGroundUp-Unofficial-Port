@@ -4,6 +4,8 @@ An unofficial port of [**From the Ground Up**](https://www.curseforge.com/minecr
 
 This mod adds a research system to Minecraft: instead of knowing every recipe from the start, you must study and unlock technologies through research before you can use them.
 
+📖 **Wiki**: [中文版](WIKI_CN.md) · [English](WIKI_EN.md)
+
 ## Features
 
 - **Research Book** (default key: `R`) — browse the technology tree and track your progress.
