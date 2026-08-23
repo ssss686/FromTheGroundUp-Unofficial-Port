@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "up": "ftgumod:block/idea_table_top",
+    "front": "ftgumod:block/idea_table_front",
+    "side": "ftgumod:block/idea_table_side",
+    "down": "minecraft:block/oak_planks"
+  }
+}

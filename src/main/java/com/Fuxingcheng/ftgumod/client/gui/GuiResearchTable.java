@@ -1,0 +1,48 @@
+package com.Fuxingcheng.ftgumod.client.gui;
+
+import com.Fuxingcheng.ftgumod.Content;
+import com.Fuxingcheng.ftgumod.FTGU;
+import com.Fuxingcheng.ftgumod.api.technology.puzzle.gui.IPuzzleGui;
+import com.Fuxingcheng.ftgumod.inventory.ContainerResearchTable;
+import com.Fuxingcheng.ftgumod.tileentity.TileEntityResearchTable;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+
+public class GuiResearchTable extends AbstractContainerScreen<ContainerResearchTable> {
+
+	private final ResourceLocation texture;
+	private final Inventory player;
+	private final TileEntityResearchTable tile;
+
+	public GuiResearchTable(ContainerResearchTable menu, Inventory player, Component title) {
+		super(menu, player, title);
+		this.player = player;
+		this.tile = menu.invInput;
+		this.texture = ResourceLocation.fromNamespaceAndPath(FTGU.MODID, "textures/gui/container/research_table.png");
+	}
+
+	@Override
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		super.render(graphics, mouseX, mouseY, partialTicks);
+		renderTooltip(graphics, mouseX, mouseY);
+	}
+
+	@Override
+	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+		graphics.drawString(font, Content.b_researchTable.get().getName(), imageWidth / 2 - font.width(Content.b_researchTable.get().getName()) / 2, 6, 4210752, false);
+		graphics.drawString(font, player.getDisplayName().getString(), 8, imageHeight - 96 + 2, 4210752, false);
+		if (tile.puzzle != null)
+			((IPuzzleGui) tile.puzzle.getGui()).drawForeground(this, graphics, mouseX, mouseY);
+	}
+
+	@Override
+	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+		graphics.blit(texture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+		if (tile.puzzle != null)
+			((IPuzzleGui) tile.puzzle.getGui()).drawBackground(this, graphics, mouseX, mouseY);
+	}
+
+}
