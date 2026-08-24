@@ -28,27 +28,20 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Get mouse position directly from the screen
-		Minecraft mc = Minecraft.getInstance();
-		double actualMouseX = mc.mouseHandler.xpos();
-		double actualMouseY = mc.mouseHandler.ypos();
-		int scaledMouseX = (int)(actualMouseX / mc.getWindow().getGuiScale());
-		int scaledMouseY = (int)(actualMouseY / mc.getWindow().getGuiScale());
+		// 原版 NeoForge 逻辑: mouseX -= gui.getGuiLeft(); mouseY -= gui.getGuiTop();
+		int relMouseX = mouseX - guiLeft;
+		int relMouseY = mouseY - guiTop;
 
-		// Convert to GUI-relative
-		int relX = scaledMouseX - guiLeft;
-		int relY = scaledMouseY - guiTop;
-
-		if (research.getTechnology().canResearch(mc.player)) {
-			if (relX >= 25 && relX < 43 && relY >= 34 && relY < 52)
-				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), scaledMouseX, scaledMouseY);
-			if (relX >= 97 && relX < 115 && relY >= 34 && relY < 52)
-				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), scaledMouseX, scaledMouseY);
-		} else if (relX >= 97 && relX < 119 && relY >= 35 && relY < 50) {
+		if (research.getTechnology().canResearch(Minecraft.getInstance().player)) {
+			if (relMouseX >= 25 && relMouseX < 43 && relMouseY >= 34 && relMouseY < 52)
+				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), relMouseX, relMouseY);
+			if (relMouseX >= 97 && relMouseX < 115 && relMouseY >= 34 && relMouseY < 52)
+				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), relMouseX, relMouseY);
+		} else if (relMouseX >= 97 && relMouseX < 119 && relMouseY >= 35 && relMouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
-					research.getTechnology().isResearched(mc.player) ? "technology.complete.already" : "technology.complete.understand",
+					research.getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					research.getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(mc.font, text.get(0), scaledMouseX, scaledMouseY);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), relMouseX, relMouseY);
 		}
 	}
 

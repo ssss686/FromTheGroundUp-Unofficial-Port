@@ -29,41 +29,44 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Get mouse position directly from the screen - this is always screen-absolute
-		Minecraft mc = Minecraft.getInstance();
-		double actualMouseX = mc.mouseHandler.xpos();
-		double actualMouseY = mc.mouseHandler.ypos();
-		// Scale to GUI coordinates
-		int scaledMouseX = (int)(actualMouseX / mc.getWindow().getGuiScale());
-		int scaledMouseY = (int)(actualMouseY / mc.getWindow().getGuiScale());
+		// 原版 NeoForge 逻辑: mouseX -= gui.getGuiLeft(); mouseY -= gui.getGuiTop();
+		// renderLabels 传入的是屏幕绝对坐标，需要转换为 GUI 相对坐标
+		int relMouseX = mouseX - guiLeft;
+		int relMouseY = mouseY - guiTop;
 
-		// Convert to GUI-relative
-		int relX = scaledMouseX - guiLeft;
-		int relY = scaledMouseY - guiTop;
+		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
-		boolean b = !puzzle.getRecipe().getTechnology().canResearch(mc.player);
+		// 原版使用 gui.getSlotUnderMouse()，Fabric 中需要手动查找
+		Slot slot = findSlotUnderMouse(gui, relMouseX, relMouseY);
 
-		// Find slot under mouse by iterating slots
-		Slot slot = null;
-		for (Slot s : gui.getMenu().slots) {
-			if (relX >= s.x && relX < s.x + 16 && relY >= s.y && relY < s.y + 16) {
-				slot = s;
-				break;
-			}
-		}
 		if (slot != null && !slot.hasItem()) {
-			int index = slot.index;
+			int index = slot.index; // slot.getSlotIndex() 在 Mojang mappings 中是 slot.index
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					graphics.renderTooltip(mc.font, mc.font.split(hint, 200), scaledMouseX, scaledMouseY);
+					// 原版使用 GUI 相对坐标调用 renderTooltip
+					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), relMouseX, relMouseY);
 			}
-		} else if (b && relX >= 90 && relX < 112 && relY >= 35 && relY < 50) {
+		} else if (b && relMouseX >= 90 && relMouseX < 112 && relMouseY >= 35 && relMouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
-					puzzle.getRecipe().getTechnology().isResearched(mc.player) ? "technology.complete.already" : "technology.complete.understand",
+					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(mc.font, text.get(0), scaledMouseX, scaledMouseY);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), relMouseX, relMouseY);
 		}
+	}
+
+	/**
+	 * 查找鼠标下的槽位 - 替代原版的 gui.getSlotUnderMouse()
+	 * 在 GUI 相对坐标系中工作
+	 */
+	private Slot findSlotUnderMouse(AbstractContainerScreen<?> gui, int relMouseX, int relMouseY) {
+		for (Slot slot : gui.getMenu().slots) {
+			// slot.x, slot.y 是 GUI 相对坐标
+			if (relMouseX >= slot.x && relMouseX < slot.x + 16 && relMouseY >= slot.y && relMouseY < slot.y + 16) {
+				return slot;
+			}
+		}
+		return null;
 	}
 
 	@Override
