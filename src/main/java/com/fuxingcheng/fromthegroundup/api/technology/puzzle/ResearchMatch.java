@@ -130,10 +130,6 @@ public class ResearchMatch implements IResearchRecipe {
 			Set<Character> keys = Sets.newHashSet(ingMap.keySet());
 			keys.remove(' ');
 
-			// Debug: log pattern
-			com.fuxingcheng.fromthegroundup.FromTheGroundUp.LOGGER.info("ResearchMatch pattern: {}", java.util.Arrays.toString(pattern));
-			com.fuxingcheng.fromthegroundup.FromTheGroundUp.LOGGER.info("ResearchMatch key chars: {}", ingMap.keySet());
-
 			int x = 0;
 			for (String line : pattern) {
 				for (char chr : line.toCharArray()) {
