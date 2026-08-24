@@ -15,19 +15,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinCraftingMenu {
 
 	@Unique
-	private static final ThreadLocal<Player> currentPlayer = new ThreadLocal<>();
+	private static final ThreadLocal<Player> ftgumod$currentPlayer = new ThreadLocal<>();
 
 	@Inject(method = "slotChangedCraftingGrid", at = @At("HEAD"))
 	private static void onSlotChangedCraftingGridHead(CraftingMenu menu, Player player, CallbackInfo ci) {
-		currentPlayer.set(player);
+		ftgumod$currentPlayer.set(player);
 	}
 
 	@Inject(method = "slotChangedCraftingGrid", at = @At("RETURN"))
 	private static void onSlotChangedCraftingGridReturn(CraftingMenu menu, Player player, CallbackInfo ci) {
-		currentPlayer.remove();
+		ftgumod$currentPlayer.remove();
 	}
 
-	public static Player getCurrentPlayer() {
-		return currentPlayer.get();
+	@Unique
+	public static Player ftgumod$getCurrentPlayer() {
+		return ftgumod$currentPlayer.get();
 	}
 }

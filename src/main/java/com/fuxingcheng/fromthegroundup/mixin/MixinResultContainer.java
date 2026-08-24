@@ -15,7 +15,7 @@ public class MixinResultContainer {
 	@Inject(method = "setItem", at = @At("HEAD"), cancellable = true)
 	private void onSetItem(int index, ItemStack stack, CallbackInfo ci) {
 		if (index == 0 && !stack.isEmpty()) {
-			Player player = MixinCraftingMenu.getCurrentPlayer();
+			Player player = MixinCraftingMenu.ftgumod$getCurrentPlayer();
 			if (player != null && TechnologyManager.INSTANCE.isLocked(stack, player)) {
 				// Prevent setting locked items in the result slot
 				ci.cancel();
