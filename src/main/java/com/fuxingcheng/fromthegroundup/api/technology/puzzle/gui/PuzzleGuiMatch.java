@@ -28,15 +28,17 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 	}
 
 	@Override
-	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY) {
-		// Note: mouseX/mouseY are already relative to the screen
+	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
+		// mouseX/mouseY are relative to the screen, convert to GUI-relative for slot comparison
+		int relMouseX = mouseX - guiLeft;
+		int relMouseY = mouseY - guiTop;
 
 		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
 		// Find slot under mouse by iterating slots
 		Slot slot = null;
 		for (Slot s : gui.getMenu().slots) {
-			if (mouseX >= s.x && mouseX < s.x + 16 && mouseY >= s.y && mouseY < s.y + 16) {
+			if (relMouseX >= s.x && relMouseX < s.x + 16 && relMouseY >= s.y && relMouseY < s.y + 16) {
 				slot = s;
 				break;
 			}
@@ -48,7 +50,7 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 				if (hint != null && !hint.getString().isEmpty())
 					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX, mouseY);
 			}
-		} else if (b && mouseX >= 90 && mouseX < 112 && mouseY >= 35 && mouseY < 50) {
+		} else if (b && relMouseX >= 90 && relMouseX < 112 && relMouseY >= 35 && relMouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));

@@ -35,7 +35,7 @@ public class GuiResearchTable extends AbstractContainerScreen<ContainerResearchT
 		graphics.drawString(font, Content.b_researchTable.getName(), imageWidth / 2 - font.width(Content.b_researchTable.getName()) / 2, 6, 4210752, false);
 		graphics.drawString(font, player.getDisplayName().getString(), 8, imageHeight - 96 + 2, 4210752, false);
 		if (tile.puzzle != null)
-			((IPuzzleGui) tile.puzzle.getGui()).drawForeground(this, graphics, mouseX, mouseY);
+			((IPuzzleGui) tile.puzzle.getGui()).drawForeground(this, graphics, mouseX, mouseY, leftPos, topPos);
 	}
 
 	@Override

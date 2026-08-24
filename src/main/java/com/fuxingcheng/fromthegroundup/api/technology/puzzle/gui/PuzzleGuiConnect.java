@@ -27,14 +27,17 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 	}
 
 	@Override
-	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY) {
-		// Note: mouseX/mouseY are already relative to the screen, not the guiLeft/guiTop
+	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
+		// mouseX/mouseY are relative to the screen, convert to GUI-relative for hit testing
+		int relMouseX = mouseX - guiLeft;
+		int relMouseY = mouseY - guiTop;
+
 		if (research.getTechnology().canResearch(Minecraft.getInstance().player)) {
-			if (mouseX >= 25 && mouseX < 43 && mouseY >= 34 && mouseY < 52)
+			if (relMouseX >= 25 && relMouseX < 43 && relMouseY >= 34 && relMouseY < 52)
 				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), mouseX, mouseY);
-			if (mouseX >= 97 && mouseX < 115 && mouseY >= 34 && mouseY < 52)
+			if (relMouseX >= 97 && relMouseX < 115 && relMouseY >= 34 && relMouseY < 52)
 				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), mouseX, mouseY);
-		} else if (mouseX >= 97 && mouseX < 119 && mouseY >= 35 && mouseY < 50) {
+		} else if (relMouseX >= 97 && relMouseX < 119 && relMouseY >= 35 && relMouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					research.getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					research.getTechnology().getDisplayInfo().getTitle().getString()));
