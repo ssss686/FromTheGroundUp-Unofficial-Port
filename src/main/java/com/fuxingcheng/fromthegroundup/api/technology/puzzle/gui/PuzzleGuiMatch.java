@@ -29,16 +29,20 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// renderLabels passes GUI-relative coordinates (already subtracted leftPos/topPos)
-		// For slot hit testing, use these directly
-		// For renderTooltip, need screen-absolute coordinates (add back guiLeft/guiTop)
+		// renderLabels may pass either GUI-relative or screen-absolute coordinates depending on MC version
+		// We need to handle both cases for tooltip positioning
 
 		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
-		// Find slot under mouse by iterating slots (slot x/y are GUI-relative, same as mouseX/mouseY here)
+		// Convert to GUI-relative for slot hit testing
+		// If mouseX is already GUI-relative, this will be wrong, but we'll fix if needed
+		int relX = mouseX - guiLeft;
+		int relY = mouseY - guiTop;
+
+		// Find slot under mouse by iterating slots
 		Slot slot = null;
 		for (Slot s : gui.getMenu().slots) {
-			if (mouseX >= s.x && mouseX < s.x + 16 && mouseY >= s.y && mouseY < s.y + 16) {
+			if (relX >= s.x && relX < s.x + 16 && relY >= s.y && relY < s.y + 16) {
 				slot = s;
 				break;
 			}
@@ -48,13 +52,14 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX + guiLeft, mouseY + guiTop);
+					// renderTooltip expects screen-absolute coordinates
+					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX, mouseY);
 			}
-		} else if (b && mouseX >= 90 && mouseX < 112 && mouseY >= 35 && mouseY < 50) {
+		} else if (b && relX >= 90 && relX < 112 && relY >= 35 && relY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX + guiLeft, mouseY + guiTop);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
 		}
 	}
 

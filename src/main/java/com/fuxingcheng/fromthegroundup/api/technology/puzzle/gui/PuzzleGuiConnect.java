@@ -28,20 +28,20 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// renderLabels passes GUI-relative coordinates (already subtracted leftPos/topPos)
-		// For hit testing, use these directly
-		// For renderTooltip, need screen-absolute coordinates (add back guiLeft/guiTop)
+		// Convert to GUI-relative for hit testing
+		int relX = mouseX - guiLeft;
+		int relY = mouseY - guiTop;
 
 		if (research.getTechnology().canResearch(Minecraft.getInstance().player)) {
-			if (mouseX >= 25 && mouseX < 43 && mouseY >= 34 && mouseY < 52)
-				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), mouseX + guiLeft, mouseY + guiTop);
-			if (mouseX >= 97 && mouseX < 115 && mouseY >= 34 && mouseY < 52)
-				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), mouseX + guiLeft, mouseY + guiTop);
-		} else if (mouseX >= 97 && mouseX < 119 && mouseY >= 35 && mouseY < 50) {
+			if (relX >= 25 && relX < 43 && relY >= 34 && relY < 52)
+				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), mouseX, mouseY);
+			if (relX >= 97 && relX < 115 && relY >= 34 && relY < 52)
+				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), mouseX, mouseY);
+		} else if (relX >= 97 && relX < 119 && relY >= 35 && relY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					research.getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					research.getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX + guiLeft, mouseY + guiTop);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
 		}
 	}
 
