@@ -67,6 +67,15 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawBackground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
+		// Debug: log hint info
+		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % 100 == 0) {
+			for (int i = 0; i < 9; i++) {
+				boolean has = puzzle.getRecipe().hasHint(i);
+				if (has) {
+					com.fuxingcheng.fromthegroundup.FromTheGroundUp.LOGGER.info("drawBackground hint[{}]=true, hint={}", i, puzzle.getRecipe().getHint(i));
+				}
+			}
+		}
 		graphics.blit(TEXTURE, 29 + guiLeft, 16 + guiTop, 0, 166, 54, 54);
 
 		if (puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player))
