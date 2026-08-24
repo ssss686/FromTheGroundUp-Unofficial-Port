@@ -148,9 +148,12 @@ public final class Content {
 	}
 
 	private static <T extends CriterionTrigger<?>> T registerTrigger(String name, T trigger) {
-		// In Minecraft 1.21.1, criterion triggers are registered via CriteriaTriggers.register()
-		// which internally uses the trigger type registry
-		net.minecraft.advancements.CriteriaTriggers.register(name, trigger);
+		// Register trigger type directly to the registry
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, name);
+		// In 1.21.1, we need to use the internal registry
+		// CriteriaTriggers.register() should handle this
+		net.minecraft.advancements.CriteriaTriggers.register(id.toString(), trigger);
+		FromTheGroundUp.LOGGER.info("Registered trigger: {}", id);
 		return trigger;
 	}
 }

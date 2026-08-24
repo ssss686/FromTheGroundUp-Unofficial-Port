@@ -23,22 +23,14 @@ public class CapabilityTechnology {
 			ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, "technology"),
 			builder -> builder
 					.initializer(DefaultImpl::new)
-					.persistent(new com.mojang.serialization.Codec<>() {
-						@Override
-						public <T> com.mojang.serialization.DataResult<com.mojang.datafixers.util.Pair<ITechnology, T>> decode(com.mojang.serialization.DynamicOps<T> ops, T input) {
-							if (input instanceof CompoundTag tag) {
+					.persistent(net.minecraft.nbt.CompoundTag.CODEC.xmap(
+							tag -> {
 								DefaultImpl impl = new DefaultImpl();
 								impl.load(tag);
-								return com.mojang.serialization.DataResult.success(com.mojang.datafixers.util.Pair.of(impl, ops.empty()));
-							}
-							return com.mojang.serialization.DataResult.error(() -> "Expected CompoundTag");
-						}
-
-						@Override
-						public <T> com.mojang.serialization.DataResult<T> encode(ITechnology input, com.mojang.serialization.DynamicOps<T> ops, T prefix) {
-							return com.mojang.serialization.DataResult.success(ops.createString(input.write().toString()));
-						}
-					})
+								return impl;
+							},
+							impl -> impl.write()
+					))
 					.copyOnDeath()
 	);
 
