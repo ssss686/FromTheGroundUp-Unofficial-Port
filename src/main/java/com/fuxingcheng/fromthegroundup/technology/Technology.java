@@ -28,6 +28,7 @@ import com.fuxingcheng.fromthegroundup.api.technology.unlock.IUnlock;
 import com.fuxingcheng.fromthegroundup.api.util.JsonContextPublic;
 import com.fuxingcheng.fromthegroundup.event.TechnologyEvent;
 import com.fuxingcheng.fromthegroundup.util.ListenerTechnology;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.Criterion;
@@ -46,7 +47,6 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.ChatFormatting;
-import com.fuxingcheng.fromthegroundup.event.TechnologyEvent;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,6 +58,9 @@ public class Technology implements ITechnology {
 	private final Set<Technology> children = new HashSet<>();
 	private final ResourceLocation id;
 	private final int level;
+
+	// Store vanilla trigger listeners per-player so we can remove them later
+	private final Map<ServerPlayer, Map<String, CriterionTrigger.Listener<?>>> vanillaListeners = new java.util.HashMap<>();
 
 	Component displayText;
 	DisplayInfo display;
@@ -327,6 +330,7 @@ public class Technology implements ITechnology {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void registerListeners(ServerPlayer player) {
 		TechnologyProgress progress = TechnologyManager.INSTANCE.getProgress(player, this);
 		if (!progress.isDone()) {
@@ -335,19 +339,50 @@ public class Technology implements ITechnology {
 				if (criterionProgress != null && !criterionProgress) {
 					CriterionTriggerInstance instance = entry.getValue().triggerInstance();
 					if (instance != null) {
-						CriterionTrigger<?> trigger = entry.getValue().trigger();
-							if (trigger instanceof TriggerFTGU)
-								((TriggerFTGU) trigger).addTechListener(player.getAdvancements(), instance,
+						CriterionTrigger<CriterionTriggerInstance> trigger = (CriterionTrigger<CriterionTriggerInstance>) entry.getValue().trigger();
+						if (trigger instanceof TriggerFTGU) {
+							((TriggerFTGU) trigger).addTechListener(player.getAdvancements(), instance,
 									new ListenerTechnology(this, entry.getKey()));
-							else {
-								TechnologyManager.INSTANCE.trackCriterion(player, this, entry.getKey(), instance, trigger);
+						} else {
+							// Create a fake advancement to hook into vanilla trigger system
+							ResourceLocation fakeId = ResourceLocation.fromNamespaceAndPath("ftgumod",
+									"tech/" + getRegistryName().getNamespace() + "/" + getRegistryName().getPath() + "/" + entry.getKey());
+
+							try {
+								net.minecraft.advancements.Advancement.Builder advBuilder = net.minecraft.advancements.Advancement.Builder.advancement();
+
+								// Add criterion using the public API
+								advBuilder.addCriterion(entry.getKey(), entry.getValue());
+
+								net.minecraft.advancements.AdvancementHolder holder = advBuilder.build(fakeId);
+
+								// Create a Listener record: when vanilla trigger fires,
+								// it calls advancements.award(holder, criterionName)
+								CriterionTrigger.Listener<CriterionTriggerInstance> listener =
+										new CriterionTrigger.Listener<>(instance, holder, entry.getKey());
+
+								trigger.addPlayerListener(player.getAdvancements(), listener);
+
+									// Store listener reference for later removal
+									vanillaListeners.computeIfAbsent(player, k -> new java.util.HashMap<>())
+											.put(entry.getKey(), listener);
+
+								TechnologyManager.INSTANCE.trackFakeAdvancement(player, holder, this, entry.getKey());
+
+								LOGGER.info("[FTGU] Registered vanilla trigger '{}' for technology '{}' (player: {})",
+										entry.getKey(), getRegistryName(), player.getName().getString());
+							} catch (Exception e) {
+								LOGGER.error("[FTGU] Failed to register vanilla trigger '{}' for technology '{}'",
+										entry.getKey(), getRegistryName(), e);
 							}
+						}
 					}
 				}
 			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void unregisterListeners(ServerPlayer player) {
 		boolean parent = this.parent != null && !this.parent.isResearched(player);
 		TechnologyProgress progress = TechnologyManager.INSTANCE.getProgress(player, this);
@@ -357,12 +392,24 @@ public class Technology implements ITechnology {
 			if (criterionProgress != null && (parent || criterionProgress || progress.isDone())) {
 				CriterionTriggerInstance instance = entry.getValue().triggerInstance();
 				if (instance != null) {
-					CriterionTrigger<?> trigger = entry.getValue().trigger();
-						if (trigger instanceof TriggerFTGU)
+					CriterionTrigger<CriterionTriggerInstance> trigger = (CriterionTrigger<CriterionTriggerInstance>) entry.getValue().trigger();
+					if (trigger instanceof TriggerFTGU) {
 						((TriggerFTGU) trigger).removeTechListener(player.getAdvancements(), instance,
 								new ListenerTechnology(this, entry.getKey()));
-						else
-							TechnologyManager.INSTANCE.untrackCriterion(player, this, entry.getKey());
+					} else {
+						// Remove vanilla trigger listener
+						Map<String, CriterionTrigger.Listener<?>> playerListeners = vanillaListeners.get(player);
+						if (playerListeners != null) {
+							CriterionTrigger.Listener<?> listener = playerListeners.remove(entry.getKey());
+							if (listener != null) {
+								trigger.removePlayerListener(player.getAdvancements(),
+										(CriterionTrigger.Listener<CriterionTriggerInstance>) listener);
+							}
+							if (playerListeners.isEmpty()) {
+								vanillaListeners.remove(player);
+							}
+						}
+					}
 				}
 			}
 		}

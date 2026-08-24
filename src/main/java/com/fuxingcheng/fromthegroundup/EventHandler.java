@@ -151,13 +151,19 @@ public class EventHandler {
 			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 				var fakeMap = TechnologyManager.INSTANCE.getFakeAdvancements().get(player);
 				if (fakeMap != null && !fakeMap.isEmpty()) {
+					// Collect completed advancements first to avoid concurrent modification
 					List<org.apache.commons.lang3.tuple.Pair<Technology, String>> toGrant = new ArrayList<>();
-					for (var entry : fakeMap.entrySet()) {
-						if (player.getAdvancements().getOrStartProgress(entry.getKey()).isDone())
+					for (var entry : new java.util.HashMap<>(fakeMap).entrySet()) {
+						var progress = player.getAdvancements().getOrStartProgress(entry.getKey());
+						if (progress.isDone()) {
 							toGrant.add(entry.getValue());
+						}
 					}
-					for (var pair : toGrant)
+					for (var pair : toGrant) {
+						Technology.getLogger().info("[FTGU] Granting criterion '{}' for technology '{}' (player: {})",
+								pair.getRight(), pair.getLeft().getRegistryName(), player.getName().getString());
 						pair.getLeft().grantCriterion(player, pair.getRight());
+					}
 				}
 			}
 

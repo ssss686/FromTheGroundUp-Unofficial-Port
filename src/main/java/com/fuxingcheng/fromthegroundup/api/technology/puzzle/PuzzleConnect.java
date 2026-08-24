@@ -19,6 +19,7 @@ import com.fuxingcheng.fromthegroundup.inventory.ContainerResearchTable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -186,8 +187,10 @@ public class PuzzleConnect implements IPuzzle {
 			return;
 		for (int i = 0; i < 3; i++) {
 			ItemStack stack = inv.getItem(i);
-			if (!stack.isEmpty())
-				inv.setItem(i, new ItemStack(stack.getItem().getCraftingRemainingItem()));
+			if (!stack.isEmpty()) {
+				Item remainder = stack.getItem().getCraftingRemainingItem();
+				inv.setItem(i, remainder != null ? new ItemStack(remainder) : ItemStack.EMPTY);
+			}
 		}
 	}
 
