@@ -19,7 +19,7 @@
 			"com.fuxingcheng.fromthegroundup.FromTheGroundUp"
 		],
 		"client": [
-			"com.fuxingcheng.fromthegroundup.FromTheGroundUpClient"
+			"com.fuxingcheng.fromthegroundup.client.FTGUClient"
 		]
 	},
 	"mixins": [
