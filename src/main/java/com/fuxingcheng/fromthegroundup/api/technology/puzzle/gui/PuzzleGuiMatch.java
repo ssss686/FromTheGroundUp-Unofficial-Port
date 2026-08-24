@@ -29,39 +29,40 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// 原版 NeoForge 逻辑: mouseX -= gui.getGuiLeft(); mouseY -= gui.getGuiTop();
-		// renderLabels 传入的是屏幕绝对坐标，需要转换为 GUI 相对坐标
-		int relMouseX = mouseX - guiLeft;
-		int relMouseY = mouseY - guiTop;
+		// Fabric/Mojang: renderLabels 传入的是屏幕绝对坐标
+		// NeoForge: renderLabels 传入的是 GUI 相对坐标
+		// 原版代码: mouseX -= gui.getGuiLeft() 后传给 renderTooltip
+		// 所以原版的 renderTooltip 收到的是 GUI 相对坐标
+		// 但 Fabric 的 renderTooltip 需要屏幕绝对坐标
+		//
+		// 解决方案:
+		// - 槽位命中检测: 用 GUI 相对坐标 (mouseX - guiLeft)
+		// - renderTooltip: 用屏幕绝对坐标 (mouseX)
+
+		int relX = mouseX - guiLeft;
+		int relY = mouseY - guiTop;
 
 		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
-		// 原版使用 gui.getSlotUnderMouse()，Fabric 中需要手动查找
-		Slot slot = findSlotUnderMouse(gui, relMouseX, relMouseY);
-
+		Slot slot = findSlotUnderMouse(gui, relX, relY);
 		if (slot != null && !slot.hasItem()) {
-			int index = slot.index; // slot.getSlotIndex() 在 Mojang mappings 中是 slot.index
+			int index = slot.index;
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					// 原版使用 GUI 相对坐标调用 renderTooltip
-					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), relMouseX, relMouseY);
+					// 用屏幕绝对坐标渲染 tooltip
+					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX, mouseY);
 			}
-		} else if (b && relMouseX >= 90 && relMouseX < 112 && relMouseY >= 35 && relMouseY < 50) {
+		} else if (b && relX >= 90 && relX < 112 && relY >= 35 && relY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), relMouseX, relMouseY);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
 		}
 	}
 
-	/**
-	 * 查找鼠标下的槽位 - 替代原版的 gui.getSlotUnderMouse()
-	 * 在 GUI 相对坐标系中工作
-	 */
 	private Slot findSlotUnderMouse(AbstractContainerScreen<?> gui, int relMouseX, int relMouseY) {
 		for (Slot slot : gui.getMenu().slots) {
-			// slot.x, slot.y 是 GUI 相对坐标
 			if (relMouseX >= slot.x && relMouseX < slot.x + 16 && relMouseY >= slot.y && relMouseY < slot.y + 16) {
 				return slot;
 			}

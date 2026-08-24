@@ -28,20 +28,21 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// 原版 NeoForge 逻辑: mouseX -= gui.getGuiLeft(); mouseY -= gui.getGuiTop();
-		int relMouseX = mouseX - guiLeft;
-		int relMouseY = mouseY - guiTop;
+		// Fabric: renderLabels 传入屏幕绝对坐标
+		// 槽位命中用 GUI 相对坐标, renderTooltip 用屏幕绝对坐标
+		int relX = mouseX - guiLeft;
+		int relY = mouseY - guiTop;
 
 		if (research.getTechnology().canResearch(Minecraft.getInstance().player)) {
-			if (relMouseX >= 25 && relMouseX < 43 && relMouseY >= 34 && relMouseY < 52)
-				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), relMouseX, relMouseY);
-			if (relMouseX >= 97 && relMouseX < 115 && relMouseY >= 34 && relMouseY < 52)
-				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), relMouseX, relMouseY);
-		} else if (relMouseX >= 97 && relMouseX < 119 && relMouseY >= 35 && relMouseY < 50) {
+			if (relX >= 25 && relX < 43 && relY >= 34 && relY < 52)
+				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), mouseX, mouseY);
+			if (relX >= 97 && relX < 115 && relY >= 34 && relY < 52)
+				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), mouseX, mouseY);
+		} else if (relX >= 97 && relX < 119 && relY >= 35 && relY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					research.getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					research.getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), relMouseX, relMouseY);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
 		}
 	}
 
