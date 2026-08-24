@@ -28,20 +28,27 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Exactly match original NeoForge code
-		mouseX -= guiLeft;
-		mouseY -= guiTop;
+		// Get mouse position directly from the screen
+		Minecraft mc = Minecraft.getInstance();
+		double actualMouseX = mc.mouseHandler.xpos();
+		double actualMouseY = mc.mouseHandler.ypos();
+		int scaledMouseX = (int)(actualMouseX / mc.getWindow().getGuiScale());
+		int scaledMouseY = (int)(actualMouseY / mc.getWindow().getGuiScale());
 
-		if (research.getTechnology().canResearch(Minecraft.getInstance().player)) {
-			if (mouseX >= 25 && mouseX < 43 && mouseY >= 34 && mouseY < 52)
-				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), mouseX, mouseY);
-			if (mouseX >= 97 && mouseX < 115 && mouseY >= 34 && mouseY < 52)
-				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), mouseX, mouseY);
-		} else if (mouseX >= 97 && mouseX < 119 && mouseY >= 35 && mouseY < 50) {
+		// Convert to GUI-relative
+		int relX = scaledMouseX - guiLeft;
+		int relY = scaledMouseY - guiTop;
+
+		if (research.getTechnology().canResearch(mc.player)) {
+			if (relX >= 25 && relX < 43 && relY >= 34 && relY < 52)
+				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), scaledMouseX, scaledMouseY);
+			if (relX >= 97 && relX < 115 && relY >= 34 && relY < 52)
+				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), scaledMouseX, scaledMouseY);
+		} else if (relX >= 97 && relX < 119 && relY >= 35 && relY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
-					research.getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
+					research.getTechnology().isResearched(mc.player) ? "technology.complete.already" : "technology.complete.understand",
 					research.getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
+			graphics.renderTooltip(mc.font, text.get(0), scaledMouseX, scaledMouseY);
 		}
 	}
 

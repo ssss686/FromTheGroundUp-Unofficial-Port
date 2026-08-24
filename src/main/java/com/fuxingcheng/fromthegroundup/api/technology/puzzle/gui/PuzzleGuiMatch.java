@@ -29,26 +29,24 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Debug: log the coordinates to understand what's happening
-		// In NeoForge, renderLabels receives screen-absolute coords, then we subtract guiLeft/guiTop
-		// Let's try both approaches and see which works
+		// Get mouse position directly from the screen - this is always screen-absolute
+		Minecraft mc = Minecraft.getInstance();
+		double actualMouseX = mc.mouseHandler.xpos();
+		double actualMouseY = mc.mouseHandler.ypos();
+		// Scale to GUI coordinates
+		int scaledMouseX = (int)(actualMouseX / mc.getWindow().getGuiScale());
+		int scaledMouseY = (int)(actualMouseY / mc.getWindow().getGuiScale());
 
-		// Approach 1: Original NeoForge style - convert to GUI-relative
-		int guiRelX = mouseX - guiLeft;
-		int guiRelY = mouseY - guiTop;
+		// Convert to GUI-relative
+		int relX = scaledMouseX - guiLeft;
+		int relY = scaledMouseY - guiTop;
 
-		// Debug logging (remove after testing)
-		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % 60 == 0) {
-			FromTheGroundUp.LOGGER.debug("drawForeground: mouseX={}, mouseY={}, guiLeft={}, guiTop={}, guiRelX={}, guiRelY={}",
-					mouseX, mouseY, guiLeft, guiTop, guiRelX, guiRelY);
-		}
+		boolean b = !puzzle.getRecipe().getTechnology().canResearch(mc.player);
 
-		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
-
-		// Find slot under mouse by iterating slots (use GUI-relative coords)
+		// Find slot under mouse by iterating slots
 		Slot slot = null;
 		for (Slot s : gui.getMenu().slots) {
-			if (guiRelX >= s.x && guiRelX < s.x + 16 && guiRelY >= s.y && guiRelY < s.y + 16) {
+			if (relX >= s.x && relX < s.x + 16 && relY >= s.y && relY < s.y + 16) {
 				slot = s;
 				break;
 			}
@@ -58,14 +56,13 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					// Try with GUI-relative coords (original NeoForge behavior)
-					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), guiRelX, guiRelY);
+					graphics.renderTooltip(mc.font, mc.font.split(hint, 200), scaledMouseX, scaledMouseY);
 			}
-		} else if (b && guiRelX >= 90 && guiRelX < 112 && guiRelY >= 35 && guiRelY < 50) {
+		} else if (b && relX >= 90 && relX < 112 && relY >= 35 && relY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
-					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
+					puzzle.getRecipe().getTechnology().isResearched(mc.player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), guiRelX, guiRelY);
+			graphics.renderTooltip(mc.font, text.get(0), scaledMouseX, scaledMouseY);
 		}
 	}
 
