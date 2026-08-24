@@ -37,6 +37,6 @@
     }
   },
   "textures": {
-    "layer0": "ftgumod:item/magnifying_glass"
+    "layer0": "fromthegroundup:item/magnifying_glass"
   }
 }

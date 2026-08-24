@@ -12,7 +12,7 @@
     "x": 6,
     "y": 3
   },
-  "parent": "ftgumod:survival/refinement",
+  "parent": "fromthegroundup:survival/refinement",
   "idea": {
     "amount": 3,
     "ingredients": [

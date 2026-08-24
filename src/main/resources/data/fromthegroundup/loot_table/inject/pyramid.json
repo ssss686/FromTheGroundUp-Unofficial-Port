@@ -5,18 +5,18 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftgumod:parchment_research",
+          "name": "fromthegroundup:parchment_research",
           "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:research/bibliography\"}"
+              "tag": "{FTGU:\"fromthegroundup:construction/construction\"}"
             }
           ]
         },
         {
           "type": "minecraft:empty",
-          "weight": 7
+          "weight": 15
         }
       ]
     },
@@ -25,18 +25,18 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftgumod:parchment_research",
+          "name": "fromthegroundup:parchment_research",
           "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:research/enchanting\"}"
+              "tag": "{FTGU:\"fromthegroundup:construction/stonemasonry\"}"
             }
           ]
         },
         {
           "type": "minecraft:empty",
-          "weight": 7
+          "weight": 23
         }
       ]
     }

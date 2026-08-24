@@ -12,7 +12,7 @@
     "x": 2,
     "y": 3
   },
-  "parent": "ftgumod:survival/survival",
+  "parent": "fromthegroundup:survival/survival",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -33,7 +33,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       " RC",
       " SR",

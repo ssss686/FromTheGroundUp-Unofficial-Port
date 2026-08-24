@@ -1,23 +1,29 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
+    "F P",
     "SSS",
-    "CBC",
-    "CCC"
+    "WBW"
   ],
   "key": {
+    "F": {
+      "item": "minecraft:feather"
+    },
+    "P": {
+      "item": "fromthegroundup:parchment_empty"
+    },
     "S": {
       "tag": "minecraft:wooden_slabs"
     },
-    "C": {
-      "item": "minecraft:cobblestone"
+    "W": {
+      "tag": "minecraft:planks"
     },
     "B": {
       "item": "minecraft:crafting_table"
     }
   },
   "result": {
-    "id": "ftgumod:research_table",
+    "id": "fromthegroundup:idea_table",
     "count": 1
   }
 }

@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "id": "fromthegroundup:magnifying_glass"
+    },
+    "title": {
+      "translate": "advancements.fromthegroundup.research.inspect.title"
+    },
+    "description": {
+      "translate": "advancements.fromthegroundup.research.inspect.description"
+    }
+  },
+  "parent": "fromthegroundup:research/research",
+  "criteria": {
+    "ftgu": {
+      "trigger": "fromthegroundup:block_inspected"
+    }
+  }
+}

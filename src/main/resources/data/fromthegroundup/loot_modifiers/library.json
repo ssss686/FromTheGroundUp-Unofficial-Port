@@ -6,5 +6,5 @@
       "loot_table_id": "minecraft:chests/stronghold_library"
     }
   ],
-  "table": "ftgumod:inject/library"
+  "table": "fromthegroundup:inject/library"
 }

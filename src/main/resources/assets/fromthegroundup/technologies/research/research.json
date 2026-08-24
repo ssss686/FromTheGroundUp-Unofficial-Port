@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "ftgumod:parchment_idea"
+      "item": "fromthegroundup:parchment_idea"
     },
     "title": {
       "translate": "technology.research.name"
@@ -9,21 +9,21 @@
     "description": {
       "translate": "technology.research.desc"
     },
-    "background": "ftgumod:textures/gui/advancements/backgrounds/parchment.png",
+    "background": "fromthegroundup:textures/gui/advancements/backgrounds/parchment.png",
     "x": 0,
     "y": 0
   },
   "start": true,
-  "parent": "ftgumod:survival/survival",
+  "parent": "fromthegroundup:survival/survival",
   "unlock": [
     {
       "type": "forge:ore_dict",
       "ore": "paper"
     },
-    "ftgumod:parchment_empty",
-    "ftgumod:idea_table",
-    "ftgumod:research_table",
-    "ftgumod:research_book",
-    "ftgumod:magnifying_glass"
+    "fromthegroundup:parchment_empty",
+    "fromthegroundup:idea_table",
+    "fromthegroundup:research_table",
+    "fromthegroundup:research_book",
+    "fromthegroundup:magnifying_glass"
   ]
 }

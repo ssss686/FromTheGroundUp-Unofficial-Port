@@ -12,7 +12,7 @@
     "x": 6,
     "y": 0
   },
-  "parent": "ftgumod:construction/glassworking",
+  "parent": "fromthegroundup:construction/glassworking",
   "criteria": {
     "monument": {
       "trigger": "minecraft:location",

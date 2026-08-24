@@ -12,7 +12,7 @@
     "x": 2,
     "y": 0
   },
-  "parent": "ftgumod:power/power",
+  "parent": "fromthegroundup:power/power",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -40,7 +40,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "   ",
       "RST",

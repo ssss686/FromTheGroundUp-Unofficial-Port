@@ -13,7 +13,7 @@
     "x": 6,
     "y": 2
   },
-  "parent": "ftgumod:survival/refinement",
+  "parent": "fromthegroundup:survival/refinement",
   "idea": {
     "amount": 1,
     "ingredients": [
@@ -21,7 +21,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": {
       "type": "forge:ore_dict",
       "ore": "plankWood"

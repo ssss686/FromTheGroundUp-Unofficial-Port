@@ -12,7 +12,7 @@
     "x": 8,
     "y": 1
   },
-  "parent": "ftgumod:construction/quartz",
+  "parent": "fromthegroundup:construction/quartz",
   "criteria": {
     "city": {
       "trigger": "minecraft:location",
@@ -45,7 +45,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "SSS",
       "PRP",

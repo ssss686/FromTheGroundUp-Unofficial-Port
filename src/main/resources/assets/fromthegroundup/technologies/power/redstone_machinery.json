@@ -12,7 +12,7 @@
     "x": 4,
     "y": 0
   },
-  "parent": "ftgumod:power/circuitry",
+  "parent": "fromthegroundup:power/circuitry",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -24,7 +24,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "   ",
       "ISR",

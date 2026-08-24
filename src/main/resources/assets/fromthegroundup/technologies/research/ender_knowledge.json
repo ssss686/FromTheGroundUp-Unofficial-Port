@@ -12,7 +12,7 @@
     "x": 8,
     "y": 0
   },
-  "parent": "ftgumod:research/glowing_eyes",
+  "parent": "fromthegroundup:research/glowing_eyes",
   "criteria": {
     "dragon": {
       "trigger": "minecraft:player_killed_entity",
@@ -37,7 +37,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       " S ",
       " P ",

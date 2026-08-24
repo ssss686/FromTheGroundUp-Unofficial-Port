@@ -12,7 +12,7 @@
     "x": 4,
     "y": 1
   },
-  "parent": "ftgumod:survival/defense",
+  "parent": "fromthegroundup:survival/defense",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -21,7 +21,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": "minecraft:armor_stand",
     "right": {
       "type": "forge:ore_dict",

@@ -6,5 +6,5 @@
       "loot_table_id": "minecraft:chests/village/village_weaponsmith"
     }
   ],
-  "table": "ftgumod:inject/blacksmith"
+  "table": "fromthegroundup:inject/blacksmith"
 }

@@ -2,15 +2,15 @@
   "type": "minecraft:crafting_shapeless",
   "group": "research_book",
   "result": {
-    "id": "ftgumod:research_book",
+    "id": "fromthegroundup:research_book",
     "count": 1
   },
   "ingredients": [
     {
-      "item": "ftgumod:research_book"
+      "item": "fromthegroundup:research_book"
     },
     {
-      "item": "ftgumod:parchment_research"
+      "item": "fromthegroundup:parchment_research"
     }
   ]
 }

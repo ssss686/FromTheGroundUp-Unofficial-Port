@@ -12,7 +12,7 @@
     "x": 6,
     "y": 4
   },
-  "parent": "ftgumod:survival/agriculture",
+  "parent": "fromthegroundup:survival/agriculture",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -26,7 +26,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "   ",
       "VMF",

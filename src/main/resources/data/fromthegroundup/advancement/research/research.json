@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "id": "fromthegroundup:parchment_research"
+    },
+    "title": {
+      "translate": "advancements.fromthegroundup.research.research.title"
+    },
+    "description": {
+      "translate": "advancements.fromthegroundup.research.research.description"
+    }
+  },
+  "parent": "fromthegroundup:research/root",
+  "criteria": {
+    "ftgu": {
+      "trigger": "fromthegroundup:technology_researched"
+    }
+  }
+}

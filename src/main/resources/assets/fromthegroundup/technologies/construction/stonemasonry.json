@@ -13,7 +13,7 @@
     "x": 2,
     "y": 1
   },
-  "parent": "ftgumod:construction/construction",
+  "parent": "fromthegroundup:construction/construction",
   "idea": {
     "amount": 1,
     "ingredients": [
@@ -21,7 +21,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "SSS",
       "B B",

@@ -12,7 +12,7 @@
     "x": 6,
     "y": 0
   },
-  "parent": "ftgumod:survival/boats",
+  "parent": "fromthegroundup:survival/boats",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -30,7 +30,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "C C",
       "CCC",

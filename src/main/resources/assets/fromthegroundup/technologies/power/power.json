@@ -13,7 +13,7 @@
     "x": 0,
     "y": 1
   },
-  "parent": "ftgumod:construction/activation",
+  "parent": "fromthegroundup:construction/activation",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -37,7 +37,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "R  ",
       "SRR",

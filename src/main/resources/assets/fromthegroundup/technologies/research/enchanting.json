@@ -12,12 +12,12 @@
     "x": 4,
     "y": 0
   },
-  "parent": "ftgumod:research/bibliography",
+  "parent": "fromthegroundup:research/bibliography",
   "criteria": {
     "item": {
-      "trigger": "ftgumod:item_inventory",
+      "trigger": "fromthegroundup:item_inventory",
       "conditions": {
-        "predicate": "ftgumod:enchantment"
+        "predicate": "fromthegroundup:enchantment"
       }
     }
   },
@@ -25,12 +25,12 @@
     "amount": 1,
     "ingredients": [
       {
-        "type": "ftgumod:enchantment"
+        "type": "fromthegroundup:enchantment"
       }
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": "minecraft:book",
     "right": "minecraft:iron_sword"
   },

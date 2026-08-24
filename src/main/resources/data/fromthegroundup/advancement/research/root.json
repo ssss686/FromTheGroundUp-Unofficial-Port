@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "id": "fromthegroundup:research_book"
+    },
+    "title": {
+      "translate": "advancements.fromthegroundup.research.root.title"
+    },
+    "description": {
+      "translate": "advancements.fromthegroundup.research.root.description"
+    },
+    "background": "fromthegroundup:textures/gui/advancements/backgrounds/parchment.png",
+    "show_toast": false,
+    "announce_to_chat": false
+  },
+  "criteria": {
+    "research": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "fromthegroundup:research_book"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@
     "x": 8,
     "y": 2
   },
-  "parent": "ftgumod:survival/smithing",
+  "parent": "fromthegroundup:survival/smithing",
   "idea": {
     "amount": 1,
     "ingredients": [
@@ -27,7 +27,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": {
       "type": "forge:ore_dict",
       "ore": "ingotIron"

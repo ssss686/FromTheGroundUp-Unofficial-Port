@@ -12,7 +12,7 @@
     "x": 6,
     "y": 5
   },
-  "parent": "ftgumod:survival/agriculture",
+  "parent": "fromthegroundup:survival/agriculture",
   "idea": {
     "amount": 1,
     "ingredients": [
@@ -28,7 +28,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": "minecraft:flint",
     "right": {
       "item": "minecraft:ink_sac"

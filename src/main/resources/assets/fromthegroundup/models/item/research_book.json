@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "ftgumod:item/research_book"
+    "layer0": "fromthegroundup:item/research_book"
   }
 }

@@ -12,7 +12,7 @@
     "x": 4,
     "y": 1
   },
-  "parent": "ftgumod:construction/stonemasonry",
+  "parent": "fromthegroundup:construction/stonemasonry",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -24,7 +24,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": "minecraft:hardened_clay",
     "right": "minecraft:brick_block"
   },

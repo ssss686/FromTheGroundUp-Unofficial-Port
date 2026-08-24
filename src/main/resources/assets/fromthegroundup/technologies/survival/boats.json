@@ -12,7 +12,7 @@
     "x": 2,
     "y": 0
   },
-  "parent": "ftgumod:survival/survival",
+  "parent": "fromthegroundup:survival/survival",
   "idea": {
     "amount": 1,
     "ingredients": [

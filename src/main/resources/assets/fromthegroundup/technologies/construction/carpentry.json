@@ -13,7 +13,7 @@
     "x": 2,
     "y": 0
   },
-  "parent": "ftgumod:construction/construction",
+  "parent": "fromthegroundup:construction/construction",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -33,7 +33,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:connect",
+    "type": "fromthegroundup:connect",
     "left": {
       "type": "forge:ore_dict",
       "ore": "plankWood"

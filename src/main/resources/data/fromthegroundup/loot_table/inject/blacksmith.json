@@ -5,12 +5,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftgumod:parchment_research",
+          "name": "fromthegroundup:parchment_research",
           "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:survival/refinement\"}"
+              "tag": "{FTGU:\"fromthegroundup:survival/refinement\"}"
             }
           ]
         },
@@ -25,12 +25,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftgumod:parchment_research",
+          "name": "fromthegroundup:parchment_research",
           "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:survival/smithing\"}"
+              "tag": "{FTGU:\"fromthegroundup:survival/smithing\"}"
             }
           ]
         },
@@ -45,12 +45,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftgumod:parchment_research",
+          "name": "fromthegroundup:parchment_research",
           "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:survival/metal_armor\"}"
+              "tag": "{FTGU:\"fromthegroundup:survival/metal_armor\"}"
             }
           ]
         },
@@ -65,12 +65,12 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "ftgumod:parchment_research",
+          "name": "fromthegroundup:parchment_research",
           "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:survival/lapidary\"}"
+              "tag": "{FTGU:\"fromthegroundup:survival/lapidary\"}"
             }
           ]
         },

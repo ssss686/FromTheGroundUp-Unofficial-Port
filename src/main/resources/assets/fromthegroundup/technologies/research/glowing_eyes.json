@@ -12,7 +12,7 @@
     "x": 6,
     "y": 0
   },
-  "parent": "ftgumod:research/enchanting",
+  "parent": "fromthegroundup:research/enchanting",
   "criteria": {
     "enderman": {
       "trigger": "minecraft:player_killed_entity",

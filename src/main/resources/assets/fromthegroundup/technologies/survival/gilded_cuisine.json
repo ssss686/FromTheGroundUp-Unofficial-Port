@@ -13,7 +13,7 @@
     "x": 8,
     "y": 4
   },
-  "parent": "ftgumod:survival/cooking",
+  "parent": "fromthegroundup:survival/cooking",
   "idea": {
     "amount": 2,
     "ingredients": [
@@ -39,7 +39,7 @@
     ]
   },
   "research": {
-    "type": "ftgumod:match",
+    "type": "fromthegroundup:match",
     "pattern": [
       "NNN",
       "NCN",

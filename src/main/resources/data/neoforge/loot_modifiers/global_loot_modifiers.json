@@ -1,8 +1,8 @@
 {
   "replace": false,
   "entries": [
-    "ftgumod:blacksmith",
-    "ftgumod:library",
-    "ftgumod:pyramid"
+    "fromthegroundup:blacksmith",
+    "fromthegroundup:library",
+    "fromthegroundup:pyramid"
   ]
 }

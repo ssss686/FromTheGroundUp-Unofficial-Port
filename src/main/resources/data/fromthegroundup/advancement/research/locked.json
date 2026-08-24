@@ -1,0 +1,20 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:barrier"
+    },
+    "title": {
+      "translate": "advancements.fromthegroundup.research.locked.title"
+    },
+    "description": {
+      "translate": "advancements.fromthegroundup.research.locked.description"
+    },
+    "hidden": true
+  },
+  "parent": "fromthegroundup:research/root",
+  "criteria": {
+    "ftgu": {
+      "trigger": "fromthegroundup:recipe_locked"
+    }
+  }
+}
