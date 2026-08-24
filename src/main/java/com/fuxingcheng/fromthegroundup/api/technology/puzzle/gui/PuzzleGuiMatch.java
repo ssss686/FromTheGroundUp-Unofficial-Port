@@ -29,31 +29,26 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Fabric/Mojang: renderLabels 传入的是屏幕绝对坐标
-		// NeoForge: renderLabels 传入的是 GUI 相对坐标
-		// 原版代码: mouseX -= gui.getGuiLeft() 后传给 renderTooltip
-		// 所以原版的 renderTooltip 收到的是 GUI 相对坐标
-		// 但 Fabric 的 renderTooltip 需要屏幕绝对坐标
-		//
-		// 解决方案:
-		// - 槽位命中检测: 用 GUI 相对坐标 (mouseX - guiLeft)
-		// - renderTooltip: 用屏幕绝对坐标 (mouseX)
+		// 关键: render() 在调用 renderLabels() 之前做了 pose.translate(leftPos, topPos, 0)
+		// 所以 GuiGraphics 的所有渲染都自动偏移了 (leftPos, topPos)
+		// renderTooltip(font, lines, x, y) 实际渲染在 (x + leftPos, y + topPos)
+		// 因此要渲染在屏幕位置 (mouseX, mouseY)，需要传 (mouseX - leftPos, mouseY - topPos)
+		// 这和原版 NeoForge 代码的逻辑完全一致!
 
-		int relX = mouseX - guiLeft;
-		int relY = mouseY - guiTop;
+		mouseX -= guiLeft;
+		mouseY -= guiTop;
 
 		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
-		Slot slot = findSlotUnderMouse(gui, relX, relY);
+		Slot slot = findSlotUnderMouse(gui, mouseX, mouseY);
 		if (slot != null && !slot.hasItem()) {
 			int index = slot.index;
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					// 用屏幕绝对坐标渲染 tooltip
 					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX, mouseY);
 			}
-		} else if (b && relX >= 90 && relX < 112 && relY >= 35 && relY < 50) {
+		} else if (b && mouseX >= 90 && mouseX < 112 && mouseY >= 35 && mouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
