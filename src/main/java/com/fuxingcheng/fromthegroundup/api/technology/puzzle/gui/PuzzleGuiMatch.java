@@ -67,6 +67,16 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawBackground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
+		// Debug: log all hint and inventory state
+		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % 100 == 0) {
+			StringBuilder sb = new StringBuilder("HintState: ");
+			for (int i = 0; i < 9; i++) {
+				boolean has = puzzle.getRecipe().hasHint(i);
+				boolean empty = inventory.getItem(i).isEmpty();
+				sb.append("[").append(i).append("]=").append(has ? "H" : "-").append(empty ? "E" : "F").append(" ");
+			}
+			com.fuxingcheng.fromthegroundup.FromTheGroundUp.LOGGER.info(sb.toString());
+		}
 		graphics.blit(TEXTURE, 29 + guiLeft, 16 + guiTop, 0, 166, 54, 54);
 
 		if (puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player))
