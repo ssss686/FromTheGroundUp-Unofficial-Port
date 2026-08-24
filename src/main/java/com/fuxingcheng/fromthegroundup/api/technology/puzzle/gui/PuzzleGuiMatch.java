@@ -29,16 +29,26 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Convert screen-absolute coords to GUI-relative (same as original NeoForge code)
-		mouseX -= guiLeft;
-		mouseY -= guiTop;
+		// Debug: log the coordinates to understand what's happening
+		// In NeoForge, renderLabels receives screen-absolute coords, then we subtract guiLeft/guiTop
+		// Let's try both approaches and see which works
+
+		// Approach 1: Original NeoForge style - convert to GUI-relative
+		int guiRelX = mouseX - guiLeft;
+		int guiRelY = mouseY - guiTop;
+
+		// Debug logging (remove after testing)
+		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % 60 == 0) {
+			FromTheGroundUp.LOGGER.debug("drawForeground: mouseX={}, mouseY={}, guiLeft={}, guiTop={}, guiRelX={}, guiRelY={}",
+					mouseX, mouseY, guiLeft, guiTop, guiRelX, guiRelY);
+		}
 
 		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
-		// Find slot under mouse by iterating slots
+		// Find slot under mouse by iterating slots (use GUI-relative coords)
 		Slot slot = null;
 		for (Slot s : gui.getMenu().slots) {
-			if (mouseX >= s.x && mouseX < s.x + 16 && mouseY >= s.y && mouseY < s.y + 16) {
+			if (guiRelX >= s.x && guiRelX < s.x + 16 && guiRelY >= s.y && guiRelY < s.y + 16) {
 				slot = s;
 				break;
 			}
@@ -48,13 +58,14 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX, mouseY);
+					// Try with GUI-relative coords (original NeoForge behavior)
+					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), guiRelX, guiRelY);
 			}
-		} else if (b && mouseX >= 90 && mouseX < 112 && mouseY >= 35 && mouseY < 50) {
+		} else if (b && guiRelX >= 90 && guiRelX < 112 && guiRelY >= 35 && guiRelY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), guiRelX, guiRelY);
 		}
 	}
 

@@ -28,7 +28,7 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Convert screen-absolute coords to GUI-relative (same as original NeoForge code)
+		// Exactly match original NeoForge code
 		mouseX -= guiLeft;
 		mouseY -= guiTop;
 

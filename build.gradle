@@ -34,6 +34,13 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.release = 21
 }
 
+// Fix player name in development
+afterEvaluate {
+	tasks.matching { it.name.startsWith("runClient") }.configureEach {
+		args "--username=Dev"
+	}
+}
+
 java {
 	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
 	// if it is present.
