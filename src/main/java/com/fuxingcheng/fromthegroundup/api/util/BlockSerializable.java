@@ -1,4 +1,5 @@
 package com.fuxingcheng.fromthegroundup.api.util;
+import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +8,7 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.util.predicate.BlockPredicate;
 import net.minecraft.world.level.block.Block;
@@ -23,7 +24,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
-import net.fabricmc.fabric.api.server.ServerLifecycleHooks;
+
 
 public class BlockSerializable {
 
@@ -78,7 +79,7 @@ public class BlockSerializable {
 			properties.put(property, value.get());
 		}
 
-		var server = ServerLifecycleHooks.getCurrentServer();
+		var server = ServerHelper.getCurrentServer();
 		RegistryAccess registryAccess = server != null
 				? server.registryAccess()
 				: RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
@@ -98,7 +99,7 @@ public class BlockSerializable {
 			state.putString(entry.getKey().getName(), getPropertyName(entry.getKey(), entry.getValue()));
 
 		compound.put("state", state);
-		compound.put("display", display.save(ServerLifecycleHooks.getCurrentServer().registryAccess()));
+		compound.put("display", display.save(ServerHelper.getCurrentServer().registryAccess()));
 
 		return compound;
 	}
@@ -113,7 +114,7 @@ public class BlockSerializable {
 	}
 
 	public boolean test(BlockPredicate predicate) {
-		var server = ServerLifecycleHooks.getCurrentServer();
+		var server = ServerHelper.getCurrentServer();
 		if (server == null)
 			return false;
 		ServerLevel level = server.getLevel(dimension);

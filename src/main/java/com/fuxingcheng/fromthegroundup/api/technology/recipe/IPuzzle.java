@@ -2,7 +2,7 @@ package com.fuxingcheng.fromthegroundup.api.technology.recipe;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.inventory.ContainerResearch;
 import net.minecraft.world.entity.player.Player;

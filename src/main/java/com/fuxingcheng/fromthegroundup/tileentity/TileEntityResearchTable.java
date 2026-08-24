@@ -1,23 +1,25 @@
 package com.fuxingcheng.fromthegroundup.tileentity;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.Content;
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IPuzzle;
 import com.fuxingcheng.fromthegroundup.inventory.ContainerResearchTable;
 import com.fuxingcheng.fromthegroundup.technology.Technology;
 import com.fuxingcheng.fromthegroundup.util.StackUtils;
+
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class TileEntityResearchTable extends TileEntityInventory {
+public class TileEntityResearchTable extends TileEntityInventory implements ExtendedScreenHandlerFactory {
 
 	public IPuzzle puzzle;
 
@@ -58,8 +60,18 @@ public class TileEntityResearchTable extends TileEntityInventory {
 	}
 
 	@Override
-	public AbstractContainerMenu createMenu(int containerId, Inventory playerInv) {
+	public AbstractContainerMenu createMenu(int containerId, Inventory playerInv, Player player) {
 		return new ContainerResearchTable(containerId, this, playerInv);
+	}
+
+	@Override
+	protected AbstractContainerMenu createMenu(int containerId, Inventory playerInv) {
+		return new ContainerResearchTable(containerId, this, playerInv);
+	}
+
+	@Override
+	public Object getScreenOpeningData(ServerPlayer player) {
+		return this.getBlockPos();
 	}
 
 }

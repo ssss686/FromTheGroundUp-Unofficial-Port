@@ -15,13 +15,30 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 
+import org.jetbrains.annotations.Nullable;
+
 public class CapabilityTechnology {
 
 	public static final AttachmentType<ITechnology> TECH_CAP = AttachmentRegistry.create(
 			ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, "technology"),
 			builder -> builder
 					.initializer(DefaultImpl::new)
-					.persistent(ITechnology.CODEC)
+					.persistent(new com.mojang.serialization.Codec<>() {
+						@Override
+						public <T> com.mojang.serialization.DataResult<com.mojang.datafixers.util.Pair<ITechnology, T>> decode(com.mojang.serialization.DynamicOps<T> ops, T input) {
+							if (input instanceof CompoundTag tag) {
+								DefaultImpl impl = new DefaultImpl();
+								impl.load(tag);
+								return com.mojang.serialization.DataResult.success(com.mojang.datafixers.util.Pair.of(impl, ops.empty()));
+							}
+							return com.mojang.serialization.DataResult.error(() -> "Expected CompoundTag");
+						}
+
+						@Override
+						public <T> com.mojang.serialization.DataResult<T> encode(ITechnology input, com.mojang.serialization.DynamicOps<T> ops, T prefix) {
+							return com.mojang.serialization.DataResult.success(ops.createString(input.write().toString()));
+						}
+					})
 					.copyOnDeath()
 	);
 
@@ -66,22 +83,6 @@ public class CapabilityTechnology {
 			return compound;
 		}
 
-		net.minecraft.util.codecs.Codec<ITechnology> CODEC = new net.minecraft.util.codecs.Codec<>() {
-			@Override
-			public <T> com.mojang.datafixers.util.Either<ITechnology, T> decode(com.mojang.serialization.DynamicOps<T> ops, T input) {
-				if (input instanceof CompoundTag tag) {
-					DefaultImpl impl = new DefaultImpl();
-					impl.load(tag);
-					return com.mojang.datafixers.util.Either.left(impl);
-				}
-				return com.mojang.datafixers.util.Either.right(input);
-			}
-
-			@Override
-			public <T> com.mojang.datafixers.util.Either<T, com.mojang.serialization.DataResult.Error<ITechnology>> encode(ITechnology input, com.mojang.serialization.DynamicOps<T> ops, T prefix) {
-				return com.mojang.datafixers.util.Either.left(ops.createString(input.write().toString()));
-			}
-		};
 	}
 
 	public static class DefaultImpl implements ITechnology {

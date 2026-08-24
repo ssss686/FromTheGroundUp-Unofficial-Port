@@ -1,6 +1,6 @@
 package com.fuxingcheng.fromthegroundup.event;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.technology.TechnologyManager;
 

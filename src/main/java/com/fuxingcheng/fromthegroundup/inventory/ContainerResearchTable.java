@@ -39,7 +39,7 @@ import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 
 public class ContainerResearchTable extends ContainerResearch {
 
-	private static final TagKey<Item> FEATHERS = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "feathers"));
+	private static final TagKey<Item> FEATHERS = TagKey.create(net.minecraft.core.registries.Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "feathers"));
 
 	public final TileEntityResearchTable invInput;
 

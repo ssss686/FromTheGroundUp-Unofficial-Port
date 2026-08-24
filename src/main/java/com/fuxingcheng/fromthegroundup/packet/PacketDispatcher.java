@@ -60,6 +60,12 @@ public final class PacketDispatcher {
 		ServerPlayNetworking.send(player, message);
 	}
 
+	public static void sendToAll(CustomPacketPayload message) {
+		net.fabricmc.fabric.api.networking.v1.PlayerLookup.all(
+				com.fuxingcheng.fromthegroundup.util.ServerHelper.getCurrentServer()
+		).forEach(player -> ServerPlayNetworking.send(player, message));
+	}
+
 	public static void sendToServer(CustomPacketPayload message) {
 		ClientPlayNetworking.send(message);
 	}

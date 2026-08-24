@@ -29,35 +29,38 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY) {
-		mouseX -= gui.getGuiLeft();
-		mouseY -= gui.getGuiTop();
+		// Note: mouseX/mouseY are already relative to the screen
 
-		boolean b = !puzzle.getRecipe().getTechnology().canResearch(gui.getMinecraft().player);
+		boolean b = !puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player);
 
-		Slot slot = gui.getSlotUnderMouse();
+		// Find slot under mouse by iterating slots
+		Slot slot = null;
+		for (Slot s : gui.getMenu().slots) {
+			if (mouseX >= s.x && mouseX < s.x + 16 && mouseY >= s.y && mouseY < s.y + 16) {
+				slot = s;
+				break;
+			}
+		}
 		if (slot != null && !slot.hasItem()) {
-			int index = slot.getSlotIndex();
+			int index = slot.index;
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
-					graphics.renderTooltip(gui.getMinecraft().font, gui.getMinecraft().font.split(hint, 200), mouseX, mouseY);
+					graphics.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(hint, 200), mouseX, mouseY);
 			}
 		} else if (b && mouseX >= 90 && mouseX < 112 && mouseY >= 35 && mouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
-					puzzle.getRecipe().getTechnology().isResearched(gui.getMinecraft().player) ? "technology.complete.already" : "technology.complete.understand",
+					puzzle.getRecipe().getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					puzzle.getRecipe().getTechnology().getDisplayInfo().getTitle().getString()));
-			graphics.renderTooltip(gui.getMinecraft().font, text.get(0), mouseX, mouseY);
+			graphics.renderTooltip(Minecraft.getInstance().font, text.get(0), mouseX, mouseY);
 		}
 	}
 
 	@Override
-	public void drawBackground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY) {
-		int guiLeft = gui.getGuiLeft();
-		int guiTop = gui.getGuiTop();
-
+	public void drawBackground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
 		graphics.blit(TEXTURE, 29 + guiLeft, 16 + guiTop, 0, 166, 54, 54);
 
-		if (puzzle.getRecipe().getTechnology().canResearch(gui.getMinecraft().player))
+		if (puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player))
 			graphics.blit(TEXTURE, 90 + guiLeft, 35 + guiTop, 54, 166, 22, 15);
 		else
 			graphics.blit(TEXTURE, 90 + guiLeft, 35 + guiTop, 54, 181, 22, 15);

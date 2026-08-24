@@ -101,18 +101,16 @@ public final class Content {
 		// Register menus using ExtendedScreenHandlerType for Fabric
 		m_ideaTable = Registry.register(BuiltInRegistries.MENU,
 				ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, n_ideaTable),
-				new ExtendedScreenHandlerType<>((syncId, playerInv, buf) -> {
-					net.minecraft.core.BlockPos pos = buf.readBlockPos();
+				new ExtendedScreenHandlerType<>((syncId, playerInv, pos) -> {
 					TileEntityIdeaTable tile = (TileEntityIdeaTable) playerInv.player.level().getBlockEntity(pos);
 					return new com.fuxingcheng.fromthegroundup.inventory.ContainerIdeaTable(syncId, tile, playerInv);
-				}));
+				}, net.minecraft.core.BlockPos.STREAM_CODEC));
 		m_researchTable = Registry.register(BuiltInRegistries.MENU,
 				ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, n_researchTable),
-				new ExtendedScreenHandlerType<>((syncId, playerInv, buf) -> {
-					net.minecraft.core.BlockPos pos = buf.readBlockPos();
+				new ExtendedScreenHandlerType<>((syncId, playerInv, pos) -> {
 					TileEntityResearchTable tile = (TileEntityResearchTable) playerInv.player.level().getBlockEntity(pos);
 					return new com.fuxingcheng.fromthegroundup.inventory.ContainerResearchTable(syncId, tile, playerInv);
-				}));
+				}, net.minecraft.core.BlockPos.STREAM_CODEC));
 
 		// Register creative tab
 		FTGU_TAB = FabricItemGroup.builder()
@@ -150,7 +148,9 @@ public final class Content {
 	}
 
 	private static <T extends CriterionTrigger<?>> T registerTrigger(String name, T trigger) {
-		return Registry.register(BuiltInRegistries.TRIGGER_TYPE,
-				ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, name), trigger);
+		// In Minecraft 1.21.1, criterion triggers are registered via CriteriaTriggers.register()
+		// which internally uses the trigger type registry
+		net.minecraft.advancements.CriteriaTriggers.register(name, trigger);
+		return trigger;
 	}
 }

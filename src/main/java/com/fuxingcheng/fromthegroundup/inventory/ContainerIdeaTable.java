@@ -29,7 +29,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class ContainerIdeaTable extends AbstractContainerMenu {
 
-	private static final TagKey<Item> FEATHERS = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "feathers"));
+	private static final TagKey<Item> FEATHERS = TagKey.create(net.minecraft.core.registries.Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "feathers"));
 
 	private final TileEntityInventory invInput;
 	private final InventoryCraftingPersistent craftMatrix;

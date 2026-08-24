@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.technology.ITechnologyBuilder;
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IIdeaRecipe;

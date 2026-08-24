@@ -42,7 +42,7 @@ public class GuiResearchTable extends AbstractContainerScreen<ContainerResearchT
 	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
 		graphics.blit(texture, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 		if (tile.puzzle != null)
-			((IPuzzleGui) tile.puzzle.getGui()).drawBackground(this, graphics, mouseX, mouseY);
+			((IPuzzleGui) tile.puzzle.getGui()).drawBackground(this, graphics, mouseX, mouseY, leftPos, topPos);
 	}
 
 }

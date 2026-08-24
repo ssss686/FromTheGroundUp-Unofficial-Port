@@ -2,7 +2,7 @@ package com.fuxingcheng.fromthegroundup.api.util;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 import com.fuxingcheng.fromthegroundup.api.technology.ITechnology;

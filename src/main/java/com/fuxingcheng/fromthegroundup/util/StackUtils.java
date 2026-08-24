@@ -1,4 +1,5 @@
 package com.fuxingcheng.fromthegroundup.util;
+import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -33,7 +34,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.fabricmc.fabric.api.server.ServerLifecycleHooks;
+
 
 import com.mojang.serialization.JsonOps;
 
@@ -359,7 +360,7 @@ public class StackUtils implements IStackUtils {
 
 	@Override
 	public ItemStack getParchment(ITechnology tech, Parchment type) {
-		ItemStack stack = new ItemStack((type == Parchment.IDEA ? Content.i_parchmentIdea : Content.i_parchmentResearch).get());
+		ItemStack stack = new ItemStack(type == Parchment.IDEA ? Content.i_parchmentIdea : Content.i_parchmentResearch);
 		stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, data -> {
 			CompoundTag tag = data.copyTag();
 			tag.putString("FTGU", tech.getRegistryName().toString());
@@ -415,7 +416,7 @@ public class StackUtils implements IStackUtils {
 			object.remove("data");
 		}
 		com.mojang.serialization.DynamicOps<JsonElement> ops;
-		var server = ServerLifecycleHooks.getCurrentServer();
+		var server = ServerHelper.getCurrentServer();
 		if (server != null)
 			ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
 		else

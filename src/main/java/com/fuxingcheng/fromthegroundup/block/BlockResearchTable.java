@@ -62,7 +62,7 @@ public class BlockResearchTable extends BaseEntityBlock {
 			ClientboundBlockEntityDataPacket packet = te.getUpdatePacket();
 			if (packet != null && player instanceof ServerPlayer sp)
 				sp.connection.send(packet);
-			player.openMenu(te, pos);
+			player.openMenu(te);
 		}
 		return ItemInteractionResult.sidedSuccess(level.isClientSide);
 	}

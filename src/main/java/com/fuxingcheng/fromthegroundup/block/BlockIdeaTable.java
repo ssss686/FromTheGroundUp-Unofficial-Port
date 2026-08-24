@@ -58,7 +58,7 @@ public class BlockIdeaTable extends BaseEntityBlock {
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (!level.isClientSide && level.getBlockEntity(pos) instanceof TileEntityIdeaTable te)
-			player.openMenu(te, pos);
+			player.openMenu(te);
 		return ItemInteractionResult.sidedSuccess(level.isClientSide);
 	}
 

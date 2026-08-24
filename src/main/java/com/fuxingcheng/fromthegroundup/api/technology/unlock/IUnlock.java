@@ -1,6 +1,6 @@
 package com.fuxingcheng.fromthegroundup.api.technology.unlock;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
 import com.fuxingcheng.fromthegroundup.api.util.JsonContextPublic;

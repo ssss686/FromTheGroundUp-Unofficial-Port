@@ -1,11 +1,12 @@
 package com.fuxingcheng.fromthegroundup.api.technology.puzzle;
+import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.FTGUAPI;
 import com.fuxingcheng.fromthegroundup.api.inventory.ContainerResearch;
@@ -30,7 +31,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
-import net.fabricmc.fabric.api.server.ServerLifecycleHooks;
+
 
 public class PuzzleConnect implements IPuzzle {
 
@@ -86,7 +87,7 @@ public class PuzzleConnect implements IPuzzle {
 		if (predicate.getMatchingStacks().length == 0)
 			return true;
 
-		var server = ServerLifecycleHooks.getCurrentServer();
+		var server = ServerHelper.getCurrentServer();
 		if (server == null)
 			return false;
 		var registryAccess = server.registryAccess();
@@ -186,7 +187,7 @@ public class PuzzleConnect implements IPuzzle {
 		for (int i = 0; i < 3; i++) {
 			ItemStack stack = inv.getItem(i);
 			if (!stack.isEmpty())
-				inv.setItem(i, stack.getCraftingRemainingItem());
+				inv.setItem(i, new ItemStack(stack.getItem().getCraftingRemainingItem()));
 		}
 	}
 

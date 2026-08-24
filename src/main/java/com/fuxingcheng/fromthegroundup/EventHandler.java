@@ -22,10 +22,9 @@ import com.fuxingcheng.fromthegroundup.util.StackUtils;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -52,7 +51,7 @@ public class EventHandler {
 
 	public static void register() {
 		// Item tooltip
-		ItemTooltipCallback.EVENT.register((itemStack, context, lines) -> {
+		ItemTooltipCallback.EVENT.register((itemStack, context, flag, lines) -> {
 			Item item = itemStack.getItem();
 			if (item == Content.i_magnifyingGlass) {
 				List<BlockSerializable> blocks = ItemMagnifyingGlass.getInspected(itemStack);
@@ -73,8 +72,8 @@ public class EventHandler {
 			} else if (item == Content.i_parchmentIdea) {
 				Technology tech = StackUtils.INSTANCE.getTechnology(itemStack);
 				if (tech != null) {
-					boolean hide = !tech.isResearched(context.entity())
-							&& !tech.canResearchIgnoreCustomUnlock(context.entity());
+					boolean hide = !tech.isResearched(Minecraft.getInstance().player)
+							&& !tech.canResearchIgnoreCustomUnlock(Minecraft.getInstance().player);
 					lines.add(Component.translatable("technology.idea",
 							tech.getDisplayInfo().getTitle().getString()).withStyle(ChatFormatting.GOLD));
 					lines.add(Component.literal(tech.getDisplayInfo().getDescription().getString())
@@ -85,15 +84,15 @@ public class EventHandler {
 			} else if (item == Content.i_parchmentResearch) {
 				Technology tech = StackUtils.INSTANCE.getTechnology(itemStack);
 				if (tech != null) {
-					boolean can = tech.isResearched(context.entity())
-							|| tech.canResearchIgnoreCustomUnlock(context.entity());
+					boolean can = tech.isResearched(Minecraft.getInstance().player)
+							|| tech.canResearchIgnoreCustomUnlock(Minecraft.getInstance().player);
 					lines.add(Component.literal(tech.getDisplayInfo().getTitle().getString())
 							.withStyle(ChatFormatting.GOLD));
 					lines.add(Component.literal(tech.getDisplayInfo().getDescription().getString())
 							.withStyle(can ? new ChatFormatting[] { ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC }
 									: new ChatFormatting[] { ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC,
 											ChatFormatting.OBFUSCATED }));
-					if (can && !tech.isResearched(context.entity())) {
+					if (can && !tech.isResearched(Minecraft.getInstance().player)) {
 						lines.add(Component.empty());
 						lines.add(Component.translatable("item.ftgumod.parchment_research.complete")
 								.withStyle(ChatFormatting.DARK_RED));
@@ -206,9 +205,9 @@ public class EventHandler {
 				CompatJEI.refreshHiddenItems(true);
 		});
 
-		// Entity join level
-		ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-			if (world.isClientSide() && entity == Minecraft.getInstance().player) {
+		// Entity join level (client side)
+		ClientEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+			if (entity == Minecraft.getInstance().player) {
 				PacketDispatcher.sendToServer(new RequestMessage());
 			}
 		});

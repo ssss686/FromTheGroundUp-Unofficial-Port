@@ -1,4 +1,5 @@
 package com.fuxingcheng.fromthegroundup.api.technology.unlock;
+import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.fabricmc.fabric.api.server.ServerLifecycleHooks;
+
 
 public class UnlockRecipe implements IUnlock {
 
@@ -37,10 +38,10 @@ public class UnlockRecipe implements IUnlock {
 
 	public Collection<RecipeHolder<?>> getRecipeList() {
 		List<RecipeHolder<?>> recipes = new ArrayList<>();
-		RecipeManager manager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
+		RecipeManager manager = ServerHelper.getCurrentServer().getRecipeManager();
 		for (RecipeHolder<?> holder : manager.getRecipes()) {
 			if (unlocks(holder.value().getResultItem(
-					ServerLifecycleHooks.getCurrentServer().registryAccess())))
+					ServerHelper.getCurrentServer().registryAccess())))
 				recipes.add(holder);
 		}
 		return recipes;

@@ -108,7 +108,7 @@ public record TechnologyMessage(Collection<String> tech, boolean force, ITechnol
 				ClientHooks.displayToast.accept(toast);
 
 			// Fire client sync event
-			net.fabricmc.fabric.api.event.EventFactory.EMPTY.invoker().run();
+			com.fuxingcheng.fromthegroundup.api.event.FTGUClientSyncEvent.POST.invoker().run();
 		});
 	}
 

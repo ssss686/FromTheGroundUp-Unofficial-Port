@@ -24,7 +24,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Identifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,9 +80,13 @@ public class FromTheGroundUp implements ModInitializer {
 
 		// Server lifecycle events
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			com.fuxingcheng.fromthegroundup.util.ServerHelper.setServer(server);
 			TechnologyManager.INSTANCE.setRegistryAccess(server.registryAccess());
 			TechnologyManager.INSTANCE.reload(server.getWorldPath(
 					net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
+		});
+		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			com.fuxingcheng.fromthegroundup.util.ServerHelper.setServer(null);
 		});
 
 		// Register commands
@@ -97,7 +100,7 @@ public class FromTheGroundUp implements ModInitializer {
 		LOGGER.info("FromTheGroundUp (Fabric) initialized!");
 	}
 
-	public static Identifier id(String path) {
-		return Identifier.of(MOD_ID, path);
+	public static ResourceLocation id(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

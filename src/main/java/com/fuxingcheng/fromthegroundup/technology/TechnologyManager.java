@@ -1,4 +1,5 @@
 package com.fuxingcheng.fromthegroundup.technology;
+import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -30,7 +31,7 @@ import com.google.gson.JsonSyntaxException;
 import com.fuxingcheng.fromthegroundup.FTGU;
 import com.fuxingcheng.fromthegroundup.FTGUConfig;
 import com.fuxingcheng.fromthegroundup.api.FTGUAPI;
-import net.fabricmc.fabric.api.server.ServerLifecycleHooks;
+
 import com.fuxingcheng.fromthegroundup.api.technology.ITechnology;
 import com.fuxingcheng.fromthegroundup.api.technology.ITechnologyManager;
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IResearchRecipe;
@@ -121,13 +122,14 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 			Map<ResourceLocation, String> map = new HashMap<>();
 
 			// Find the mod's resources path
-			Path basePath = null;
+			Path basePathRaw = null;
 			try {
-				basePath = mod.findPath("assets/" + modId + "/technologies").orElse(null);
+				basePathRaw = mod.findPath("assets/" + modId + "/technologies").orElse(null);
 			} catch (Exception e) {
 				return;
 			}
-			if (basePath == null || !Files.exists(basePath)) return;
+			if (basePathRaw == null || !Files.exists(basePathRaw)) return;
+			final Path basePath = basePathRaw;
 
 			// Load _constants.json
 			Path constantsPath = basePath.resolve("_constants.json");
@@ -582,7 +584,7 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 	}
 
 	public static void autoResearch(Technology tech) {
-		var server = ServerLifecycleHooks.getCurrentServer();
+		var server = ServerHelper.getCurrentServer();
 		if (server != null)
 			server.getPlayerList().getPlayers().forEach(player -> {
 				var cap = player.getAttachedOrCreate(CapabilityTechnology.TECH_CAP);

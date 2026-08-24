@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IResearchRecipe;
 import com.fuxingcheng.fromthegroundup.api.technology.unlock.IUnlock;

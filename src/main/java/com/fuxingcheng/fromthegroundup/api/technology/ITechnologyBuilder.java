@@ -2,7 +2,7 @@ package com.fuxingcheng.fromthegroundup.api.technology;
 
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IIdeaRecipe;
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IResearchRecipe;
