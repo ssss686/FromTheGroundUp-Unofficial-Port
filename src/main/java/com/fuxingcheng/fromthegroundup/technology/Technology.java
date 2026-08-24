@@ -368,9 +368,6 @@ public class Technology implements ITechnology {
 											.put(entry.getKey(), listener);
 
 								TechnologyManager.INSTANCE.trackFakeAdvancement(player, holder, this, entry.getKey());
-
-								LOGGER.info("[FTGU] Registered vanilla trigger '{}' for technology '{}' (player: {})",
-										entry.getKey(), getRegistryName(), player.getName().getString());
 							} catch (Exception e) {
 								LOGGER.error("[FTGU] Failed to register vanilla trigger '{}' for technology '{}'",
 										entry.getKey(), getRegistryName(), e);

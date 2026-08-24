@@ -160,8 +160,6 @@ public class EventHandler {
 						}
 					}
 					for (var pair : toGrant) {
-						Technology.getLogger().info("[FTGU] Granting criterion '{}' for technology '{}' (player: {})",
-								pair.getRight(), pair.getLeft().getRegistryName(), player.getName().getString());
 						pair.getLeft().grantCriterion(player, pair.getRight());
 					}
 				}
