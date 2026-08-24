@@ -1,4 +1,4 @@
-package com.fuxingcheng.fromthegroundup.mixin;
+package com.fuxingcheng.fromthegroundup.util;
 
 import net.minecraft.world.entity.player.Player;
 
