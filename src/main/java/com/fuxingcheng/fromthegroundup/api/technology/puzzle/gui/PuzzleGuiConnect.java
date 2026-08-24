@@ -28,16 +28,16 @@ public class PuzzleGuiConnect implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Convert to GUI-relative for hit testing
-		int relX = mouseX - guiLeft;
-		int relY = mouseY - guiTop;
+		// Convert screen-absolute coords to GUI-relative (same as original NeoForge code)
+		mouseX -= guiLeft;
+		mouseY -= guiTop;
 
 		if (research.getTechnology().canResearch(Minecraft.getInstance().player)) {
-			if (relX >= 25 && relX < 43 && relY >= 34 && relY < 52)
+			if (mouseX >= 25 && mouseX < 43 && mouseY >= 34 && mouseY < 52)
 				renderItemTooltip(gui, graphics, research.left.getDisplayStack(), mouseX, mouseY);
-			if (relX >= 97 && relX < 115 && relY >= 34 && relY < 52)
+			if (mouseX >= 97 && mouseX < 115 && mouseY >= 34 && mouseY < 52)
 				renderItemTooltip(gui, graphics, research.right.getDisplayStack(), mouseX, mouseY);
-		} else if (relX >= 97 && relX < 119 && relY >= 35 && relY < 50) {
+		} else if (mouseX >= 97 && mouseX < 119 && mouseY >= 35 && mouseY < 50) {
 			List<Component> text = Collections.singletonList(Component.translatable(
 					research.getTechnology().isResearched(Minecraft.getInstance().player) ? "technology.complete.already" : "technology.complete.understand",
 					research.getTechnology().getDisplayInfo().getTitle().getString()));
