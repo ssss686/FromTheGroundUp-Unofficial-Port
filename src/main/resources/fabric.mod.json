@@ -3,15 +3,15 @@
 	"id": "ftgumod",
 	"version": "${version}",
 	"name": "FromTheGroundUp",
-	"description": "A Minecraft mod that adds research. This is a 1.21.1 port/adaptation of the 1.12.2 mod \"From the Ground Up\" by Astavie (https://www.curseforge.com/minecraft/mc-mods/from-the-ground-up ). The original work has been modified. Original mod licensed under CC BY-NC 3.0 (https://creativecommons.org/licenses/by-nc/3.0/ ); this port is licensed under CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/ ).\n",
+	"description": "A Minecraft mod that adds research. This is a 1.21.1 port/adaptation of the 1.12.2 mod \"From the Ground Up\" by Astavie",
 	"authors": [
 		"Fuxingcheng"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "",
+		"sources": "https://github.com/ssss686/FromTheGroundUp-Unofficial-Port"
 	},
-	"license": "CC0-1.0",
+	"license": "CC BY-NC 4.0",
 	"icon": "assets/ftgumod/icon.png",
 	"environment": "*",
 	"entrypoints": {
