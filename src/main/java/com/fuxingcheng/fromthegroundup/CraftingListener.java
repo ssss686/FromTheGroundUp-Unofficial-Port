@@ -15,7 +15,7 @@ public class CraftingListener implements ContainerListener {
 
 	private final Player player;
 
-	CraftingListener(Player player) {
+	public CraftingListener(Player player) {
 		this.player = player;
 	}
 

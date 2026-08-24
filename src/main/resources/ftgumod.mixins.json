@@ -3,6 +3,7 @@
 	"package": "com.fuxingcheng.fromthegroundup.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"MixinServerPlayer"
 	],
 	"injectors": {
 		"defaultRequire": 1
