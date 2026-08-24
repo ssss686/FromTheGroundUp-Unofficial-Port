@@ -29,6 +29,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.fuxingcheng.fromthegroundup.FTGU;
+import com.fuxingcheng.fromthegroundup.FromTheGroundUp;
 import com.fuxingcheng.fromthegroundup.FTGUConfig;
 import com.fuxingcheng.fromthegroundup.api.FTGUAPI;
 
@@ -121,18 +122,57 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 			Map<ResourceLocation, String> map = new HashMap<>();
 
-			// Find the mod's resources path
-			Path basePathRaw = null;
+			// Find the mod's resources path using multiple methods
+			Path basePath = null;
+
+			// Method 1: Try mod.findPath()
 			try {
-				basePathRaw = mod.findPath("assets/" + modId + "/technologies").orElse(null);
+				basePath = mod.findPath("assets/" + modId + "/technologies").orElse(null);
+				if (basePath != null && Files.exists(basePath)) {
+					// Found via findPath
+				} else {
+					basePath = null;
+				}
 			} catch (Exception e) {
+				basePath = null;
+			}
+
+			// Method 2: Try mod.getOrigin().getPaths()
+			if (basePath == null) {
+				try {
+					for (Path originPath : mod.getOrigin().getPaths()) {
+						Path techPath = originPath.resolve("assets/" + modId + "/technologies");
+						if (Files.exists(techPath)) {
+							basePath = techPath;
+							break;
+						}
+					}
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+
+			// Method 3: Try classpath resource
+			if (basePath == null) {
+				try {
+					var url = getClass().getClassLoader().getResource("assets/" + modId + "/technologies");
+					if (url != null) {
+						basePath = Path.of(url.toURI());
+					}
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+
+			if (basePath == null || !Files.exists(basePath)) {
+				FromTheGroundUp.LOGGER.debug("No technologies found for mod {} (path: {})", modId, basePath);
 				return;
 			}
-			if (basePathRaw == null || !Files.exists(basePathRaw)) return;
-			final Path basePath = basePathRaw;
+			FromTheGroundUp.LOGGER.info("Loading technologies from: {}", basePath);
+			final Path finalBasePath = basePath;
 
 			// Load _constants.json
-			Path constantsPath = basePath.resolve("_constants.json");
+			Path constantsPath = finalBasePath.resolve("_constants.json");
 			if (Files.exists(constantsPath)) {
 				BufferedReader reader = null;
 				try {
@@ -149,10 +189,10 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 			// Walk all JSON files
 			try {
-				Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
+				Files.walkFileTree(finalBasePath, new SimpleFileVisitor<Path>() {
 					@Override
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-						String relative = basePath.relativize(file).toString().replace('\\', '/');
+						String relative = finalBasePath.relativize(file).toString().replace('\\', '/');
 						if (!relative.endsWith(".json") || relative.startsWith("_") || !relative.contains("/"))
 							return FileVisitResult.CONTINUE;
 
@@ -172,7 +212,12 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 				error("Couldn't read technologies from {}", modId, e);
 			}
 
-			json.put(context, map);
+			if (!map.isEmpty()) {
+				json.put(context, map);
+				FromTheGroundUp.LOGGER.info("Loaded {} technologies for mod {}", map.size(), modId);
+			} else {
+				FromTheGroundUp.LOGGER.warn("No technologies loaded for mod {} from {}", modId, finalBasePath);
+			}
 		});
 		return json;
 	}
