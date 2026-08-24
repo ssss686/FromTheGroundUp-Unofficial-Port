@@ -32,8 +32,9 @@ public class CraftingListener implements ContainerListener {
 
 			if (!event.isCanceled()) {
 				slot.container.setItem(0, ItemStack.EMPTY);
-				if (player instanceof ServerPlayer)
+				if (player instanceof ServerPlayer) {
 					Content.c_itemLocked.trigger((ServerPlayer) player, recipe, stack);
+				}
 			}
 		}
 	}
