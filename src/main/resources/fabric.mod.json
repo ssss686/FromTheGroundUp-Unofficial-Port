@@ -1,0 +1,34 @@
+{
+	"schemaVersion": 1,
+	"id": "fromthegroundup",
+	"version": "${version}",
+	"name": "FromTheGroundUp",
+	"description": "A Minecraft mod that adds research. This is a 1.21.1 port/adaptation of the 1.12.2 mod \"From the Ground Up\" by Astavie (https://www.curseforge.com/minecraft/mc-mods/from-the-ground-up ). The original work has been modified. Original mod licensed under CC BY-NC 3.0 (https://creativecommons.org/licenses/by-nc/3.0/ ); this port is licensed under CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/ ).\n",
+	"authors": [
+		"Fuxingcheng"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/fromthegroundup/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.fuxingcheng.fromthegroundup.FromTheGroundUp"
+		],
+		"client": [
+			"com.fuxingcheng.fromthegroundup.FromTheGroundUpClient"
+		]
+	},
+	"mixins": [
+		"fromthegroundup.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
