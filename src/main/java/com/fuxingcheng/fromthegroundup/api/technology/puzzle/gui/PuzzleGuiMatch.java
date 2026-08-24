@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fuxingcheng.fromthegroundup.FromTheGroundUp;
 import com.fuxingcheng.fromthegroundup.api.inventory.InventoryCraftingPersistent;
+import com.fuxingcheng.fromthegroundup.api.inventory.SlotSpecial;
 import com.fuxingcheng.fromthegroundup.api.technology.puzzle.PuzzleMatch;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -29,12 +30,10 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawForeground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// 关键: render() 在调用 renderLabels() 之前做了 pose.translate(leftPos, topPos, 0)
-		// 所以 GuiGraphics 的所有渲染都自动偏移了 (leftPos, topPos)
-		// renderTooltip(font, lines, x, y) 实际渲染在 (x + leftPos, y + topPos)
-		// 因此要渲染在屏幕位置 (mouseX, mouseY)，需要传 (mouseX - leftPos, mouseY - topPos)
-		// 这和原版 NeoForge 代码的逻辑完全一致!
-
+		// 1.21.1 语义：AbstractContainerScreen.render() 在调用 renderLabels() 之前执行了
+		// pose.translate(leftPos, topPos, 0)，而 renderLabels() 收到的是屏幕绝对坐标。
+		// 因此渲染 tooltip 时必须传 (mouseX - leftPos, mouseY - topPos)，
+		// 渲染结果才会落在屏幕绝对坐标 (mouseX, mouseY)。这与 NeoForge 原版逻辑一致。
 		mouseX -= guiLeft;
 		mouseY -= guiTop;
 
@@ -42,7 +41,12 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 		Slot slot = findSlotUnderMouse(gui, mouseX, mouseY);
 		if (slot != null && !slot.hasItem()) {
-			int index = slot.index;
+			// 必须用容器索引（0..8），不能用 slot.index（菜单槽位号 4..12）：
+			// 原版 AbstractContainerMenu.addSlot() 会把 slot.index 覆盖为菜单列表位置，
+			// 容器索引在原版 Slot 中是私有字段且 Mojmap 无公开 getter
+			// （NeoForge 的 getSlotIndex() 是 NeoForge 补丁加的），
+			// 所以由 SlotSpecial 在构造时自行保存容器索引。
+			int index = slot instanceof SlotSpecial ss ? ss.getContainerIndex() : -1;
 			if (slot.container instanceof InventoryCraftingPersistent && index >= 0 && index < 9 && puzzle.getRecipe().hasHint(index)) {
 				Component hint = (puzzle.getHints() == null || b) ? puzzle.getRecipe().getHint(index).getObfuscatedHint() : puzzle.getHints().get(index);
 				if (hint != null && !hint.getString().isEmpty())
@@ -56,9 +60,12 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 		}
 	}
 
+	/** 与原版 getSlotUnderMouse() 等价：只返回激活槽位（hoveredSlot 同样要求 isActive）。 */
 	private Slot findSlotUnderMouse(AbstractContainerScreen<?> gui, int relMouseX, int relMouseY) {
 		for (Slot slot : gui.getMenu().slots) {
-			if (relMouseX >= slot.x && relMouseX < slot.x + 16 && relMouseY >= slot.y && relMouseY < slot.y + 16) {
+			if (slot.isActive()
+					&& relMouseX >= slot.x && relMouseX < slot.x + 16
+					&& relMouseY >= slot.y && relMouseY < slot.y + 16) {
 				return slot;
 			}
 		}
@@ -67,16 +74,6 @@ public class PuzzleGuiMatch implements IPuzzleGui {
 
 	@Override
 	public void drawBackground(AbstractContainerScreen<?> gui, GuiGraphics graphics, int mouseX, int mouseY, int guiLeft, int guiTop) {
-		// Debug: log all hint and inventory state
-		if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount % 100 == 0) {
-			StringBuilder sb = new StringBuilder("HintState: ");
-			for (int i = 0; i < 9; i++) {
-				boolean has = puzzle.getRecipe().hasHint(i);
-				boolean empty = inventory.getItem(i).isEmpty();
-				sb.append("[").append(i).append("]=").append(has ? "H" : "-").append(empty ? "E" : "F").append(" ");
-			}
-			com.fuxingcheng.fromthegroundup.FromTheGroundUp.LOGGER.info(sb.toString());
-		}
 		graphics.blit(TEXTURE, 29 + guiLeft, 16 + guiTop, 0, 166, 54, 54);
 
 		if (puzzle.getRecipe().getTechnology().canResearch(Minecraft.getInstance().player))

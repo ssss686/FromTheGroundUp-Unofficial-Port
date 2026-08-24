@@ -150,8 +150,10 @@ public class ContainerResearchTable extends ContainerResearch {
 					invInput.puzzle = tech.getResearchRecipe().createInstance();
 					invInput.puzzle.onStart(this);
 					invInput.puzzle.onInventoryChange(this);
+					requestHintsIfMissing();
 				} else if (invInput.puzzle != null) {
 					invInput.puzzle.onStart(this);
+					requestHintsIfMissing();
 				}
 			} else if (invInput.puzzle != null) {
 				boolean hadItems = false;
@@ -254,6 +256,17 @@ public class ContainerResearchTable extends ContainerResearch {
 	public void refreshHints(List<Component> hints) {
 		if (invPlayer.player instanceof ServerPlayer sp)
 			PacketDispatcher.sendTo(new HintMessage(hints), sp);
+	}
+
+	/**
+	 * 客户端在 puzzle 出现或重建时补发提示请求。
+	 * 若 TE 数据晚于 open-screen 包到达，菜单构造时 puzzle 尚为 null，
+	 * 构造里的 RequestHintsMessage 永远不会发出，提示会一直停留在 null（显示乱码提示）。
+	 * 服务端处理幂等（puzzle 为 null 时直接忽略），可以安全补发。
+	 */
+	private void requestHintsIfMissing() {
+		if (invPlayer.player.level().isClientSide() && invInput.puzzle != null && invInput.puzzle.getHints() == null)
+			PacketDispatcher.sendToServer(new RequestHintsMessage());
 	}
 
 	@Override
