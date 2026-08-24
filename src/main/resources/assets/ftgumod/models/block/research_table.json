@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "up": "ftgumod:block/research_table_top",
+    "front": "minecraft:block/furnace_side",
+    "side": "minecraft:block/furnace_side",
+    "down": "minecraft:block/furnace_top"
+  }
+}

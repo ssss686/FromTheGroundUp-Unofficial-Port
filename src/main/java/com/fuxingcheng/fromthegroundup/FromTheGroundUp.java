@@ -34,7 +34,7 @@ public class FromTheGroundUp implements ModInitializer {
 			.registerTypeAdapter(Technology.Builder.class, new Technology.Deserializer())
 			.create();
 
-	public static final String MOD_ID = "fromthegroundup";
+	public static final String MOD_ID = "ftgumod";
 	public static final String MODID = MOD_ID;
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

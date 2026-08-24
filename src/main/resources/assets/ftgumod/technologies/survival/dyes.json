@@ -1,0 +1,50 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:light_blue_dye"
+    },
+    "title": {
+      "translate": "technology.dyes.name"
+    },
+    "description": {
+      "translate": "technology.dyes.desc"
+    },
+    "x": 6,
+    "y": 5
+  },
+  "parent": "ftgumod:survival/agriculture",
+  "idea": {
+    "amount": 1,
+    "ingredients": [
+      "#flower",
+      {
+        "type": "forge:ore_dict",
+        "ore": "dye"
+      },
+      {
+        "type": "forge:ore_dict",
+        "ore": "blockCactus"
+      }
+    ]
+  },
+  "research": {
+    "type": "ftgumod:connect",
+    "left": "minecraft:flint",
+    "right": {
+      "item": "minecraft:ink_sac"
+    }
+  },
+  "unlock": [
+    "minecraft:red_dye",
+    "minecraft:purple_dye",
+    "minecraft:cyan_dye",
+    "minecraft:light_gray_dye",
+    "minecraft:gray_dye",
+    "minecraft:pink_dye",
+    "minecraft:lime_dye",
+    "minecraft:yellow_dye",
+    "minecraft:light_blue_dye",
+    "minecraft:magenta_dye",
+    "minecraft:orange_dye"
+  ]
+}
