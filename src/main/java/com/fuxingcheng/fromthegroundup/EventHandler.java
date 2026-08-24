@@ -161,21 +161,9 @@ public class EventHandler {
 				}
 			}
 
-			// Periodically check pending criteria
+			// Note: Pending criteria are handled by vanilla trigger system
+			// The criteria will be granted when their triggers fire naturally
 			if (server.getTickCount() % 20 == 0) {
-				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-					List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
-					if (pending != null && !pending.isEmpty()) {
-						List<TechnologyManager.PendingCriterion> matched = new ArrayList<>();
-						for (TechnologyManager.PendingCriterion pc : pending) {
-							// Simplified check - in NeoForge this checks PlayerTrigger.TriggerInstance
-							// For now, just grant all pending location-based criteria
-							matched.add(pc);
-						}
-						for (TechnologyManager.PendingCriterion pc : matched)
-							pc.tech().grantCriterion(player, pc.criterionName());
-					}
-				}
 
 				if (com.fuxingcheng.fromthegroundup.criterion.TriggerItemInventory.INSTANCE != null) {
 					for (ServerPlayer player : server.getPlayerList().getPlayers()) {
