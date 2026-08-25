@@ -64,9 +64,6 @@ public class FromTheGroundUp implements ModInitializer {
 		// Register event handler
 		EventHandler.register();
 
-		// Register loot table modifications
-		com.fuxingcheng.fromthegroundup.loot.LootTableHandler.register();
-
 		// Register packets
 		PacketDispatcher.registerPackets();
 

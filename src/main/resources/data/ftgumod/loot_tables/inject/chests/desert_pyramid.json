@@ -10,13 +10,13 @@
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:construction/construction\"}"
+              "tag": "{FTGU:\"ftgumod:survival/stoneworking\"}"
             }
           ]
         },
         {
           "type": "minecraft:empty",
-          "weight": 15
+          "weight": 3
         }
       ]
     },
@@ -30,13 +30,13 @@
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:construction/stonemasonry\"}"
+              "tag": "{FTGU:\"ftgumod:combat/archery\"}"
             }
           ]
         },
         {
           "type": "minecraft:empty",
-          "weight": 23
+          "weight": 7
         }
       ]
     }
