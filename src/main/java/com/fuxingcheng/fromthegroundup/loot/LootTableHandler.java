@@ -3,7 +3,6 @@ package com.fuxingcheng.fromthegroundup.loot;
 import com.fuxingcheng.fromthegroundup.Content;
 import com.fuxingcheng.fromthegroundup.FromTheGroundUp;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
-import net.fabricmc.fabric.api.loot.v2.LootTableSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -16,21 +15,21 @@ import net.minecraft.nbt.CompoundTag;
 public class LootTableHandler {
 
 	// Vanilla loot table IDs
-	private static final ResourceLocation BLACKSMITH = ResourceLocation.fromNamespaceAndPath("minecraft", "chests/village/village_armorer");
-	private static final ResourceLocation LIBRARY = ResourceLocation.fromNamespaceAndPath("minecraft", "chests/village/village_library");
-	private static final ResourceLocation PYRAMID = ResourceLocation.fromNamespaceAndPath("minecraft", "chests/desert_pyramid");
+	private static final ResourceLocation VILLAGE_ARMORER = ResourceLocation.fromNamespaceAndPath("minecraft", "chests/village/village_armorer");
+	private static final ResourceLocation STRONGHOLD_LIBRARY = ResourceLocation.fromNamespaceAndPath("minecraft", "chests/stronghold_library");
+	private static final ResourceLocation DESERT_PYRAMID = ResourceLocation.fromNamespaceAndPath("minecraft", "chests/desert_pyramid");
 
 	public static void register() {
 		LootTableEvents.MODIFY.register((id, tableBuilder, source) -> {
-			if (BLACKSMITH.equals(id)) {
+			if (VILLAGE_ARMORER.equals(id)) {
 				addParchmentPool(tableBuilder, "ftgumod:survival/refinement", 1, 3);
 				addParchmentPool(tableBuilder, "ftgumod:survival/smithing", 1, 7);
 				addParchmentPool(tableBuilder, "ftgumod:survival/metal_armor", 1, 7);
 				addParchmentPool(tableBuilder, "ftgumod:survival/lapidary", 1, 15);
-			} else if (LIBRARY.equals(id)) {
+			} else if (STRONGHOLD_LIBRARY.equals(id)) {
 				addParchmentPool(tableBuilder, "ftgumod:magic/enchanting", 1, 3);
 				addParchmentPool(tableBuilder, "ftgumod:magic/brewing", 1, 7);
-			} else if (PYRAMID.equals(id)) {
+			} else if (DESERT_PYRAMID.equals(id)) {
 				addParchmentPool(tableBuilder, "ftgumod:survival/stoneworking", 1, 3);
 				addParchmentPool(tableBuilder, "ftgumod:combat/archery", 1, 7);
 			}
