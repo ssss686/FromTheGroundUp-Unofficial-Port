@@ -21,10 +21,7 @@
         "type": "forge:ore_dict",
         "ore": "dye"
       },
-      {
-        "type": "forge:ore_dict",
-        "ore": "blockCactus"
-      }
+      "minecraft:cactus"
     ]
   },
   "research": {

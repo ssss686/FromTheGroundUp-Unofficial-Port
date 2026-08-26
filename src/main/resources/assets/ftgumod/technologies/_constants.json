@@ -25,7 +25,8 @@
       "minecraft:stone_sword",
       "minecraft:iron_sword",
       "minecraft:golden_sword",
-      "minecraft:diamond_sword"
+      "minecraft:diamond_sword",
+      "minecraft:netherite_sword"
     ],
     "name": "sword"
   },
@@ -68,7 +69,28 @@
       {
         "type": "forge:ore_dict",
         "ore": "oreGold"
-      }
+      },
+      "minecraft:coal_ore",
+      "minecraft:copper_ore",
+      "minecraft:gold_ore",
+      "minecraft:redstone_ore",
+      "minecraft:emerald_ore",
+      "minecraft:lapis_ore",
+      "minecraft:diamond_ore",
+      "minecraft:nether_gold_ore",
+      "minecraft:nether_quartz_ore",
+      "minecraft:ancient_debris",
+      "minecraft:deepslate_coal_ore",
+      "minecraft:deepslate_iron_ore",
+      "minecraft:deepslate_copper_ore",
+      "minecraft:deepslate_gold_ore",
+      "minecraft:deepslate_redstone_ore",
+      "minecraft:deepslate_emerald_ore",
+      "minecraft:deepslate_lapis_ore",
+      "minecraft:deepslate_diamond_ore",
+      "minecraft:raw_iron",
+      "minecraft:raw_copper",
+      "minecraft:raw_gold"
     ],
     "name": "ore"
   },
@@ -92,11 +114,27 @@
       },
       {
         "type": "forge:ore_dict",
+        "ore": "ingotCopper"
+      },
+      {
+        "type": "forge:ore_dict",
+        "ore": "ingotNetherite"
+      },
+      {
+        "type": "forge:ore_dict",
         "ore": "blockIron"
       },
       {
         "type": "forge:ore_dict",
         "ore": "blockGold"
+      },
+      {
+        "type": "forge:ore_dict",
+        "ore": "blockCopper"
+      },
+      {
+        "type": "forge:ore_dict",
+        "ore": "blockNetherite"
       }
     ],
     "name": "metal"
@@ -118,7 +156,19 @@
       "minecraft:melon_seeds",
       "minecraft:pumpkin",
       "minecraft:pumpkin_seeds",
-      "minecraft:reeds"
+      "minecraft:sugar_cane",
+      "minecraft:apple",
+      "minecraft:sweet_berries",
+      "minecraft:glow_berries",
+      "minecraft:chorus_fruit",
+      "minecraft:beetroot",
+      "minecraft:beetroot_seeds",
+      "minecraft:brown_mushroom",
+      "minecraft:red_mushroom",
+      "minecraft:cocoa_beans",
+      "minecraft:kelp",
+      "minecraft:torchflower",
+      "minecraft:torchflower_seeds"
     ],
     "name": "crop"
   },
@@ -157,8 +207,28 @@
   },
   {
     "ingredient": [
-      "minecraft:yellow_flower",
-      "minecraft:red_flower"
+      "minecraft:dandelion",
+      "minecraft:poppy",
+      "minecraft:blue_orchid",
+      "minecraft:allium",
+      "minecraft:azure_bluet",
+      "minecraft:red_tulip",
+      "minecraft:orange_tulip",
+      "minecraft:white_tulip",
+      "minecraft:pink_tulip",
+      "minecraft:oxeye_daisy",
+      "minecraft:cornflower",
+      "minecraft:lily_of_the_valley",
+      "minecraft:torchflower",
+      "minecraft:wither_rose",
+      "minecraft:pink_petals",
+      "minecraft:spore_blossom",
+      "minecraft:sunflower",
+      "minecraft:lilac",
+      "minecraft:rose_bush",
+      "minecraft:peony",
+      "minecraft:pitcher_plant",
+      "minecraft:chorus_flower"
     ],
     "name": "flower"
   },
@@ -167,9 +237,11 @@
       "minecraft:furnace",
       "minecraft:smoker",
       "minecraft:blast_furnace",
+      "minecraft:magma_block",
       "minecraft:campfire",
       "minecraft:soul_campfire",
       "minecraft:coal",
+      "minecraft:charcoal",
       "minecraft:fire_charge"
     ],
     "name": "heat"
@@ -201,8 +273,12 @@
   },
   {
     "ingredient": [
+      "minecraft:amethyst_shard",
       "minecraft:diamond",
-      "minecraft:emerald"
+      "minecraft:emerald",
+      "minecraft:lapis_lazuli",
+      "minecraft:prismarine_crystals",
+      "minecraft:quartz"
     ],
     "name": "gem"
   },
@@ -211,7 +287,8 @@
       "minecraft:leather_helmet",
       "minecraft:iron_helmet",
       "minecraft:golden_helmet",
-      "minecraft:diamond_helmet"
+      "minecraft:diamond_helmet",
+      "minecraft:netherite_helmet"
     ],
     "name": "helmet"
   },
@@ -220,7 +297,8 @@
       "minecraft:leather_chestplate",
       "minecraft:iron_chestplate",
       "minecraft:golden_chestplate",
-      "minecraft:diamond_chestplate"
+      "minecraft:diamond_chestplate",
+      "minecraft:netherite_chestplate"
     ],
     "name": "chestplate"
   },
@@ -229,7 +307,8 @@
       "minecraft:leather_leggings",
       "minecraft:iron_leggings",
       "minecraft:golden_leggings",
-      "minecraft:diamond_leggings"
+      "minecraft:diamond_leggings",
+      "minecraft:netherite_leggings"
     ],
     "name": "leggings"
   },
@@ -238,7 +317,8 @@
       "minecraft:leather_boots",
       "minecraft:iron_boots",
       "minecraft:golden_boots",
-      "minecraft:diamond_boots"
+      "minecraft:diamond_boots",
+      "minecraft:netherite_boots"
     ],
     "name": "boots"
   },
@@ -265,7 +345,10 @@
       "minecraft:birch_boat",
       "minecraft:jungle_boat",
       "minecraft:acacia_boat",
-      "minecraft:dark_oak_boat"
+      "minecraft:dark_oak_boat",
+      "minecraft:mangrove_boat",
+      "minecraft:cherry_boat",
+      "minecraft:bamboo_raft"
     ],
     "name": "boat"
   },
