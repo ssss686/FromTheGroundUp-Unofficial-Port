@@ -179,10 +179,8 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:custom_data": "{FTGU:\"ftgumod:survival/refinement\"}"
-              }
+              "function": "minecraft:set_custom_data",
+              "tag": "{FTGU:\"ftgumod:survival/refinement\"}"
             }
           ]
         },
@@ -201,10 +199,8 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:custom_data": "{FTGU:\"ftgumod:survival/smithing\"}"
-              }
+              "function": "minecraft:set_custom_data",
+              "tag": "{FTGU:\"ftgumod:survival/smithing\"}"
             }
           ]
         },
@@ -223,10 +219,8 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:custom_data": "{FTGU:\"ftgumod:survival/metal_armor\"}"
-              }
+              "function": "minecraft:set_custom_data",
+              "tag": "{FTGU:\"ftgumod:survival/metal_armor\"}"
             }
           ]
         },
@@ -245,10 +239,8 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_components",
-              "components": {
-                "minecraft:custom_data": "{FTGU:\"ftgumod:survival/lapidary\"}"
-              }
+              "function": "minecraft:set_custom_data",
+              "tag": "{FTGU:\"ftgumod:survival/lapidary\"}"
             }
           ]
         },
