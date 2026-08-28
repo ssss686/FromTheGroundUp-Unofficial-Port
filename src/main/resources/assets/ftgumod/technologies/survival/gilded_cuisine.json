@@ -68,11 +68,8 @@
     }
   },
   "unlock": [
-    {
-      "item": "minecraft:golden_apple",
-      "data": 0
-    },
+    "minecraft:golden_apple",
     "minecraft:golden_carrot",
-    "minecraft:speckled_melon"
+    "minecraft:glistering_melon_slice"
   ]
 }

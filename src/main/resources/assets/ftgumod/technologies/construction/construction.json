@@ -22,91 +22,50 @@
   },
   "unlock": [
     [
-      {
-        "item": "minecraft:stone",
-        "data": 1
-      },
-      {
-        "item": "minecraft:stone",
-        "data": 2
-      }
+      "minecraft:granite",
+      "minecraft:polished_granite"
     ],
     [
-      {
-        "item": "minecraft:stone",
-        "data": 3
-      },
-      {
-        "item": "minecraft:stone",
-        "data": 4
-      }
+      "minecraft:diorite",
+      "minecraft:polished_diorite"
     ],
     [
-      {
-        "item": "minecraft:stone",
-        "data": 5
-      },
-      {
-        "item": "minecraft:stone",
-        "data": 6
-      }
-    ],
-    {
-      "item": "minecraft:mossy_cobblestone"
-    },
-    {
-      "item": "minecraft:stone_slab",
-      "data": 3
-    },
-    {
-      "item": "minecraft:stone_stairs"
-    },
-    [
-      {
-        "item": "minecraft:sandstone",
-        "data": 0
-      },
-      {
-        "item": "minecraft:red_sandstone",
-        "data": 0
-      }
+      "minecraft:andesite",
+      "minecraft:polished_andesite"
     ],
     [
-      {
-        "item": "minecraft:sandstone",
-        "data": 1
-      },
-      {
-        "item": "minecraft:red_sandstone",
-        "data": 1
-      }
+      "minecraft:tuff",
+      "minecraft:polished_tuff"
     ],
     [
-      {
-        "item": "minecraft:sandstone",
-        "data": 2
-      },
-      {
-        "item": "minecraft:red_sandstone",
-        "data": 2
-      }
+      "minecraft:deepslate",
+      "minecraft:polished_deepslate"
     ],
     [
-      {
-        "item": "minecraft:stone_slab",
-        "data": 1
-      },
-      {
-        "item": "minecraft:stone_slab2",
-        "data": 0
-      }
+      "minecraft:basalt",
+      "minecraft:polished_basalt"
+    ],
+      "minecraft:mossy_cobblestone",
+    [
+      "minecraft:cobblestone_slab",
+      "minecraft:cobblestone_stairs"
+    ],
+    [
+      "minecraft:sandstone",
+      "minecraft:red_sandstone"
+    ],
+    [
+      "minecraft:sandstone_slab",
+      "minecraft:red_sandstone_slab"
     ],
     [
       "minecraft:sandstone_stairs",
       "minecraft:red_sandstone_stairs"
     ],
-    "minecraft:snow",
-    "minecraft:snow_layer",
+    [
+      "minecraft:snow",
+      "minecraft:snow_layer"
+    ],
     "minecraft:nether_wart_block",
     "minecraft:item_frame"
   ]

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "id": "ftgumod:parchment_empty",
+    "count": 1
+  },
+  "ingredients": [
+    [
+      {"item":"ftgumod:parchment_research"},
+      {"item":"ftgumod:parchment_idea"}
+    ]
+  ]
+}

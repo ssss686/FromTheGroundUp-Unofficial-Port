@@ -49,37 +49,17 @@
     }
   },
   "unlock": [
-    {
-      "item": "minecraft:stone_slab",
-      "data": 0
-    },
-    {
-      "item": "minecraft:stonebrick",
-      "data": 0
-    },
-    {
-      "item": "minecraft:stonebrick",
-      "data": 1
-    },
-    {
-      "item": "minecraft:stonebrick",
-      "data": 3
-    },
-    {
-      "item": "minecraft:stone_slab",
-      "data": 5
-    },
-    {
-      "item": "minecraft:stone_brick_stairs"
-    },
-    {
-      "item": "minecraft:cobblestone_wall",
-      "data": 0
-    },
-    {
-      "item": "minecraft:cobblestone_wall",
-      "data": 1
-    },
-    "minecraft:concrete_powder"
+    [
+      "minecraft:stone_slab",
+      "minecraft:stone_stairs"
+    ],
+    "minecraft:stone_bricks",
+    "minecraft:chiseled_stone_bricks",
+    "minecraft:mossy_stone_bricks",
+    "minecraft:stone_brick_slab",
+    "minecraft:stone_brick_stairs",
+    "minecraft:cobblestone_wall",
+    "minecraft:mossy_cobblestone_wall",
+    "#concrete_powder"
   ]
 }

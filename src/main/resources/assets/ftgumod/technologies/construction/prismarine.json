@@ -43,20 +43,9 @@
     ]
   },
   "unlock": [
-    {
-      "item": "minecraft:prismarine",
-      "data": 0
-    },
-    {
-      "item": "minecraft:prismarine",
-      "data": 1
-    },
-    {
-      "item": "minecraft:prismarine",
-      "data": 2
-    },
-    {
-      "item": "minecraft:sea_lantern"
-    }
+    "minecraft:prismarine",
+    "minecraft:prismarine_bricks",
+    "minecraft:dark_prismarine",
+    "minecraft:sea_lantern"
   ]
 }
