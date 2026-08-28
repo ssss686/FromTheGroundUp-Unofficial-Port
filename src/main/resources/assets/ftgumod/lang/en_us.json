@@ -1,9 +1,9 @@
 {
   "block.ftgumod.idea_table": "Idea Table",
   "block.ftgumod.research_table": "Research Table",
-  "item.ftgumod.parchment_empty": "Parchment",
-  "item.ftgumod.parchment_idea": "Parchment",
-  "item.ftgumod.parchment_research": "Parchment",
+  "item.ftgumod.parchment_empty": "Empty Parchment",
+  "item.ftgumod.parchment_idea": "Idea Parchment",
+  "item.ftgumod.parchment_research": "Research Parchment",
   "item.ftgumod.parchment_research.complete": "Right-click this item to complete the research",
   "item.ftgumod.research_book": "Research Book",
   "item.ftgumod.magnifying_glass": "Magnifying Glass",
