@@ -26,25 +26,20 @@
   "research": {
     "type": "ftgumod:connect",
     "left": "minecraft:hardened_clay",
-    "right": "minecraft:brick_block"
+    "right": "minecraft:bricks"
   },
   "unlock": [
-    "minecraft:brick_block",
-    {
-      "item": "minecraft:stone_slab",
-      "data": 4
-    },
+    "minecraft:bricks",
+    "minecraft:brick_slab",
     "minecraft:brick_stairs",
     "minecraft:flower_pot",
     "minecraft:nether_brick",
-    {
-      "item": "minecraft:stone_slab",
-      "data": 6
-    },
+    "minecraft:nether_bricks",
+    "minecraft:nether_brick_slab",
     "minecraft:nether_brick_stairs",
     "minecraft:nether_brick_fence",
     "minecraft:red_nether_brick",
-    "minecraft:end_bricks",
+    "minecraft:end_stone_bricks",
     "minecraft:clay",
     "#stainedHardenedClay"
   ]
