@@ -50,79 +50,27 @@
     }
   },
   "unlock": [
-    {
-      "item": "minecraft:furnace"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "ingotIron"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "nuggetIron"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockIron"
-    },
+    "minecraft:furnace",
+    "minecraft:iron_ingot",
+    "minecraft:iron_nugget",
+    "minecraft:iron_block",
     "minecraft:flint_and_steel",
-    {
-      "type": "forge:ore_dict",
-      "ore": "ingotGold"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "nuggetGold"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockGold"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "gemDiamond"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockDiamond"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "gemEmerald"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockEmerald"
-    },
-    {
-      "item": "minecraft:coal",
-      "data": 0
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockCoal"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "gemLapis"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockLapis"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
-    },
-    {
-      "type": "forge:ore_dict",
-      "ore": "blockRedstone"
-    },
+    "minecraft:gold_ingot",
+    "minecraft:gold_nugget",
+    "minecraft:gold_block",
+    "minecraft:diamond",
+    "minecraft:diamond_block",
+    "minecraft:emerald",
+    "minecraft:emerald_block",
+    "minecraft:coal",
+    "minecraft:coal_block",
+    "minecraft:lapis_lazuli",
+    "minecraft:lapis_block",
+    "minecraft:redstone",
+    "minecraft:redstone_block",
     "minecraft:slime_ball",
     "minecraft:slime",
-    {
-      "item": "minecraft:bone_meal"
-    },
+    "minecraft:bone_meal",
     "minecraft:bone_block"
   ]
 }

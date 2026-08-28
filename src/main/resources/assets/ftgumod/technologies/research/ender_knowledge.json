@@ -33,7 +33,8 @@
     "amount": 1,
     "ingredients": [
       "#dragon",
-      "minecraft:nether_star"
+      "minecraft:soul_sand",
+      "minecraft:wither_skeleton_skull"
     ]
   },
   "research": {
@@ -45,16 +46,16 @@
     ],
     "key": {
       "S": {
-        "item": "minecraft:nether_star",
+        "item": "minecraft:wither_skeleton_skull",
         "hint": {
-          "translate": "technology.hint.star"
+          "translate": "technology.hint.wither.skull"
         },
         "decipher": {
           "decipher": {
             "block": "minecraft:soul_sand"
           },
           "hint": {
-            "translate": "item.minecraft.nether_star"
+            "translate": "block.minecraft.wither_skeleton_skull"
           }
         }
       },

@@ -32,24 +32,12 @@
     ]
   },
   "unlock": [
-    {
-      "item": "minecraft:quartz_block",
-      "data": 0
-    },
-    {
-      "item": "minecraft:quartz_block",
-      "data": 1
-    },
-    {
-      "item": "minecraft:quartz_block",
-      "data": 2
-    },
-    {
-      "item": "minecraft:stone_slab",
-      "data": 7
-    },
+    "minecraft:quartz_block",
+    "minecraft:chiseled_quartz_block",
+    "minecraft:quartz_pillar",
+    "minecraft:quartz_slab",
     "minecraft:quartz_stairs",
     "minecraft:glowstone",
-    "minecraft:magma"
+    "minecraft:magma_block"
   ]
 }

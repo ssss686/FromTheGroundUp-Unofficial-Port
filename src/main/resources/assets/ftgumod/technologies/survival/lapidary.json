@@ -16,14 +16,7 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "gemDiamond"
-      },
-      {
-        "type": "forge:ore_dict",
-        "ore": "gemEmerald"
-      }
+      "#gem"
     ]
   },
   "research": {

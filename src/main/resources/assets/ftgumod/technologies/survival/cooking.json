@@ -21,7 +21,12 @@
         "#rawMeat",
         "minecraft:potato",
         "minecraft:carrot",
-        "minecraft:wheat"
+        "minecraft:wheat",
+        "minecraft:pumpkin",
+        "minecraft:beetroot",
+        "minecraft:brown_mushroom",
+        "minecraft:red_mushroom",
+        "minecraft:kelp"
       ]
     ]
   },
@@ -37,7 +42,13 @@
         "item": [
           "minecraft:carrot",
           "minecraft:potato",
-          "minecraft:beetroot"
+          "minecraft:beetroot",
+          "minecraft:wheat",
+          "minecraft:pumpkin",
+          "minecraft:beetroot",
+          "minecraft:brown_mushroom",
+          "minecraft:red_mushroom",
+          "minecraft:kelp"
         ],
         "hint": {
           "translate": "technology.hint.vegetable"
@@ -54,7 +65,9 @@
           "minecraft:apple",
           "minecraft:melon",
           "minecraft:chorus_fruit",
-          "minecraft:chorus_fruit_popped"
+          "minecraft:sugar_cane",
+          "minecraft:sweet_berries",
+          "minecraft:glow_berries"
         ],
         "hint": {
           "translate": "technology.hint.fruit"

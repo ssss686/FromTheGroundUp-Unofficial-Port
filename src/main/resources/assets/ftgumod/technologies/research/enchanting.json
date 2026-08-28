@@ -22,11 +22,13 @@
     }
   },
   "idea": {
-    "amount": 1,
+    "amount": 2,
     "ingredients": [
       {
         "type": "ftgumod:enchantment"
-      }
+      },
+      "minecraft:book",
+      "minecraft:lapis_lazuli"
     ]
   },
   "research": {

@@ -66,10 +66,7 @@
     "minecraft:melon_seeds",
     "minecraft:pumpkin_seeds",
     "minecraft:lead",
-    {
-      "item": "minecraft:dirt",
-      "data": 1
-    },
+    "minecraft:coarse_dirt",
     "minecraft:lit_pumpkin",
     "minecraft:leather"
   ]

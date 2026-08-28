@@ -98,12 +98,10 @@
   "unlock": [
     "minecraft:purpur_block",
     "minecraft:purpur_pillar",
-    {
-      "item": "minecraft:purpur_slab",
-      "data": 0
-    },
+    "minecraft:purpur_slab",
     "minecraft:purpur_stairs",
     "minecraft:end_rod",
+    "minecraft:shulker_box",
     "#shulker"
   ]
 }
