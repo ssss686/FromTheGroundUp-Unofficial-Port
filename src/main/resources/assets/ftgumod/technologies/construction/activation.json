@@ -40,10 +40,16 @@
     "right": "minecraft:lever"
   },
   "unlock": [
-    "minecraft:wooden_button",
-    "minecraft:wooden_pressure_plate",
-    "minecraft:stone_button",
-    "minecraft:stone_pressure_plate",
+    "#button",
+    [
+      "minecraft:stone_button",
+      "minecraft:polished_blackstone_button"
+    ],
+    "#pressure_plate",
+    [
+      "minecraft:stone_pressure_plate",
+      "minecraft:polished_blackstone_pressure_plate"
+    ],
     "minecraft:light_weighted_pressure_plate",
     "minecraft:heavy_weighted_pressure_plate",
     "minecraft:lever"
