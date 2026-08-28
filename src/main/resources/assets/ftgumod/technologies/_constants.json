@@ -254,6 +254,38 @@
   },
   {
     "ingredient":[
+      "minecraft:oak_button",
+      "minecraft:spruce_button",
+      "minecraft:birch_button",
+      "minecraft:jungle_button",
+      "minecraft:acacia_button",
+      "minecraft:dark_oak_button",
+      "minecraft:mangrove_button",
+      "minecraft:cherry_button",
+      "minecraft:bamboo_button",
+      "minecraft:crimson_button",
+      "minecraft:warped_button"
+    ],
+    "name": "button"
+  },
+  {
+    "ingredient":[
+      "minecraft:oak_pressure_plate",
+      "minecraft:spruce_pressure_plate",
+      "minecraft:birch_pressure_plate",
+      "minecraft:jungle_pressure_plate",
+      "minecraft:acacia_pressure_plate",
+      "minecraft:dark_oak_pressure_plate",
+      "minecraft:mangrove_pressure_plate",
+      "minecraft:cherry_pressure_plate",
+      "minecraft:bamboo_pressure_plate",
+      "minecraft:crimson_pressure_plate",
+      "minecraft:warped_pressure_plate"
+    ],
+    "name": "pressure_plate"
+  },
+  {
+    "ingredient":[
       "minecraft:white_carpet",
       "minecraft:orange_carpet",
       "minecraft:magenta_carpet",
