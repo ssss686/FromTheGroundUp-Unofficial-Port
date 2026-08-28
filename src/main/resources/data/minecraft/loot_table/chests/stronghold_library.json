@@ -83,13 +83,13 @@
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:magic/enchanting\"}"
+              "tag": "{FTGU:\"ftgumod:research/bibliography\"}"
             }
           ]
         },
         {
           "type": "minecraft:empty",
-          "weight": 3
+          "weight": 7
         }
       ]
     },
@@ -103,7 +103,7 @@
           "functions": [
             {
               "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:magic/brewing\"}"
+              "tag": "{FTGU:\"ftgumod:research/enchanting\"}"
             }
           ]
         },
