@@ -42,16 +42,16 @@
   },
   "unlock": [
     "#door",
-    "minecraft:trapdoor",
+    "#trapdoor",
     "#fence",
     "#fence_gate",
+    "#sign",
     "minecraft:chest",
-    "minecraft:sign",
     "minecraft:ladder",
     "minecraft:painting",
     "#wool",
     "#bed",
-    "minecraft:carpet",
-    "minecraft:banner"
+    "#carpet",
+    "#banner"
   ]
 }
