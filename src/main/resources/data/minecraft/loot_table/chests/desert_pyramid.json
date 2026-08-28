@@ -284,8 +284,10 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:survival/stoneworking\"}"
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": "{FTGU:\"ftgumod:survival/stoneworking\"}"
+              }
             }
           ]
         },
@@ -304,8 +306,10 @@
           "weight": 1,
           "functions": [
             {
-              "function": "minecraft:set_custom_data",
-              "tag": "{FTGU:\"ftgumod:combat/archery\"}"
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": "{FTGU:\"ftgumod:combat/archery\"}"
+              }
             }
           ]
         },
