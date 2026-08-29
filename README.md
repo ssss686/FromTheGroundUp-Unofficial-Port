@@ -22,7 +22,7 @@ This mod adds a research system to Minecraft: instead of knowing every recipe fr
 - Minecraft **1.21.1**
 - NeoForge **21.1.230** or later
 - Forge **52.1.0** or later
-- Fabric **loader_version=0.19.3 and fabric api version 0.116.15** or later 
+- Fabric **loader version 0.19.3 and fabric api version 0.116.15** or later 
 
 ## Installation
 
