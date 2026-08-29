@@ -1,6 +1,6 @@
 # From the Ground Up (Unofficial Port)
 
-An unofficial port of [**From the Ground Up**](https://www.curseforge.com/minecraft/mc-mods/from-the-ground-up) by Astavie, updated from Minecraft **1.12.2 (Forge)** to **1.21.1 (NeoForge)**.
+An unofficial port of [**From the Ground Up**](https://www.curseforge.com/minecraft/mc-mods/from-the-ground-up) by Astavie, updated from Minecraft **1.12.2 (Forge)**.
 
 This mod adds a research system to Minecraft: instead of knowing every recipe from the start, you must study and unlock technologies through research before you can use them.
 
@@ -21,10 +21,12 @@ This mod adds a research system to Minecraft: instead of knowing every recipe fr
 
 - Minecraft **1.21.1**
 - NeoForge **21.1.230** or later
+- Forge **52.1.0** or later
+- Fabric **loader_version=0.19.3 and fabric api version 0.116.15** or later 
 
 ## Installation
 
-1. Install [NeoForge](https://neoforged.net/) for Minecraft 1.21.1.
+1. Install [NeoForge](https://neoforged.net/) / [Forge](https://files.minecraftforge.net/net/minecraftforge/forge/) / [Fabric](https://www.fabricmc.net/) for Minecraft 1.21.1.
 2. Download the latest `FromTheGroundUp-Unofficial-Port` release.
 3. Place the `.jar` file in your `mods/` folder.
 4. Launch the game.
