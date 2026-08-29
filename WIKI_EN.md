@@ -32,6 +32,7 @@ This mod adds a **research system** to Minecraft: instead of knowing every recip
 | **Idea Table** | Combine items in it to spark "ideas", unlocking new research branches. |
 | **Research Table** | Insert research parchment and solve a **puzzle** (match or connect types) to complete the research. |
 | **Research Parchment** | The vessel of research — written with an idea at the Idea Table, then solved at the Research Table. |
+| **Idea Parchment** | The vessel of ideas from the Idea Table. Can be crafted together with Research Parchment into Empty Parchment to recover mistaken parchments. |
 
 ### Getting Started
 
@@ -103,21 +104,21 @@ power Power  (prerequisite = construction/activation)
 |---|---|---|
 | **Survival** | (root) | wooden_sword, wooden_shovel, wooden_pickaxe, wooden_axe, crafting_table, torch, bowl, wooden tools & planks |
 | **Stoneworking** | Survival | stone_sword, stone_shovel, stone_pickaxe, stone_axe (stone tools) |
-| **Construction** | Stoneworking | assorted stone/sandstone blocks, snow, nether wart block, item frame |
-| **Stonemasonry** | Construction | stonebrick, stone slab, stone brick stairs, cobblestone wall, concrete powder |
-| **Activation** | Stonemasonry | wooden/stone button, pressure plates, lever |
-| **Brickwork** | Stonemasonry | brick_block, brick stairs, flower pot, nether brick, terracotta, etc. |
-| **Quartz** | Brickwork | quartz_block, quartz stairs, glowstone, magma block |
-| **Purpur** | Quartz | purpur_block, purpur_pillar, purpur_stairs, end rod, shulker box |
-| **Carpentry** | Construction | doors, trapdoors, fences, fence gates, chest, sign, ladder, painting, wool, bed, carpet, banner |
-| **Glassworking** | Carpentry | stained_glass, glass pane, glass bottle |
-| **Prismarine** | Glassworking | prismarine (three kinds), sea lantern |
-| **Agriculture** | Stoneworking | hoes, wheat, hay block, melon, pumpkin, lead, grass path, leather |
-| **Cooking** | Agriculture | sugar, mushroom/rabbit/beetroot stew, bread, cookie, cake, pumpkin pie, fishing rod, carrot_on_a_stick |
-| **Gilded Cuisine** | Cooking | golden_apple, golden carrot, speckled melon |
-| **Dyes** | Agriculture | assorted dyes (red/purple/cyan/gray/pink/yellow/blue/magenta/orange, etc.) |
-| **Refinement** | Stoneworking | furnace, iron/gold ingot & block, diamond, emerald, coal block, lapis, redstone, slime, bone meal/block |
-| **Smithing** | Refinement | anvil, bucket, iron bars, iron door/trapdoor, full iron & gold tool sets |
+| **Construction** | Stoneworking | granite/diorite/andesite/tuff/deepslate/basalt & polished variants, mossy cobblestone, cobblestone slab/stairs, sandstone/red sandstone & slab/stairs, snow/snow layer, nether wart block, item frame |
+| **Stonemasonry** | Construction | stone slab/stairs, stone bricks/chiseled/mossy, stone brick slab/stairs, cobblestone wall/mossy, concrete powder (`#concrete_powder`) |
+| **Activation** | Stonemasonry | buttons (`#button`), stone/polished blackstone button, pressure plates (`#pressure_plate`), stone/polished blackstone/light/heavy pressure plate, lever |
+| **Brickwork** | Stonemasonry | bricks, brick slab/stairs, flower pot, nether brick/slab/stairs/fence, red nether bricks, end stone bricks, clay, terracotta (`#stainedHardenedClay`) |
+| **Quartz** | Brickwork | quartz block/chiseled/pillar/slab/stairs, glowstone, magma block |
+| **Purpur** | Quartz | purpur block/pillar/slab/stairs, end rod, shulker box, colored shulker boxes (`#shulker`) |
+| **Carpentry** | Construction | doors (`#door`), trapdoors (`#trapdoor`), fences (`#fence`), fence gates (`#fence_gate`), signs (`#sign`), chest, ladder, painting, wool (`#wool`), bed (`#bed`), carpet (`#carpet`), banner (`#banner`) |
+| **Glassworking** | Carpentry | stained glass (`#stained_glass`), stained glass pane (`#stained_glass_pane`), glass pane, glass bottle |
+| **Prismarine** | Glassworking | prismarine, prismarine bricks, dark prismarine, sea lantern |
+| **Agriculture** | Stoneworking | wooden/stone hoe, wheat, hay block, melon/melon seeds, pumpkin seeds, lead, coarse dirt, jack o'lantern, leather |
+| **Cooking** | Agriculture | sugar, mushroom/rabbit/beetroot stew, bread, cookie, cake, pumpkin pie, fishing rod, carrot on a stick |
+| **Gilded Cuisine** | Cooking | golden apple, golden carrot, glistering melon slice |
+| **Dyes** | Agriculture | light gray/gray/cyan/light blue/purple/magenta/pink/orange/lime dye |
+| **Refinement** | Stoneworking | furnace, iron ingot/nugget/block, flint & steel, gold ingot/nugget/block, diamond/block, emerald/block, coal/block, lapis/block, redstone/block, slime ball/block, bone meal/block |
+| **Smithing** | Refinement | anvil, bucket, iron bars, iron door/trapdoor, full iron & gold tool sets, shears |
 | **Lapidary** | Smithing | full diamond tool set (sword/shovel/pickaxe/axe/hoe) |
 | **Explosives** | Refinement | tnt, tnt_minecart, firework_charge, fireworks, fire charge |
 | **Boats** | Survival | boats |
@@ -407,7 +408,7 @@ A: Craft a Research Book and press `R`, or rebind the key in settings.
 A: For Match puzzles, place the correct items as the hint describes; for Connect puzzles, connect the related items into a line. Hints can be obtained by deciphering with the Magnifying Glass.
 
 **Q: What happens to old saves?**
-A: This is an alpha release, ported almost directly from the 1.12.2 code. Undiscovered bugs may remain — test before committing to a long-term world.
+A: This is an alpha release; undiscovered bugs may remain — test before committing to a long-term world. Since v1.1, loot tables use data pack overrides; already-generated chests are not affected.
 
 **Q: Is it compatible with multiplayer?**
 A: Yes. Research progress is saved per-player.
