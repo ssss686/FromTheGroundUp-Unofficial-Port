@@ -1,0 +1,13 @@
+{
+  "values": [
+    "minecraft:furnace",
+    "minecraft:smoker",
+    "minecraft:blast_furnace",
+    "minecraft:magma_block",
+    "minecraft:campfire",
+    "minecraft:soul_campfire",
+    "minecraft:coal",
+    "minecraft:charcoal",
+    "minecraft:fire_charge"
+  ]
+}
