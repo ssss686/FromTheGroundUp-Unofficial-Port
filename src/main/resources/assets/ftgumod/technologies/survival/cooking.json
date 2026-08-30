@@ -16,9 +16,16 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "#heat",
       [
-        "#rawMeat",
+        {
+          "tag": "ftgumod:heat_item"
+        },
+        "minecraft:bowl"
+      ],
+      [
+        {
+          "tag": "c:foods/raw_meat"
+        },
         "minecraft:potato",
         "minecraft:carrot",
         "minecraft:wheat",
@@ -55,7 +62,9 @@
         }
       },
       "M": {
-        "item": "#rawMeat",
+        "item": {
+          "tag": "c:foods/raw_meat"
+        },
         "hint": {
           "translate": "technology.hint.meat"
         }
