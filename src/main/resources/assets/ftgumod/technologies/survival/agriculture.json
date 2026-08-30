@@ -16,11 +16,24 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "#crop",
-      {
-        "item": "minecraft:dirt",
-        "data": 0
-      }
+      [
+        {
+          "tag": "c:crops"
+        },
+        {
+          "tag": "c:seeds"
+        },
+        {
+          "tag": "c:foods/berry"
+        },
+        {
+          "tag": "c:foods/fruit"
+        },
+        {
+          "tag": "c:mushrooms"
+        }
+      ],
+      "minecraft:dirt"
     ]
   },
   "research": {
@@ -32,25 +45,35 @@
     ],
     "key": {
       "S": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "stickWood"
-        },
+        "item": "minecraft:stick",
         "hint": {
           "translate": "technology.hint.stick"
         }
       },
       "C": {
-        "item": "#crop",
+        "item": [
+          {
+            "tag": "c:crops"
+          },
+          {
+            "tag": "c:seeds"
+          },
+          {
+            "tag": "c:foods/berry"
+          },
+          {
+            "tag": "c:foods/fruit"
+          },
+          {
+            "tag": "c:mushrooms"
+          }
+        ],
         "hint": {
           "translate": "technology.hint.crop"
         }
       },
       "D": {
-        "item": {
-          "item": "minecraft:dirt",
-          "data": 0
-        },
+        "item": "minecraft:dirt",
         "hint": {
           "translate": "technology.hint.soil"
         }
