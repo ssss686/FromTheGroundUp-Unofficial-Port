@@ -16,9 +16,20 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "#ore",
-      "#heat",
-      "#pickaxe"
+    [
+      {
+        "tag": "c:ores"
+      },
+      {
+        "tag": "c:raw_materials"
+      }
+    ],
+      {
+        "tag": "ftgumod:heat_item"
+      },
+      {
+        "tag": "minecraft:pickaxes"
+      }
     ]
   },
   "research": {
@@ -30,19 +41,30 @@
     ],
     "key": {
       "C": {
-        "item": "minecraft:cobblestone",
+        "item": {
+          "tag": "minecraft:stone_tool_materials"
+        },
         "hint": {
           "translate": "technology.hint.insulator"
         }
       },
       "O": {
-        "item": "#ore",
+        "item": [
+          {
+            "tag": "c:raw_materials"
+          },
+          {
+            "tag": "c:ores"
+          }
+        ],
         "hint": {
           "translate": "technology.hint.ore"
         }
       },
       "F": {
-        "item": "#heat",
+        "item": {
+          "tag": "ftgumod:heat_item"
+        },
         "hint": {
           "translate": "technology.hint.fuel"
         }
