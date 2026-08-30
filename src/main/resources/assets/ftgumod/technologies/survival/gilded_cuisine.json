@@ -18,18 +18,9 @@
     "amount": 2,
     "ingredients": [
       [
-        {
-          "type": "forge:ore_dict",
-          "ore": "blockGold"
-        },
-        {
-          "type": "forge:ore_dict",
-          "ore": "ingotGold"
-        },
-        {
-          "type": "forge:ore_dict",
-          "ore": "nuggetGold"
-        }
+        "minecraft:gold_block",
+        "minecraft:gold_ingot",
+        "minecraft:gold_nugget"
       ],
       [
         "minecraft:apple",
@@ -47,10 +38,7 @@
     ],
     "key": {
       "N": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "nuggetGold"
-        },
+        "item": "minecraft:gold_nugget",
         "hint": {
           "translate": "technology.hint.gilded"
         }
