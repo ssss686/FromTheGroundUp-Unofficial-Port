@@ -16,13 +16,20 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "dustRedstone"
-      },
+      "minecraft:redstone",
       [
         "minecraft:minecart",
-        "#boat",
+        [
+          "minecraft:oak_boat",
+          "minecraft:spruce_boat",
+          "minecraft:birch_boat",
+          "minecraft:jungle_boat",
+          "minecraft:acacia_boat",
+          "minecraft:dark_oak_boat",
+          "minecraft:mangrove_boat",
+          "minecraft:cherry_boat",
+          "minecraft:bamboo_raft"
+        ],
         "minecraft:rail"
       ],
       "minecraft:chest"
@@ -31,10 +38,7 @@
   "research": {
     "type": "ftgumod:connect",
     "left": "minecraft:rail",
-    "right": {
-      "type": "forge:ore_dict",
-      "ore": "dustRedstone"
-    }
+    "right": "minecraft:redstone"
   },
   "unlock": [
     "minecraft:hopper",
