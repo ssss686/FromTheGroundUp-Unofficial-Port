@@ -17,25 +17,25 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      "#metal"
+      [
+        {"tag":"c:ingots"},
+        {"tag":"c:nuggets"},
+        [
+          "minecraft:copper_block",
+          "minecraft:gold_block",
+          "minecraft:iron_block",
+          "minecraft:netherite_block"
+        ]
+      ]
     ]
   },
   "research": {
     "type": "ftgumod:connect",
-    "left": {
-      "type": "forge:ore_dict",
-      "ore": "plankWood"
-    },
-    "right": {
-      "item": "minecraft:anvil",
-      "data": 0
-    }
+    "left": "minecraft:oak_planks",
+    "right": "minecraft:anvil"
   },
   "unlock": [
-    {
-      "item": "minecraft:anvil",
-      "data": 0
-    },
+    "minecraft:anvil",
     "minecraft:bucket",
     "minecraft:iron_bars",
     "minecraft:iron_door",
