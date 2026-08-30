@@ -1,9 +1,6 @@
 {
   "display": {
-    "icon": {
-      "item": "minecraft:golden_apple",
-      "data": 0
-    },
+    "icon": "minecraft:golden_apple",
     "title": {
       "translate": "technology.gilded_cuisine.name"
     },
