@@ -16,19 +16,15 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      "#gem"
+      {
+        "tag": "c:gems"
+      }
     ]
   },
   "research": {
     "type": "ftgumod:connect",
-    "left": {
-      "type": "forge:ore_dict",
-      "ore": "ingotIron"
-    },
-    "right": {
-      "type": "forge:ore_dict",
-      "ore": "gemDiamond"
-    }
+    "left": "minecraft:iron_ingot",
+    "right": "minecraft:diamond"
   },
   "unlock": [
     "minecraft:diamond_sword",
