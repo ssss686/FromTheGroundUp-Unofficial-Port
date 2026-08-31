@@ -17,10 +17,7 @@
     "amount": 2,
     "ingredients": [
       "minecraft:bow",
-      {
-        "type": "forge:ore_dict",
-        "ore": "dustRedstone"
-      }
+      "minecraft:redstone"
     ]
   },
   "research": {
@@ -32,19 +29,13 @@
     ],
     "key": {
       "I": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "dustRedstone"
-        },
+        "item": "minecraft:redstone",
         "hint": {
           "translate": "technology.hint.input"
         }
       },
       "S": {
-        "item": {
-          "item": "minecraft:stone",
-          "data": 0
-        },
+        "item": "minecraft:stone",
         "hint": {
           "translate": "technology.hint.pulse"
         }
@@ -63,17 +54,17 @@
       },
       "C": {
         "item": [
+          "minecraft:stone",
+          "minecraft:stone_slab",
           {
-            "item": "minecraft:stone",
-            "data": 0
+            "tag": "minecraft:wool"
           },
           {
-            "item": "minecraft:stone_slab",
-            "data": 0
+            "tag": "minecraft:terracotta"
           },
-          "#wool",
-          "#stainedHardenedClay",
-          "#concrete"
+          {
+            "tag": "c:concretes"
+          }
         ],
         "hint": {
           "translate": "technology.hint.circuit"
