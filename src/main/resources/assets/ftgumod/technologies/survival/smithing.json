@@ -1,6 +1,8 @@
 {
   "display": {
-    "icon":"minecraft:anvil",
+    "icon": {
+      "item": "minecraft:anvil"
+    },
     "title": {
       "translate": "technology.smithing.name"
     },
