@@ -16,10 +16,7 @@
   "start": true,
   "parent": "ftgumod:survival/survival",
   "unlock": [
-    {
-      "type": "forge:ore_dict",
-      "ore": "paper"
-    },
+    "minecraft:paper",
     "ftgumod:parchment_empty",
     "ftgumod:idea_table",
     "ftgumod:research_table",
