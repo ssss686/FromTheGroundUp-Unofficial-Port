@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:quartz_block",
-      "data": 0
+      "item": "minecraft:quartz_block"
     },
     "title": {
       "translate": "technology.quartz.name"
@@ -17,15 +16,9 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "gemQuartz"
-      },
+      "minecraft:quartz",
       [
-        {
-          "type": "forge:ore_dict",
-          "ore": "dustGlowstone"
-        },
+        "minecraft:glowstone_dust",
         "minecraft:magma",
         "minecraft:magma_cream"
       ]
