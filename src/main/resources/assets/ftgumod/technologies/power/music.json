@@ -16,17 +16,10 @@
   "idea": {
     "amount": 2,
     "ingredients": [
+      "minecraft:redstone",
+      "minecraft:diamond",
       {
-        "type": "forge:ore_dict",
-        "ore": "dustRedstone"
-      },
-      {
-        "type": "forge:ore_dict",
-        "ore": "gemDiamond"
-      },
-      {
-        "type": "forge:ore_dict",
-        "ore": "plankWood"
+        "tag": "minecraft:planks"
       }
     ]
   },
@@ -40,14 +33,8 @@
     "key": {
       "I": {
         "item": [
-          {
-            "type": "forge:ore_dict",
-            "ore": "stickWood"
-          },
-          {
-            "type": "forge:ore_dict",
-            "ore": "ingotIron"
-          }
+          "minecraft:stick",
+          "minecraft:iron_ingot"
         ],
         "hint": {
           "translate": "technology.hint.arm"
@@ -56,17 +43,9 @@
       "D": {
         "item": [
           {
-            "type": "forge:ore_dict",
-            "ore": "nuggetIron"
+            "tag": "c:nuggets"
           },
-          {
-            "type": "forge:ore_dict",
-            "ore": "nuggetGold"
-          },
-          {
-            "type": "forge:ore_dict",
-            "ore": "gemDiamond"
-          }
+          "minecraft:diamond"
         ],
         "hint": {
           "translate": "technology.hint.stylus"
@@ -74,8 +53,7 @@
       },
       "R": {
         "item": {
-          "type": "forge:ore_dict",
-          "ore": "record"
+          "tag": "c:music_discs"
         },
         "hint": {
           "translate": "technology.hint.record"
@@ -84,12 +62,10 @@
       "W": {
         "item": [
           {
-            "type": "forge:ore_dict",
-            "ore": "plankWood"
+            "tag": "minecraft:planks"
           },
           {
-            "type": "forge:ore_dict",
-            "ore": "slabWood"
+            "tag": "minecraft:wooden_slabs"
           }
         ],
         "hint": {

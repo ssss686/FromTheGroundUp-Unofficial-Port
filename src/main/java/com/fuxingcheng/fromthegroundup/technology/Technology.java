@@ -18,7 +18,6 @@ import com.google.gson.JsonSyntaxException;
 import com.fuxingcheng.fromthegroundup.Content;
 import com.fuxingcheng.fromthegroundup.FTGU;
 import com.fuxingcheng.fromthegroundup.api.technology.ITechnology;
-import com.fuxingcheng.fromthegroundup.util.StackUtils;
 import com.fuxingcheng.fromthegroundup.api.technology.ITechnologyBuilder;
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IIdeaRecipe;
 import com.fuxingcheng.fromthegroundup.criterion.TriggerFTGU;
@@ -546,16 +545,13 @@ public class Technology implements ITechnology {
 			if (!displayObject.has("id"))
 				displayObject.addProperty("id", parent != null ? parent.toString() : "ftgumod:root");
 
-			// Convert 1.12.2 icon format {"item": "..."} to 1.21.1 {"id": "..."}
+			// Convert icon format {"item": "..."} to {"id": "..."}
 			if (displayObject.has("icon")) {
 				JsonObject icon = displayObject.getAsJsonObject("icon");
 				if (icon.has("item") && !icon.has("id")) {
-					String itemName = GsonHelper.getAsString(icon, "item");
-					int data = icon.has("data") ? GsonHelper.getAsInt(icon, "data") : 0;
-					icon.addProperty("id", StackUtils.INSTANCE.remapItem(itemName, data));
+					icon.addProperty("id", GsonHelper.getAsString(icon, "item"));
 					icon.remove("item");
 				}
-				icon.remove("data");
 			}
 
 			DisplayInfo display = DisplayInfo.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, displayObject).getOrThrow(JsonSyntaxException::new);

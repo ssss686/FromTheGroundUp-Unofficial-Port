@@ -20,16 +20,15 @@
       "minecraft:sand",
       "minecraft:flint_and_steel",
       {
-        "type": "forge:ore_dict",
-        "ore": "dye"
+        "tag":"c:dyes"
       }
     ]
   },
   "unlock": [
     "minecraft:tnt",
     "minecraft:tnt_minecart",
-    "minecraft:firework_charge",
-    "minecraft:fireworks",
+    "minecraft:firework_rocket",
+    "minecraft:firework_star",
     "minecraft:fire_charge"
   ]
 }

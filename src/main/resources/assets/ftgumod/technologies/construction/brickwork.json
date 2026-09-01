@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:brick_block"
+      "item": "minecraft:bricks"
     },
     "title": {
       "translate": "technology.brickwork.name"
@@ -20,12 +20,22 @@
         "minecraft:clay",
         "minecraft:clay_ball"
       ],
-      "#heat"
+      [
+        "minecraft:furnace",
+        "minecraft:smoker",
+        "minecraft:blast_furnace",
+        "minecraft:magma_block",
+        "minecraft:campfire",
+        "minecraft:soul_campfire",
+        "minecraft:coal",
+        "minecraft:charcoal",
+        "minecraft:fire_charge"
+      ]
     ]
   },
   "research": {
     "type": "ftgumod:connect",
-    "left": "minecraft:hardened_clay",
+    "left": "minecraft:terracotta",
     "right": "minecraft:bricks"
   },
   "unlock": [
@@ -38,9 +48,11 @@
     "minecraft:nether_brick_slab",
     "minecraft:nether_brick_stairs",
     "minecraft:nether_brick_fence",
-    "minecraft:red_nether_brick",
+    "minecraft:red_nether_bricks",
     "minecraft:end_stone_bricks",
     "minecraft:clay",
-    "#stainedHardenedClay"
+    {
+      "tag": "minecraft:terracotta"
+    }
   ]
 }

@@ -17,22 +17,20 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "dustRedstone"
-      },
+      "minecraft:redstone",
       [
-        "minecraft:wooden_button",
-        "minecraft:wooden_pressure_plate",
+        {
+          "tag": "minecraft:wooden_buttons"
+        },
+        {
+          "tag": "minecraft:wooden_pressure_plates"
+        },
         "minecraft:stone_button",
         "minecraft:stone_pressure_plate",
         "minecraft:light_weighted_pressure_plate",
         "minecraft:heavy_weighted_pressure_plate",
         "minecraft:lever",
-        {
-          "type": "forge:ore_dict",
-          "ore": "stickWood"
-        }
+        "minecraft:stick"
       ]
     ]
   },
@@ -45,36 +43,30 @@
     ],
     "key": {
       "R": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "dustRedstone"
-        },
+        "item": "minecraft:redstone",
         "hint": {
           "translate": "technology.hint.power"
         }
       },
       "S": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "stickWood"
-        },
+        "item": "minecraft:stick",
         "hint": {
           "translate": "technology.hint.rod"
         }
       },
       "C": {
         "item": [
+          "minecraft:stone",
+          "minecraft:stone_slab",
           {
-            "item": "minecraft:stone",
-            "data": 0
+            "tag": "minecraft:wool"
           },
           {
-            "item": "minecraft:stone_slab",
-            "data": 0
+            "tag": "minecraft:terracotta"
           },
-          "#wool",
-          "#stainedHardenedClay",
-          "#concrete"
+          {
+            "tag": "c:concretes"
+          }
         ],
         "hint": {
           "translate": "technology.hint.circuit"

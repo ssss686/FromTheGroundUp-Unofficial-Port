@@ -16,19 +16,10 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "paper"
-      },
+      "minecraft:paper",
       [
-        {
-          "type": "forge:ore_dict",
-          "ore": "dustRedstone"
-        },
-        {
-          "type": "forge:ore_dict",
-          "ore": "feather"
-        },
+        "minecraft:redstone",
+        "minecraft:feather",
         "minecraft:ink_sac"
       ]
     ]

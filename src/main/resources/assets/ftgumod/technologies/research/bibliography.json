@@ -16,14 +16,8 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "paper"
-      },
-      {
-        "type": "forge:ore_dict",
-        "ore": "leather"
-      }
+      "minecraft:paper",
+      "minecraft:leather"
     ]
   },
   "unlock": [

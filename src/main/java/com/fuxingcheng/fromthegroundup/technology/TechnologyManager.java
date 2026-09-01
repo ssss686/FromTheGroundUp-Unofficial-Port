@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -67,7 +66,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import net.minecraft.advancements.AdvancementHolder;
 
@@ -170,22 +168,6 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 			}
 			FromTheGroundUp.LOGGER.info("Loading technologies from: {}", basePath);
 			final Path finalBasePath = basePath;
-
-			// Load _constants.json
-			Path constantsPath = finalBasePath.resolve("_constants.json");
-			if (Files.exists(constantsPath)) {
-				BufferedReader reader = null;
-				try {
-					reader = Files.newBufferedReader(constantsPath);
-					JsonArray ct = GsonHelper.fromJson(FTGU.GSON, reader, JsonArray.class);
-					if (ct != null)
-						context.loadConstants(FTGU.GSON.fromJson(ct, JsonObject[].class));
-				} catch (IOException | JsonParseException e) {
-					error("Couldn't read _constants.json from {}", modId, e);
-				} finally {
-					IOUtils.closeQuietly(reader);
-				}
-			}
 
 			// Walk all JSON files
 			try {
@@ -342,17 +324,6 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 	private void load(File dir) {
 		if (dir.exists() && dir.isDirectory()) {
 			for (File child : dir.listFiles(File::isDirectory)) {
-				File constants = new File(child, "_constants.json");
-
-				String context = null;
-				if (constants.exists() && constants.isFile()) {
-					try {
-						context = new String(Files.readAllBytes(constants.toPath()));
-					} catch (IOException e) {
-						error("Couldn't read _constants.json from {}", child.getName(), e);
-					}
-				}
-
 				Map<ResourceLocation, String> techs = new HashMap<>();
 				for (File file : FileUtils.listFiles(child, new String[] { "json" }, true)) {
 					if (file.getParentFile().equals(child))
@@ -369,10 +340,8 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 				if (cache.containsKey(child.getName())) {
 					cache.get(child.getName()).getRight().forEach(techs::putIfAbsent);
-					if (context == null)
-						context = cache.get(child.getName()).getLeft();
 				}
-				cache.put(child.getName(), Pair.of(context == null ? "[]" : context, techs));
+				cache.put(child.getName(), Pair.of("[]", techs));
 			}
 		} else
 			dir.mkdirs();
@@ -389,16 +358,8 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 	public void load() {
 		Map<JsonContextPublic, Map<ResourceLocation, String>> json = cache.entrySet().stream()
-				.collect(Collectors.toMap(entry -> {
-					JsonContextPublic context = new JsonContextPublic(entry.getKey());
-					try {
-						JsonObject[] array = FTGU.GSON.fromJson(entry.getValue().getLeft(), JsonObject[].class);
-						context.loadConstants(array);
-					} catch (JsonParseException e) {
-						error("Couldn't read _constants.json from {}", context.getModId(), e);
-					}
-					return context;
-				}, entry -> entry.getValue().getRight()));
+				.collect(Collectors.toMap(entry -> new JsonContextPublic(entry.getKey()),
+						entry -> entry.getValue().getRight()));
 
 		if (FTGUConfig.cachedLoadDefaultTechnologies) {
 			loadBuiltin().forEach((context, map) -> {

@@ -16,21 +16,18 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "#sword",
-      [
-        {
-          "type": "forge:ore_dict",
-          "ore": "leather"
-        },
-        "#armor"
-      ],
       {
-        "type": "forge:ore_dict",
-        "ore": "ingotIron"
+        "tag": "minecraft:swords"
       },
+      [
+        "minecraft:leather",
+        {
+          "tag": "c:armors"
+        }
+      ],
+      "minecraft:iron_ingot",
       {
-        "type": "forge:ore_dict",
-        "ore": "plankWood"
+        "tag": "minecraft:planks"
       }
     ]
   },

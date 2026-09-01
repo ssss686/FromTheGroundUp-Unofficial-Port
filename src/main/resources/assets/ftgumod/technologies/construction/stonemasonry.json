@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:stonebrick",
-      "data": 0
+      "item": "minecraft:stone_bricks"
     },
     "title": {
       "translate": "technology.stonemasonry.name"
@@ -17,7 +16,14 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      "#smoothStone"
+      "minecraft:stone",
+      "minecraft:polished_granite",
+      "minecraft:polished_diorite",
+      "minecraft:polished_andesite",
+      "minecraft:polished_deepslate",
+      "minecraft:polished_tuff",
+      "minecraft:smooth_basalt",
+      "minecraft:polished_blackstone"
     ]
   },
   "research": {
@@ -29,19 +35,122 @@
     ],
     "key": {
       "S": {
-        "item": "#stoneSlab",
+        "item": [
+          "minecraft:stone_slab",
+          "minecraft:smooth_stone_slab",
+          "minecraft:sandstone_slab",
+          "minecraft:cut_sandstone_slab",
+          "minecraft:smooth_sandstone_slab",
+          "minecraft:red_sandstone_slab",
+          "minecraft:cut_red_sandstone_slab",
+          "minecraft:smooth_red_sandstone_slab",
+          "minecraft:granite_slab",
+          "minecraft:polished_granite_slab",
+          "minecraft:diorite_slab",
+          "minecraft:polished_diorite_slab",
+          "minecraft:andesite_slab",
+          "minecraft:polished_andesite_slab",
+          "minecraft:cobblestone_slab",
+          "minecraft:mossy_cobblestone_slab",
+          "minecraft:stone_brick_slab",
+          "minecraft:mossy_stone_brick_slab",
+          "minecraft:brick_slab",
+          "minecraft:mud_brick_slab",
+          "minecraft:nether_brick_slab",
+          "minecraft:red_nether_brick_slab",
+          "minecraft:end_stone_brick_slab",
+          "minecraft:purpur_slab",
+          "minecraft:quartz_slab",
+          "minecraft:smooth_quartz_slab",
+          "minecraft:prismarine_slab",
+          "minecraft:prismarine_brick_slab",
+          "minecraft:dark_prismarine_slab",
+          "minecraft:blackstone_slab",
+          "minecraft:polished_blackstone_slab",
+          "minecraft:polished_blackstone_brick_slab",
+          "minecraft:cobbled_deepslate_slab",
+          "minecraft:polished_deepslate_slab",
+          "minecraft:deepslate_brick_slab",
+          "minecraft:deepslate_tile_slab",
+          "minecraft:tuff_slab",
+          "minecraft:polished_tuff_slab",
+          "minecraft:tuff_brick_slab",
+          "minecraft:cut_copper_slab",
+          "minecraft:exposed_cut_copper_slab",
+          "minecraft:weathered_cut_copper_slab",
+          "minecraft:oxidized_cut_copper_slab",
+          "minecraft:waxed_cut_copper_slab",
+          "minecraft:waxed_exposed_cut_copper_slab",
+          "minecraft:waxed_weathered_cut_copper_slab",
+          "minecraft:waxed_oxidized_cut_copper_slab",
+          "minecraft:petrified_oak_slab"
+        ],
         "hint": {
           "translate": "technology.hint.slab"
         }
       },
       "B": {
-        "item": "#smoothStone",
+        "item": [
+          "minecraft:stone",
+          "minecraft:polished_granite",
+          "minecraft:polished_diorite",
+          "minecraft:polished_andesite",
+          "minecraft:polished_deepslate",
+          "minecraft:polished_tuff",
+          "minecraft:smooth_basalt",
+          "minecraft:polished_blackstone"
+        ],
         "hint": {
           "translate": "technology.hint.stone"
         }
       },
       "T": {
-        "item": "#stairsStone",
+        "item": [
+          "minecraft:stone_stairs",
+          "minecraft:sandstone_stairs",
+          "minecraft:smooth_sandstone_stairs",
+          "minecraft:red_sandstone_stairs",
+          "minecraft:smooth_red_sandstone_stairs",
+          "minecraft:granite_stairs",
+          "minecraft:polished_granite_stairs",
+          "minecraft:diorite_stairs",
+          "minecraft:polished_diorite_stairs",
+          "minecraft:andesite_stairs",
+          "minecraft:polished_andesite_stairs",
+          "minecraft:cobblestone_stairs",
+          "minecraft:mossy_cobblestone_stairs",
+          "minecraft:stone_brick_stairs",
+          "minecraft:mossy_stone_brick_stairs",
+          "minecraft:brick_stairs",
+          "minecraft:mud_brick_stairs",
+          "minecraft:nether_brick_stairs",
+          "minecraft:red_nether_brick_stairs",
+          "minecraft:end_stone_brick_stairs",
+          "minecraft:purpur_stairs",
+          "minecraft:quartz_stairs",
+          "minecraft:smooth_quartz_stairs",
+          "minecraft:prismarine_stairs",
+          "minecraft:prismarine_brick_stairs",
+          "minecraft:dark_prismarine_stairs",
+          "minecraft:blackstone_stairs",
+          "minecraft:polished_blackstone_stairs",
+          "minecraft:polished_blackstone_brick_stairs",
+          "minecraft:cobbled_deepslate_stairs",
+          "minecraft:polished_deepslate_stairs",
+          "minecraft:deepslate_brick_stairs",
+          "minecraft:deepslate_tile_stairs",
+          "minecraft:tuff_stairs",
+          "minecraft:polished_tuff_stairs",
+          "minecraft:tuff_brick_stairs",
+          "minecraft:cut_copper_stairs",
+          "minecraft:exposed_cut_copper_stairs",
+          "minecraft:weathered_cut_copper_stairs",
+          "minecraft:oxidized_cut_copper_stairs",
+          "minecraft:waxed_cut_copper_stairs",
+          "minecraft:waxed_exposed_cut_copper_stairs",
+          "minecraft:waxed_weathered_cut_copper_stairs",
+          "minecraft:waxed_oxidized_cut_copper_stairs"
+        ],
         "hint": {
           "translate": "technology.hint.stairs"
         }
@@ -60,6 +169,8 @@
     "minecraft:stone_brick_stairs",
     "minecraft:cobblestone_wall",
     "minecraft:mossy_cobblestone_wall",
-    "#concrete_powder"
+    {
+      "tag": "c:concrete_powders"
+    }
   ]
 }

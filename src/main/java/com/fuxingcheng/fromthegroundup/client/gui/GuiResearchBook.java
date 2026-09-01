@@ -557,6 +557,8 @@ public class GuiResearchBook extends Screen {
 						var recipe = holder.value();
 						if (!(recipe instanceof net.minecraft.world.item.crafting.CraftingRecipe))
 							continue;
+						if (recipe instanceof net.minecraft.world.item.crafting.CustomRecipe)
+							continue;
 						if (ItemStack.isSameItem(item, recipe.getResultItem(level.registryAccess()))) {
 							int recipeWidth = 3;
 							int recipeHeight = 3;
