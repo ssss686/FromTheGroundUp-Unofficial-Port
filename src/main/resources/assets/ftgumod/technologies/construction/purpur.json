@@ -101,7 +101,8 @@
     "minecraft:purpur_slab",
     "minecraft:purpur_stairs",
     "minecraft:end_rod",
-    "minecraft:shulker_box",
-    "#shulker"
+    {
+      "tag": "c:shulker_boxes"
+    }
   ]
 }
