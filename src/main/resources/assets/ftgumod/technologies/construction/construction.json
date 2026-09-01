@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:stone",
-      "data": 6
+      "item": "minecraft:polished_andesite"
     },
     "title": {
       "translate": "technology.construction.name"
@@ -17,7 +16,8 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      "#stone"
+      "minecraft:stone",
+      "minecraft:sandstone"
     ]
   },
   "unlock": [
