@@ -63,8 +63,8 @@
       "minecraft:red_sandstone_stairs"
     ],
     [
-      "minecraft:snow",
-      "minecraft:snow_layer"
+      "minecraft:snow_block",
+      "minecraft:snow"
     ],
     "minecraft:nether_wart_block",
     "minecraft:item_frame"

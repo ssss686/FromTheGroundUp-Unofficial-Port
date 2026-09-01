@@ -19,8 +19,12 @@
     "ingredients": [
       "minecraft:redstone",
       [
-        "minecraft:wooden_button",
-        "minecraft:wooden_pressure_plate",
+        {
+          "tag": "minecraft:wooden_buttons"
+        },
+        {
+          "tag": "minecraft:wooden_pressure_plates"
+        },
         "minecraft:stone_button",
         "minecraft:stone_pressure_plate",
         "minecraft:light_weighted_pressure_plate",

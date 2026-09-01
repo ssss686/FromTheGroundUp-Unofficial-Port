@@ -27,8 +27,8 @@
   "unlock": [
     "minecraft:tnt",
     "minecraft:tnt_minecart",
-    "minecraft:firework_charge",
-    "minecraft:fireworks",
+    "minecraft:firework_rocket",
+    "minecraft:firework_star",
     "minecraft:fire_charge"
   ]
 }

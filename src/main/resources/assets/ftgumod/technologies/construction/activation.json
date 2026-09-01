@@ -20,7 +20,9 @@
       "minecraft:redstone",
       [
         "minecraft:cobblestone",
-        "minecraft:trapdoor",
+        {
+          "tag": "minecraft:wooden_trapdoors"
+        },
         "minecraft:iron_door",
         "minecraft:iron_trapdoor",
         {

@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:boat"
+      "item": "minecraft:oak_boat"
     },
     "title": {
       "translate": "technology.boats.name"

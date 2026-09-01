@@ -19,7 +19,7 @@
       "minecraft:quartz",
       [
         "minecraft:glowstone_dust",
-        "minecraft:magma",
+        "minecraft:magma_block",
         "minecraft:magma_cream"
       ]
     ]

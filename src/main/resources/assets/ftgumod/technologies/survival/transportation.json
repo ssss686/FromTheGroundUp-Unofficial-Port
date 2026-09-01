@@ -42,7 +42,7 @@
   },
   "unlock": [
     "minecraft:hopper",
-    "minecraft:golden_rail",
+    "minecraft:powered_rail",
     "minecraft:detector_rail",
     "minecraft:activator_rail",
     "minecraft:chest_minecart",

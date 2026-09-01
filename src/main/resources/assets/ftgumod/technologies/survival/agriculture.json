@@ -85,12 +85,12 @@
     "minecraft:stone_hoe",
     "minecraft:wheat",
     "minecraft:hay_block",
-    "minecraft:melon_block",
+    "minecraft:melon",
     "minecraft:melon_seeds",
     "minecraft:pumpkin_seeds",
     "minecraft:lead",
     "minecraft:coarse_dirt",
-    "minecraft:lit_pumpkin",
+    "minecraft:jack_o_lantern",
     "minecraft:leather"
   ]
 }

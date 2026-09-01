@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:brick_block"
+      "item": "minecraft:bricks"
     },
     "title": {
       "translate": "technology.brickwork.name"
@@ -35,7 +35,7 @@
   },
   "research": {
     "type": "ftgumod:connect",
-    "left": "minecraft:hardened_clay",
+    "left": "minecraft:terracotta",
     "right": "minecraft:bricks"
   },
   "unlock": [
@@ -48,7 +48,7 @@
     "minecraft:nether_brick_slab",
     "minecraft:nether_brick_stairs",
     "minecraft:nether_brick_fence",
-    "minecraft:red_nether_brick",
+    "minecraft:red_nether_bricks",
     "minecraft:end_stone_bricks",
     "minecraft:clay",
     {
