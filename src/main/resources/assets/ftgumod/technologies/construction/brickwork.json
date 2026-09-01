@@ -20,7 +20,17 @@
         "minecraft:clay",
         "minecraft:clay_ball"
       ],
-      "#heat"
+      [
+        "minecraft:furnace",
+        "minecraft:smoker",
+        "minecraft:blast_furnace",
+        "minecraft:magma_block",
+        "minecraft:campfire",
+        "minecraft:soul_campfire",
+        "minecraft:coal",
+        "minecraft:charcoal",
+        "minecraft:fire_charge"
+      ]
     ]
   },
   "research": {
@@ -41,6 +51,8 @@
     "minecraft:red_nether_brick",
     "minecraft:end_stone_bricks",
     "minecraft:clay",
-    "#stainedHardenedClay"
+    {
+      "tag": "minecraft:terracotta"
+    }
   ]
 }
