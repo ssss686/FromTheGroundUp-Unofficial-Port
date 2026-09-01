@@ -17,10 +17,7 @@
     "amount": 2,
     "ingredients": [
       [
-        {
-          "type": "forge:ore_dict",
-          "ore": "stickWood"
-        },
+        "minecraft:stick",
         "minecraft:wooden_sword",
         "minecraft:wooden_shovel",
         "minecraft:wooden_pickaxe",
@@ -41,10 +38,7 @@
     ],
     "key": {
       "R": {
-        "item": [
-          "minecraft:string",
-          "minecraft:reeds"
-        ],
+        "item": "minecraft:string",
         "hint": {
           "translate": "technology.hint.rope"
         }
@@ -56,10 +50,7 @@
         }
       },
       "S": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "stickWood"
-        },
+        "item": "minecraft:stick",
         "hint": {
           "translate": "technology.hint.handle"
         }

@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:bed",
-      "data": 14
+      "item": "minecraft:red_bed"
     },
     "title": {
       "translate": "technology.carpentry.name"
@@ -17,41 +16,57 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "#wool",
       {
-        "type": "forge:ore_dict",
-        "ore": "plankWood"
+        "tag": "minecraft:wool"
       },
       {
-        "type": "forge:ore_dict",
-        "ore": "slabWood"
+        "tag": "minecraft:planks"
       },
       {
-        "type": "forge:ore_dict",
-        "ore": "stairWood"
+        "tag": "minecraft:wooden_slabs"
+      },
+      {
+        "tag": "minecraft:wooden_stairs"
       }
     ]
   },
   "research": {
     "type": "ftgumod:connect",
     "left": {
-      "type": "forge:ore_dict",
-      "ore": "plankWood"
+      "item": "minecraft:oak_planks"
     },
-    "right": "#wool"
+    "right": "minecraft:white_wool"
   },
   "unlock": [
-    "#door",
-    "#trapdoor",
-    "#fence",
-    "#fence_gate",
-    "#sign",
+    {
+      "tag": "minecraft:wooden_doors"
+    },
+    {
+      "tag": "minecraft:wooden_trapdoors"
+    },
+    {
+      "tag": "minecraft:wooden_fences"
+    },
+    {
+      "tag": "minecraft:fence_gates"
+    },
+    {
+      "tag": "minecraft:signs"
+    },
     "minecraft:chest",
     "minecraft:ladder",
     "minecraft:painting",
-    "#wool",
-    "#bed",
-    "#carpet",
-    "#banner"
+    {
+      "tag": "minecraft:wool"
+    },
+    {
+      "tag": "minecraft:wool_carpets"
+    },
+    {
+      "tag": "minecraft:banners"
+    },
+    {
+      "tag": "minecraft:beds"
+    }
   ]
 }

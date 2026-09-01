@@ -16,17 +16,19 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      "#flower",
-      "#dye",
+      {
+        "tag":"minecraft:flowers"
+      },
+      {
+        "tag":"c:dyes"
+      },
       "minecraft:cactus"
     ]
   },
   "research": {
     "type": "ftgumod:connect",
     "left": "minecraft:flint",
-    "right": {
-      "item": "minecraft:ink_sac"
-    }
+    "right": "minecraft:ink_sac"
   },
   "unlock": [
     "minecraft:light_gray_dye",

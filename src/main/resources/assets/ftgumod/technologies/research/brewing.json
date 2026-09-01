@@ -48,16 +48,11 @@
     "ingredients": [
       [
         "minecraft:potion",
-        {
-          "type": "ftgumod:fluid",
-          "fluid": "water",
-          "count": 250
-        }
+        "minecraft:water_bucket"
       ],
-      [
-        "minecraft:nether_wart",
-        "minecraft:sugar"
-      ]
+      "minecraft:nether_wart",
+      "minecraft:sugar"
+
     ]
   },
   "research": {
@@ -83,11 +78,7 @@
       "F": {
         "item": [
           "minecraft:potion",
-          {
-            "type": "ftgumod:fluid",
-            "fluid": "water",
-            "count": 250
-          }
+          "minecraft:water_bucket"
         ],
         "hint": {
           "translate": "technology.hint.water"
@@ -96,11 +87,11 @@
           "decipher": {
             "block": "minecraft:cauldron",
             "location": {
-              "biome": "swampland"
+              "biome": "swamp"
             }
           },
           "hint": {
-            "translate": "block.minecraft.cauldron"
+            "translate": "item.minecraft.potion"
           }
         }
       }

@@ -16,16 +16,20 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "ingotIron"
-      },
+      "minecraft:iron_ingot",
       [
-        {
-          "type": "forge:ore_dict",
-          "ore": "stickWood"
-        },
-        "#boat"
+        "minecraft:stick",
+        [
+          "minecraft:oak_boat",
+          "minecraft:spruce_boat",
+          "minecraft:birch_boat",
+          "minecraft:jungle_boat",
+          "minecraft:acacia_boat",
+          "minecraft:dark_oak_boat",
+          "minecraft:mangrove_boat",
+          "minecraft:cherry_boat",
+          "minecraft:bamboo_raft"
+        ]
       ]
     ]
   },
@@ -39,13 +43,9 @@
     "key": {
       "C": {
         "item": [
+          "minecraft:iron_ingot",
           {
-            "type": "forge:ore_dict",
-            "ore": "ingotIron"
-          },
-          {
-            "type": "forge:ore_dict",
-            "ore": "plankWood"
+            "tag": "minecraft:planks"
           }
         ],
         "hint": {
@@ -53,23 +53,18 @@
         }
       },
       "R": {
-        "item": {
-          "type": "forge:ore_dict",
-          "ore": "ingotIron"
-        },
+        "item": [
+          "minecraft:iron_ingot"
+        ],
         "hint": {
           "translate": "technology.hint.rail"
         }
       },
       "S": {
         "item": [
+          "minecraft:stick",
           {
-            "type": "forge:ore_dict",
-            "ore": "stickWood"
-          },
-          {
-            "type": "forge:ore_dict",
-            "ore": "slabWood"
+            "tag": "minecraft:wooden_slabs"
           }
         ],
         "hint": {

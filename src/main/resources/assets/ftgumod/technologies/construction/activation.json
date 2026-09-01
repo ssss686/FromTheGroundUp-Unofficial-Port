@@ -16,22 +16,22 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      {
-        "type": "forge:ore_dict",
-        "ore": "stickWood"
-      },
+      "minecraft:stick",
+      "minecraft:redstone",
       [
         "minecraft:cobblestone",
-        "#door",
-        "#fence_gate",
-        "minecraft:trapdoor",
+        {
+          "tag": "minecraft:wooden_trapdoors"
+        },
         "minecraft:iron_door",
-        "minecraft:iron_trapdoor"
-      ],
-      {
-        "type": "forge:ore_dict",
-        "ore": "dustRedstone"
-      }
+        "minecraft:iron_trapdoor",
+        {
+          "tag": "minecraft:wooden_doors"
+        },
+        {
+          "tag": "minecraft:fence_gates"
+        }
+      ]
     ]
   },
   "research": {
@@ -40,12 +40,16 @@
     "right": "minecraft:lever"
   },
   "unlock": [
-    "#button",
+    {
+      "tag": "minecraft:wooden_buttons"
+    },
     [
       "minecraft:stone_button",
       "minecraft:polished_blackstone_button"
     ],
-    "#pressure_plate",
+    {
+      "tag": "minecraft:wooden_pressure_plates"
+    },
     [
       "minecraft:stone_pressure_plate",
       "minecraft:polished_blackstone_pressure_plate"

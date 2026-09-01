@@ -34,7 +34,7 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "minecraft:chorus_fruit_popped",
+      "minecraft:popped_chorus_fruit",
       [
         "minecraft:purpur_block",
         "minecraft:purpur_pillar",
@@ -67,7 +67,7 @@
       "B": {
         "item": [
           "minecraft:purpur_block",
-          "minecraft:end_bricks"
+          "minecraft:end_stone_bricks"
         ],
         "hint": {
           "translate": "technology.hint.stone"
@@ -101,7 +101,8 @@
     "minecraft:purpur_slab",
     "minecraft:purpur_stairs",
     "minecraft:end_rod",
-    "minecraft:shulker_box",
-    "#shulker"
+    {
+      "tag": "c:shulker_boxes"
+    }
   ]
 }

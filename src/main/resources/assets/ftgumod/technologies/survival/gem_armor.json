@@ -16,20 +16,18 @@
   "idea": {
     "amount": 2,
     "ingredients": [
-      "#armor",
-      "#gem"
+      {
+        "tag": "c:armors"
+      },
+      {
+        "tag": "c:gems"
+      }
     ]
   },
   "research": {
     "type": "ftgumod:connect",
-    "left": {
-      "type": "forge:ore_dict",
-      "ore": "leather"
-    },
-    "right": {
-      "type": "forge:ore_dict",
-      "ore": "gemDiamond"
-    }
+    "left": "minecraft:leather",
+    "right": "minecraft:diamond"
   },
   "unlock": [
     "minecraft:diamond_helmet",

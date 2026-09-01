@@ -32,7 +32,11 @@
   "idea": {
     "amount": 1,
     "ingredients": [
-      "#dragon",
+      [
+        "minecraft:dragon_egg",
+        "minecraft:dragon_breath",
+        "minecraft:dragon_head"
+      ],
       "minecraft:soul_sand",
       "minecraft:wither_skeleton_skull"
     ]
@@ -62,7 +66,9 @@
       "P": {
         "item": [
           "minecraft:crafting_table",
-          "#bed"
+          {
+            "tag": "minecraft:beds"
+          }
         ],
         "hint": {
           "translate": "technology.hint.man"
@@ -82,7 +88,11 @@
         }
       },
       "D": {
-        "item": "#dragon",
+        "item": [
+          "minecraft:dragon_egg",
+          "minecraft:dragon_breath",
+          "minecraft:dragon_head"
+        ],
         "hint": {
           "translate": "technology.hint.dragon"
         }

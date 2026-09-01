@@ -23,12 +23,6 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 public class BlockPredicate {
 
-	private static final Map<String, String> BLOCK_REMAP = new HashMap<>();
-
-	static {
-		BLOCK_REMAP.put("minecraft:bed", "minecraft:white_bed");
-	}
-
 	public static final BlockPredicate ANY = new BlockPredicate(null, null, null, null);
 
 	private final Block block;
@@ -54,10 +48,9 @@ public class BlockPredicate {
 		Block block = null;
 		if (object.has("block")) {
 			String blockName = GsonHelper.getAsString(object, "block");
-			String remapped = BLOCK_REMAP.getOrDefault(blockName, blockName);
-			ResourceLocation location = ResourceLocation.tryParse(remapped);
+			ResourceLocation location = ResourceLocation.tryParse(blockName);
 			if (location == null || !BuiltInRegistries.BLOCK.containsKey(location))
-				throw new JsonSyntaxException("Unknown block type '" + remapped + "'");
+				throw new JsonSyntaxException("Unknown block type '" + blockName + "'");
 			block = BuiltInRegistries.BLOCK.get(location);
 		}
 

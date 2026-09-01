@@ -16,21 +16,15 @@
   "start": true,
   "unlock": [
     {
-      "type": "forge:ore_dict",
-      "ore": "plankWood"
+      "tag": "minecraft:planks"
     },
     {
-      "type": "forge:ore_dict",
-      "ore": "slabWood"
+      "tag": "minecraft:wooden_slabs"
     },
     {
-      "type": "forge:ore_dict",
-      "ore": "stairWood"
+      "tag": "minecraft:wooden_stairs"
     },
-    {
-      "type": "forge:ore_dict",
-      "ore": "stickWood"
-    },
+    "minecraft:stick",
     "minecraft:wooden_sword",
     "minecraft:wooden_shovel",
     "minecraft:wooden_pickaxe",
