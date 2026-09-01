@@ -1,8 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "minecraft:stained_glass",
-      "data": 0
+      "item": "minecraft:white_stained_glass"
     },
     "title": {
       "translate": "technology.glassworking.name"
@@ -18,16 +17,16 @@
     "amount": 1,
     "ingredients": [
       "minecraft:sand",
-      {
-        "type": "forge:ore_dict",
-        "ore": "blockGlass"
-      }
+      "minecraft:glass"
     ]
   },
   "unlock": [
-    "#stained_glass",
-    "#stained_glass_pane",
-    "minecraft:glass_pane",
+    {
+      "tag": "c:glass_blocks"
+    },
+    {
+      "tag": "c:glass_panes"
+    },
     "minecraft:glass_bottle"
   ]
 }
