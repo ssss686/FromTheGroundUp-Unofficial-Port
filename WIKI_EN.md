@@ -133,7 +133,7 @@ power Power  (prerequisite = construction/activation)
 
 | Technology | Prerequisite | Unlocks |
 |---|---|---|
-| **Research** | Survival | paper, **ftgumod:parchment_empty (empty parchment)**, **Idea Table**, **Research Table**, **Research Book**, **Magnifying Glass** |
+| **Research** | Survival | paper, empty parchment, Idea Table, Research Table, Research Book, Magnifying Glass |
 | **Bibliography** | Research | book, writable_book, bookshelf |
 | **Enchanting** | Bibliography | enchanting_table, spectral_arrow |
 | **Glowing Eyes** | Enchanting | ender_eye |
