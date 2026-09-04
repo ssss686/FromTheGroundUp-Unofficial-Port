@@ -170,6 +170,15 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 				if (unlocks.containsKey(type))
 					return unlocks.get(type).deserialize(object, context, tech);
 			}
+			// 解析可选的 recipe_types 字段
+			Set<ResourceLocation> recipeTypes = null;
+			if (object.has("recipe_types")) {
+				recipeTypes = new java.util.HashSet<>();
+				for (JsonElement e : object.getAsJsonArray("recipe_types")) {
+					recipeTypes.add(ResourceLocation.parse(e.getAsString()));
+				}
+			}
+			return new UnlockRecipe(StackUtils.INSTANCE.getItemPredicate(element, context).getIngredient(), recipeTypes);
 		}
 		return new UnlockRecipe(StackUtils.INSTANCE.getItemPredicate(element, context).getIngredient());
 	}
