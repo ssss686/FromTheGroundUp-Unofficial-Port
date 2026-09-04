@@ -125,7 +125,7 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 			// Method 1: Try mod.findPath()
 			try {
-				basePath = mod.findPath("assets/" + modId + "/technologies").orElse(null);
+				basePath = mod.findPath("data/" + modId + "/technologies").orElse(null);
 				if (basePath != null && Files.exists(basePath)) {
 					// Found via findPath
 				} else {
@@ -139,7 +139,7 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 			if (basePath == null) {
 				try {
 					for (Path originPath : mod.getOrigin().getPaths()) {
-						Path techPath = originPath.resolve("assets/" + modId + "/technologies");
+						Path techPath = originPath.resolve("data/" + modId + "/technologies");
 						if (Files.exists(techPath)) {
 							basePath = techPath;
 							break;
@@ -153,7 +153,7 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 			// Method 3: Try classpath resource
 			if (basePath == null) {
 				try {
-					var url = getClass().getClassLoader().getResource("assets/" + modId + "/technologies");
+					var url = getClass().getClassLoader().getResource("data/" + modId + "/technologies");
 					if (url != null) {
 						basePath = Path.of(url.toURI());
 					}
