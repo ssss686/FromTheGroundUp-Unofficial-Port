@@ -3,32 +3,37 @@ package com.Fuxingcheng.ftgumod.api.technology.unlock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import com.Fuxingcheng.ftgumod.api.FTGUAPI;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class UnlockRecipe implements IUnlock {
 
 	private final Ingredient recipe;
+	@Nullable
+	private final Set<ResourceLocation> recipeTypes;
 
 	public UnlockRecipe(Ingredient recipe) {
+		this(recipe, null);
+	}
+
+	public UnlockRecipe(Ingredient recipe, @Nullable Set<ResourceLocation> recipeTypes) {
 		this.recipe = recipe;
+		this.recipeTypes = recipeTypes;
 	}
 
 	@Override
 	public boolean isDisplayed() {
-		if (recipe == null || recipe.isEmpty()) return false;
-		try {
-			ItemStack[] stacks = recipe.getItems();
-			return stacks != null && stacks.length > 0;
-		} catch (Exception e) {
-			return false;
-		}
+		return recipe.getItems().length > 0;
 	}
 
 	@Override
@@ -38,22 +43,17 @@ public class UnlockRecipe implements IUnlock {
 
 	@Override
 	public boolean unlocks(ItemStack stack) {
-		if (recipe == null || recipe.isEmpty()) return false;
-		try {
-			return recipe.test(stack);
-		} catch (Exception e) {
-			return false;
-		}
+		return recipe.test(stack);
 	}
 
 	public Collection<RecipeHolder<?>> getRecipeList() {
 		List<RecipeHolder<?>> recipes = new ArrayList<>();
-		MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
-		if (server == null) return recipes;
-
-		RecipeManager manager = server.getRecipeManager();
+		RecipeManager manager = ServerLifecycleHooks.getCurrentServer().getRecipeManager();
 		for (RecipeHolder<?> holder : manager.getRecipes()) {
-			if (unlocks(holder.value().getResultItem(server.registryAccess())))
+			if (recipeTypes != null && !recipeTypes.contains(holder.value().getType()))
+				continue;
+			if (unlocks(holder.value().getResultItem(
+					ServerLifecycleHooks.getCurrentServer().registryAccess())))
 				recipes.add(holder);
 		}
 		return recipes;
@@ -69,4 +69,5 @@ public class UnlockRecipe implements IUnlock {
 		for (RecipeHolder<?> holder : getRecipeList())
 			player.getRecipeBook().remove(holder);
 	}
+
 }
