@@ -24,7 +24,7 @@
       [
         "minecraft:apple",
         "minecraft:carrot",
-        "minecraft:melon"
+        "minecraft:melon_slice"
       ]
     ]
   },
@@ -46,7 +46,7 @@
         "item": [
           "minecraft:apple",
           "minecraft:carrot",
-          "minecraft:melon"
+          "minecraft:melon_slice"
         ],
         "hint": {
           "translate": "technology.hint.cuisine"

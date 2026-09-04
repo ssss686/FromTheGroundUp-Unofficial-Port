@@ -118,7 +118,7 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 			IModFileInfo modFile = mod.getOwningFile();
 			if (modFile == null) return;
 
-			Path basePath = modFile.getFile().findResource("assets/" + mod.getModId() + "/technologies");
+			Path basePath = modFile.getFile().findResource("data/" + mod.getModId() + "/technologies");
 			if (basePath == null || !Files.exists(basePath)) return;
 
 			// Walk all JSON files
