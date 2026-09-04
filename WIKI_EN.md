@@ -13,9 +13,10 @@
 2. [Technology Tree Overview](#technology-tree-overview)
 3. [Technology Details](#technology-details)
 4. [Command Reference](#command-reference)
-5. [Installation & Building](#installation--building)
-6. [FAQ](#faq)
-7. [License](#license)
+5. [Custom Technologies (Data Pack)](#custom-technologies-data-pack)
+6. [Installation & Building](#installation--building)
+7. [FAQ](#faq)
+8. [License](#license)
 
 ---
 
@@ -105,13 +106,13 @@ power Power  (prerequisite = construction/activation)
 | **Survival** | (root) | wooden_sword, wooden_shovel, wooden_pickaxe, wooden_axe, crafting_table, torch, bowl, wooden tools & planks |
 | **Stoneworking** | Survival | stone_sword, stone_shovel, stone_pickaxe, stone_axe (stone tools) |
 | **Construction** | Stoneworking | granite/diorite/andesite/tuff/deepslate/basalt & polished variants, mossy cobblestone, cobblestone slab/stairs, sandstone/red sandstone & slab/stairs, snow/snow layer, nether wart block, item frame |
-| **Stonemasonry** | Construction | stone slab/stairs, stone bricks/chiseled/mossy, stone brick slab/stairs, cobblestone wall/mossy, concrete powder (`#concrete_powder`) |
-| **Activation** | Stonemasonry | buttons (`#button`), stone/polished blackstone button, pressure plates (`#pressure_plate`), stone/polished blackstone/light/heavy pressure plate, lever |
-| **Brickwork** | Stonemasonry | bricks, brick slab/stairs, flower pot, nether brick/slab/stairs/fence, red nether bricks, end stone bricks, clay, terracotta (`#stainedHardenedClay`) |
+| **Stonemasonry** | Construction | stone slab/stairs, stone bricks/chiseled/mossy, stone brick slab/stairs, cobblestone wall/mossy, concrete powder (any color) |
+| **Activation** | Stonemasonry | wooden button (any wood), stone/polished blackstone button, wooden pressure plate (any wood), stone/polished blackstone/light/heavy pressure plate, lever |
+| **Brickwork** | Stonemasonry | bricks, brick slab/stairs, flower pot, nether brick/slab/stairs/fence, red nether bricks, end stone bricks, clay, terracotta (any color) |
 | **Quartz** | Brickwork | quartz block/chiseled/pillar/slab/stairs, glowstone, magma block |
-| **Purpur** | Quartz | purpur block/pillar/slab/stairs, end rod, shulker box, colored shulker boxes (`#shulker`) |
-| **Carpentry** | Construction | doors (`#door`), trapdoors (`#trapdoor`), fences (`#fence`), fence gates (`#fence_gate`), signs (`#sign`), chest, ladder, painting, wool (`#wool`), bed (`#bed`), carpet (`#carpet`), banner (`#banner`) |
-| **Glassworking** | Carpentry | stained glass (`#stained_glass`), stained glass pane (`#stained_glass_pane`), glass pane, glass bottle |
+| **Purpur** | Quartz | purpur block/pillar/slab/stairs, end rod, shulker box, shulker box (any color) |
+| **Carpentry** | Construction | wooden door (any wood), wooden trapdoor (any wood), wooden fence (any wood), fence gate (any wood), sign (any wood), chest, ladder, painting, wool (any color), bed (any color), carpet (any color), banner (any color) |
+| **Glassworking** | Carpentry | stained glass, stained glass pane, glass pane, glass bottle |
 | **Prismarine** | Glassworking | prismarine, prismarine bricks, dark prismarine, sea lantern |
 | **Agriculture** | Stoneworking | wooden/stone hoe, wheat, hay block, melon/melon seeds, pumpkin seeds, lead, coarse dirt, jack o'lantern, leather |
 | **Cooking** | Agriculture | sugar, mushroom/rabbit/beetroot stew, bread, cookie, cake, pumpkin pie, fishing rod, carrot on a stick |
@@ -158,7 +159,7 @@ Besides meeting the **research criteria**, most technologies require two "recipe
 1. **Idea Table**: place the specified items into the Idea Table (order doesn't matter) to spark an **idea**, then write it onto a parchment.
 2. **Research Table**: put the parchment into the Research Table and solve the puzzle — either a **match** (place the right items in a 3×3 grid) or a **connect** (place 3 items forming a production chain).
 
-> Notes: `#xxx` is a mod-defined tag (any one of the listed items); `.` means an empty cell. Items are listed by registry name; in-game they display in your language.
+> Notes: `{"tag": "xxx"}` is a tag reference (any item under that tag); `[a, b, c]` is an item list (pick any one); `.` means an empty cell. Items are listed by registry name; in-game they display in your language.
 
 ### Construction
 
@@ -171,21 +172,22 @@ Besides meeting the **research criteria**, most technologies require two "recipe
     stick  .            .
     ```
 - **Construction**
-  - Idea Table: `#stone` (stone or sandstone)
+  - Idea Table: stone / sandstone
 - **Stonemasonry**
-  - Idea Table: `#smoothStone`
+  - Idea Table: stone / polished_granite / polished_diorite / polished_andesite / polished_deepslate / polished_tuff / smooth_basalt / polished_blackstone
   - Puzzle (match):
     ```
-    #stoneSlab  #stoneSlab  #stoneSlab
-    #smoothStone  .        #smoothStone
-    #smoothStone  #stairsStone  #smoothStone
+    [stone slabs]  [stone slabs]  [stone slabs]
+    [stone types]     .          [stone types]
+    [stone types]  [stone stairs]  [stone types]
     ```
+    > `[stone slabs]` = all slab variants; `[stone types]` = stone / polished_granite etc.; `[stone stairs]` = all stair variants.
 - **Activation**
-  - Idea Table: stick + any door / fence gate / trapdoor / iron door / iron trapdoor + redstone dust
+  - Idea Table: stick + redstone dust + [doors/fence gates/trapdoors]
   - Puzzle (connect): iron door → lever
 - **Brickwork**
-  - Idea Table: clay / clay ball + `#heat`
-  - Puzzle (connect): hardened clay → brick block
+  - Idea Table: clay / clay ball + [heat items] (furnace / smoker / blast furnace / magma block / campfire / coal etc.)
+  - Puzzle (connect): terracotta → brick block
 - **Quartz**
   - Idea Table: quartz + glowstone dust / magma block / magma cream
 - **Purpur**
@@ -197,7 +199,7 @@ Besides meeting the **research criteria**, most technologies require two "recipe
     [purpur block/end bricks] purpur stairs [purpur block/end bricks]
     ```
 - **Carpentry**
-  - Idea Table: wool + planks + wooden slab + wooden stairs
+  - Idea Table: wool (any color) + planks (any wood) + wooden slab (any wood) + wooden stairs (any wood)
   - Puzzle (connect): planks → wool
 - **Glassworking**
   - Idea Table: sand + glass block
@@ -247,66 +249,69 @@ Besides meeting the **research criteria**, most technologies require two "recipe
 - **Bibliography**
   - Idea Table: paper + leather
 - **Enchanting**
-  - Idea Table: any enchanted item
+  - Idea Table: enchanted item (any) + book + lapis lazuli
   - Puzzle (connect): book → iron sword
 - **Glowing Eyes**
   - Idea Table: ender pearl + blaze powder
 - **Ender Knowledge**
-  - Idea Table: `#dragon` (dragon egg / dragon's breath / dragon head) + nether star
+  - Idea Table: [dragon egg / dragon's breath / dragon head] + nether star
   - Puzzle (match):
     ```
-    .  nether star  .
+    .  wither skeleton skull  .
     .  [crafting table/bed]  .
-    .  #dragon   .
+    .  [dragon egg/breath/head]  .
     ```
 - **Brewing**
-  - Idea Table: water bottle (or water bucket) + nether wart / sugar
+  - Idea Table: [water bottle / water bucket] + [nether wart / sugar]
   - Puzzle (match):
     ```
     .  sugar     .
     .  nether wart  .
-    .  water bottle .
+    .  [water bottle/water bucket] .
     ```
 
 ### Survival
 
 - **Agriculture**
-  - Idea Table: `#crop` + dirt
+  - Idea Table: crops / seeds / berries / fruits / mushrooms (any) + dirt
   - Puzzle (match):
     ```
     .  .  .
-    stick  #crop  stick
+    stick  [crop type]  stick
     dirt  dirt  dirt
     ```
+    > `[crop type]` = any item under crops / seeds / berry / fruit / mushrooms tags.
 - **Cooking**
-  - Idea Table: `#heat` + raw meat / potato / carrot / wheat
+  - Idea Table: heat item (magma cream / blaze powder / campfire / soul campfire etc.) + [meat/vegetables/grains]
   - Puzzle (match):
     ```
     .  .  .
-    [carrot/potato/beetroot]  #rawMeat  [apple/melon/chorus fruit]
+    [vegetables]  raw meat (any)  [fruits]
     .  bowl  .
     ```
+    > `[vegetables]` = carrot / potato / beetroot / wheat / pumpkin / mushroom etc.; `[fruits]` = apple / melon / chorus_fruit / sweet_berries etc.
 - **Gilded Cuisine**
-  - Idea Table: gold block/ingot/nugget + apple/carrot/melon
+  - Idea Table: [gold block/ingot/nugget] + [apple/carrot/melon slice]
   - Puzzle (match):
     ```
     gold nugget  gold nugget  gold nugget
-    gold nugget  [apple/carrot/melon]  gold nugget
+    gold nugget  [apple/carrot/melon slice]  gold nugget
     gold nugget  gold nugget  gold nugget
     ```
 - **Dyes**
-  - Idea Table: `#flower` + dye + cactus
+  - Idea Table: flower + dye + cactus
   - Puzzle (connect): flint → ink sac
 - **Refinement**
-  - Idea Table: `#ore` (iron/gold ore) + `#heat` + `#pickaxe`
+  - Idea Table: ore (any raw ore / ore block) + heat item + pickaxe (any material)
   - Puzzle (match):
     ```
-    cobblestone  cobblestone  cobblestone
-    cobblestone  #ore       cobblestone
-    cobblestone  #heat      cobblestone
+    stone materials (stone/andesite/diorite/granite)  same  same
+    same  [ore type]  same
+    same  heat item  same
     ```
+    > `[ore type]` = any raw ore or ore block.
 - **Smithing**
-  - Idea Table: `#metal` (iron/gold nugget/ingot/block)
+  - Idea Table: metal ingot (any) / metal nugget (any) / [iron/gold/copper/netherite block]
   - Puzzle (connect): planks → anvil
 - **Lapidary**
   - Idea Table: diamond + emerald
@@ -314,7 +319,7 @@ Besides meeting the **research criteria**, most technologies require two "recipe
 - **Explosives**
   - Idea Table: gunpowder + sand + flint and steel + dye
 - **Carts**
-  - Idea Table: iron ingot + stick / boat
+  - Idea Table: iron ingot + [stick/boat]
   - Puzzle (match):
     ```
     [iron ingot/planks]  .  [iron ingot/planks]
@@ -322,15 +327,15 @@ Besides meeting the **research criteria**, most technologies require two "recipe
     iron ingot  [stick/wooden slab]  iron ingot
     ```
 - **Transportation**
-  - Idea Table: redstone dust + minecart/boat/rail + chest
+  - Idea Table: redstone dust + [minecart/boat/rail] + chest
   - Puzzle (connect): rail → redstone dust
 - **Defense**
-  - Idea Table: `#sword` + `#armor`/leather + iron ingot + planks
+  - Idea Table: sword (any material) + armor (any) / leather + iron ingot + planks (any wood)
 - **Metal Armor**
-  - Idea Table: `#armor` + `#metal`
+  - Idea Table: armor + metal ingot (any) / metal nugget (any) etc.
   - Puzzle (connect): armor stand → iron ingot
 - **Crystalline Armor**
-  - Idea Table: `#armor` + `#gem`
+  - Idea Table: armor + gems
   - Puzzle (connect): leather → diamond
 - **Boats**
   - Idea Table: bowl
@@ -367,6 +372,52 @@ All commands start with `/technology` (registered by this mod).
   - `through` goes **up** the prerequisite chain (including all parent nodes)
   - `from` goes **down** the successor chain (including all child nodes)
   - `until` takes everything from the root to that technology (excluding the root)
+
+---
+
+## Custom Technologies (Data Pack)
+
+Technology definition files are located in `data/ftgumod/technologies/`. Players can override or add technologies via data packs.
+
+### Directory Structure
+
+```
+data/
+└── ftgumod/
+    └── technologies/
+        ├── survival/
+        │   ├── survival.json
+        │   ├── stoneworking.json
+        │   └── ...
+        ├── construction/
+        ├── research/
+        └── power/
+```
+
+### Override Priority
+
+```
+world/technologies/  >  config/ftgumod/technologies/  >  Built-in (mod JAR)
+```
+
+| Directory | Purpose | Per-save? |
+|-----------|---------|-----------|
+| Built-in (JAR) | Mod's default technologies | — |
+| `config/ftgumod/technologies/` | Global overrides / additions | No |
+| `world/technologies/` | Per-save overrides / additions | Yes |
+
+### unlock recipe_types Filtering
+
+By default, unlock searches all recipe types. Use the `recipe_types` field to restrict the search scope:
+
+```json
+"unlock": [
+  "minecraft:iron_ingot",
+  {"item": "minecraft:glass", "recipe_types": ["minecraft:smelting"]}
+]
+```
+
+When `recipe_types` is omitted, all types (crafting, smelting, blasting, etc.) are searched.
 
 ---
 
@@ -418,6 +469,9 @@ A: Use the command `/technology grant <your name> everything`.
 
 **Q: Where is research progress stored?**
 A: In player data, saved with the world / player data.
+
+**Q: Can I customize the technology tree?**
+A: Yes. Technology definitions are in `data/ftgumod/technologies/` and can be overridden or added via data packs. See the "Custom Technologies (Data Pack)" section.
 
 ---
 
