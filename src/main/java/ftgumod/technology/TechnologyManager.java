@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.Enumeration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -277,7 +280,97 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 		load(new File(FTGU.configFolder, "technologies"));
 		load(new File(data, "technologies"));
 
+		// 扫描数据包目录（world/datapacks/*/data/<namespace>/technologies/）
+		File datapacksDir = new File(data, "datapacks");
+		if (datapacksDir.exists() && datapacksDir.isDirectory()) {
+			File[] packs = datapacksDir.listFiles();
+			if (packs != null) {
+				for (File pack : packs) {
+					if (pack.isDirectory()) {
+						scanPackDirectory(pack);
+					} else if (pack.getName().endsWith(".zip")) {
+						scanPackZip(pack);
+					}
+				}
+			}
+		}
+
 		load();
+	}
+
+	private void scanPackDirectory(File pack) {
+		File packData = new File(pack, "data");
+		if (!packData.exists() || !packData.isDirectory()) return;
+		File[] namespaces = packData.listFiles(File::isDirectory);
+		if (namespaces == null) return;
+		for (File namespace : namespaces) {
+			File techDir = new File(namespace, "technologies");
+			if (!techDir.exists() || !techDir.isDirectory()) continue;
+			Map<ResourceLocation, String> techs = new HashMap<>();
+			File[] categories = techDir.listFiles(File::isDirectory);
+			if (categories == null) continue;
+			for (File category : categories) {
+				for (File file : FileUtils.listFiles(category, new String[]{"json"}, true)) {
+					String relative = category.toPath().relativize(file.toPath()).toString().replace('\\', '/');
+					if (!relative.endsWith(".json")) continue;
+					String path = category.getName() + "/" + FilenameUtils.removeExtension(relative);
+					ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace.getName(), path);
+					try {
+						techs.put(id, new String(Files.readAllBytes(file.toPath())));
+					} catch (IOException e) {
+						error("Couldn't read technology {} from {}", id, file, e);
+					}
+				}
+			}
+			if (!techs.isEmpty()) {
+				String ns = namespace.getName();
+				if (cache.containsKey(ns)) {
+					cache.get(ns).getRight().forEach(techs::putIfAbsent);
+				}
+				cache.put(ns, Pair.of("[]", techs));
+			}
+		}
+	}
+
+	private void scanPackZip(File zipFile) {
+		try (ZipFile zip = new ZipFile(zipFile)) {
+			Map<String, Map<ResourceLocation, String>> nsTechs = new HashMap<>();
+			Enumeration<? extends ZipEntry> entries = zip.entries();
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				if (entry.isDirectory()) continue;
+				String name = entry.getName().replace('\\', '/');
+				// 匹配 data/<namespace>/technologies/<category>/<file>.json
+				if (!name.startsWith("data/") || !name.contains("/technologies/") || !name.endsWith(".json"))
+					continue;
+				String[] parts = name.split("/");
+				// parts: data, <namespace>, technologies, <category>, <file>.json
+				if (parts.length < 5) continue;
+				String namespace = parts[1];
+				String category = parts[3];
+				String fileName = parts[parts.length - 1];
+				String path = category + "/" + FilenameUtils.removeExtension(fileName);
+				ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, path);
+				try {
+					String content = new String(zip.getInputStream(entry).readAllBytes());
+					nsTechs.computeIfAbsent(namespace, k -> new HashMap<>()).put(id, content);
+				} catch (IOException e) {
+					error("Couldn't read technology {} from {}", id, zipFile.getName(), e);
+				}
+			}
+			for (Map.Entry<String, Map<ResourceLocation, String>> entry : nsTechs.entrySet()) {
+				Map<ResourceLocation, String> techs = entry.getValue();
+				if (!techs.isEmpty()) {
+					String ns = entry.getKey();
+					if (cache.containsKey(ns)) {
+						cache.get(ns).getRight().forEach(techs::putIfAbsent);
+					}
+					cache.put(ns, Pair.of("[]", techs));
+				}
+			}
+		} catch (IOException e) {
+			error("Couldn't read datapack {}", zipFile.getName(), e);
+		}
 	}
 
 	private void load(File dir) {

@@ -71,6 +71,7 @@ public class FTGU {
 		modEventBus.addListener(this::loadComplete);
 
 		NeoForge.EVENT_BUS.addListener(this::serverStarted);
+		NeoForge.EVENT_BUS.addListener(this::tagsUpdated);
 		NeoForge.EVENT_BUS.addListener(this::registerCommands);
 	}
 
@@ -82,6 +83,14 @@ public class FTGU {
 		TechnologyManager.INSTANCE.setRegistryAccess(event.getServer().registryAccess());
 		TechnologyManager.INSTANCE.reload(event.getServer().getWorldPath(
 				net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
+	}
+
+	private void tagsUpdated(net.neoforged.neoforge.event.TagsUpdatedEvent event) {
+		MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+		if (server != null) {
+			TechnologyManager.INSTANCE.reload(server.getWorldPath(
+					net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
+		}
 	}
 
 	private void registerCommands(RegisterCommandsEvent event) {
