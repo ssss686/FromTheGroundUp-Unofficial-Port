@@ -88,6 +88,13 @@ public class FromTheGroundUp implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
 			com.fuxingcheng.fromthegroundup.util.ServerHelper.setServer(null);
 		});
+		// Reload technologies when datapacks are reloaded (/reload)
+		ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+			if (success) {
+				TechnologyManager.INSTANCE.reload(server.getWorldPath(
+						net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
+			}
+		});
 
 		// Register commands
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
