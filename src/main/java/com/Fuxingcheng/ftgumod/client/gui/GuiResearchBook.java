@@ -120,8 +120,10 @@ public class GuiResearchBook extends Screen {
 			state = true;
 		}
 
-		xScrollP = xScrollTarget = xScrollO.get(root.getRegistryName());
-		yScrollP = yScrollTarget = yScrollO.get(root.getRegistryName());
+		Double xScroll = xScrollO.get(root.getRegistryName());
+		Double yScroll = yScrollO.get(root.getRegistryName());
+		xScrollP = xScrollTarget = xScroll != null ? xScroll : 0.0D;
+		yScrollP = yScrollTarget = yScroll != null ? yScroll : 0.0D;
 
 		clearWidgets();
 		if (state) {

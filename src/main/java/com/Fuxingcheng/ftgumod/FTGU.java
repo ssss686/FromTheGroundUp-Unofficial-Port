@@ -82,6 +82,7 @@ public class FTGU {
 		// 其他事件监听
 		modEventBus.addListener(this::loadComplete);
 		MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
+		MinecraftForge.EVENT_BUS.addListener(this::tagsUpdated);
 		MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 	}
 
@@ -92,6 +93,13 @@ public class FTGU {
 	private void serverStarted(ServerStartedEvent event) {
 		TechnologyManager.INSTANCE.setRegistryAccess(event.getServer().registryAccess());
 		TechnologyManager.INSTANCE.reload(event.getServer().getWorldPath(LevelResource.ROOT).toFile());
+	}
+
+	private void tagsUpdated(net.minecraftforge.event.TagsUpdatedEvent event) {
+		MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+		if (server != null) {
+			TechnologyManager.INSTANCE.reload(server.getWorldPath(LevelResource.ROOT).toFile());
+		}
 	}
 
 	private void registerCommands(RegisterCommandsEvent event) {
