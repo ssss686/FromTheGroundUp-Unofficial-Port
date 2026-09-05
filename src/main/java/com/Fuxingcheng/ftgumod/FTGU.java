@@ -16,6 +16,7 @@ import com.Fuxingcheng.ftgumod.technology.Technology;
 import com.Fuxingcheng.ftgumod.technology.TechnologyManager;
 import com.Fuxingcheng.ftgumod.util.StackUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
