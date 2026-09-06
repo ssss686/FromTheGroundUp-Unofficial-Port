@@ -229,8 +229,10 @@ public class GuiResearchBook extends Screen {
 					if (scrolling == 0) {
 						scrolling = 1;
 					} else {
-						xScrollP -= (float) (mouseX - xLastScroll) * zoom.get(root.getRegistryName());
-						yScrollP -= (float) (mouseY - yLastScroll) * zoom.get(root.getRegistryName());
+						Float zoomDrag = zoom.get(root.getRegistryName());
+						if (zoomDrag == null) zoomDrag = 1.0F;
+						xScrollP -= (float) (mouseX - xLastScroll) * zoomDrag;
+						yScrollP -= (float) (mouseY - yLastScroll) * zoomDrag;
 
 						xScrollTarget = xScrollP;
 						yScrollTarget = yScrollP;
@@ -320,7 +322,9 @@ public class GuiResearchBook extends Screen {
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		if (state && root != null) {
-			float f3 = zoom.get(root.getRegistryName());
+			Float zoomCurrent = zoom.get(root.getRegistryName());
+			if (zoomCurrent == null) zoomCurrent = 1.0F;
+			float f3 = zoomCurrent;
 			zoom.put(root.getRegistryName(),
 					(float) Mth.clamp(scrollY < 0 ? f3 + 0.25F : scrollY > 0 ? f3 - 0.25F : f3, 1.0F, 2.0F));
 
@@ -410,13 +414,16 @@ public class GuiResearchBook extends Screen {
 		guiGraphics.enableScissor(k + 16, l + 17, k + 16 + 224, l + 17 + 155);
 
 		if (state) {
-			float zoomVal = zoom.get(root.getRegistryName());
+			Float zoomVal = zoom.get(root.getRegistryName());
+			if (zoomVal == null) zoomVal = 1.0F;
 			poseStack.scale(1.0F / zoomVal, 1.0F / zoomVal, 1.0F);
 
-			int i = Mth.floor(xScrollO.get(root.getRegistryName())
-					+ (xScrollP - xScrollO.get(root.getRegistryName())) * partialTick);
-			int j = Mth.floor(yScrollO.get(root.getRegistryName())
-					+ (yScrollP - yScrollO.get(root.getRegistryName())) * partialTick);
+			Double xScrollOld = xScrollO.get(root.getRegistryName());
+			Double yScrollOld = yScrollO.get(root.getRegistryName());
+			double xOld = xScrollOld != null ? xScrollOld : 0.0D;
+			double yOld = yScrollOld != null ? yScrollOld : 0.0D;
+			int i = Mth.floor(xOld + (xScrollP - xOld) * partialTick);
+			int j = Mth.floor(yOld + (yScrollP - yOld) * partialTick);
 
 			if (i < x_min)
 				i = x_min;
