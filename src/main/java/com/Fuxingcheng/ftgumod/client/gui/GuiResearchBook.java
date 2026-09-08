@@ -621,6 +621,56 @@ public class GuiResearchBook extends Screen {
 			}
 		}
 
+		// 内框渐变效果（在 scissor 区域内绘制，参考原版进度 UI）
+		// 原版风格：精简层次、柔和过渡、轻薄凹陷感
+		// 临时重置缩放，使阴影保持固定像素大小
+		Float zoomForShadow = zoom.get(root.getRegistryName());
+		if (zoomForShadow == null) zoomForShadow = 1.0F;
+		if (zoomForShadow != 1.0F) {
+			poseStack.scale(zoomForShadow, zoomForShadow, 1.0F);
+		}
+
+		int left = 0;
+		int top = 0;
+		int right = 224;
+		int bottom = 155;
+
+		// 5层半透明覆盖，alpha值低，营造柔和弱阴影
+		// 第1层：最内圈，alpha 80
+		guiGraphics.fill(left, top, right, top + 1, 0x50000000);
+		guiGraphics.fill(left, bottom - 1, right, bottom, 0x50000000);
+		guiGraphics.fill(left, top, left + 1, bottom, 0x50000000);
+		guiGraphics.fill(right - 1, top, right, bottom, 0x50000000);
+
+		// 第2层：alpha 55
+		guiGraphics.fill(left, top + 1, right, top + 2, 0x37000000);
+		guiGraphics.fill(left, bottom - 2, right, bottom - 1, 0x37000000);
+		guiGraphics.fill(left + 1, top, left + 2, bottom, 0x37000000);
+		guiGraphics.fill(right - 2, top, right - 1, bottom, 0x37000000);
+
+		// 第3层：alpha 35
+		guiGraphics.fill(left, top + 2, right, top + 3, 0x23000000);
+		guiGraphics.fill(left, bottom - 3, right, bottom - 2, 0x23000000);
+		guiGraphics.fill(left + 2, top, left + 3, bottom, 0x23000000);
+		guiGraphics.fill(right - 3, top, right - 2, bottom, 0x23000000);
+
+		// 第4层：alpha 18
+		guiGraphics.fill(left, top + 3, right, top + 4, 0x12000000);
+		guiGraphics.fill(left, bottom - 4, right, bottom - 3, 0x12000000);
+		guiGraphics.fill(left + 3, top, left + 4, bottom, 0x12000000);
+		guiGraphics.fill(right - 4, top, right - 3, bottom, 0x12000000);
+
+		// 第5层：最外圈，alpha 8，几乎透明
+		guiGraphics.fill(left, top + 4, right, top + 5, 0x08000000);
+		guiGraphics.fill(left, bottom - 5, right, bottom - 4, 0x08000000);
+		guiGraphics.fill(left + 4, top, left + 5, bottom, 0x08000000);
+		guiGraphics.fill(right - 5, top, right - 4, bottom, 0x08000000);
+
+		// 恢复缩放状态（如果需要）
+		if (zoomForShadow != 1.0F) {
+			poseStack.scale(1.0F / zoomForShadow, 1.0F / zoomForShadow, 1.0F);
+		}
+
 		guiGraphics.disableScissor();
 		poseStack.popPose();
 		RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
