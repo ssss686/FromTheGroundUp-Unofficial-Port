@@ -614,6 +614,54 @@ public class GuiResearchBook extends Screen {
 			}
 		}
 
+		// Inner frame gradient shadow (vanilla advancement UI style)
+		// Reset zoom so shadow stays at fixed pixel size
+		Float zoomForShadow = zoom.get(root.getRegistryName());
+		if (zoomForShadow == null) zoomForShadow = 1.0F;
+		if (zoomForShadow != 1.0F) {
+			poseStack.scale(zoomForShadow, zoomForShadow, 1.0F);
+		}
+
+		int left = 0;
+		int top = 0;
+		int right = 224;
+		int bottom = 155;
+
+		// Layer 1: innermost, alpha 80
+		guiGraphics.fill(left, top, right, top + 1, 0x50000000);
+		guiGraphics.fill(left, bottom - 1, right, bottom, 0x50000000);
+		guiGraphics.fill(left, top, left + 1, bottom, 0x50000000);
+		guiGraphics.fill(right - 1, top, right, bottom, 0x50000000);
+
+		// Layer 2: alpha 55
+		guiGraphics.fill(left, top + 1, right, top + 2, 0x37000000);
+		guiGraphics.fill(left, bottom - 2, right, bottom - 1, 0x37000000);
+		guiGraphics.fill(left + 1, top, left + 2, bottom, 0x37000000);
+		guiGraphics.fill(right - 2, top, right - 1, bottom, 0x37000000);
+
+		// Layer 3: alpha 35
+		guiGraphics.fill(left, top + 2, right, top + 3, 0x23000000);
+		guiGraphics.fill(left, bottom - 3, right, bottom - 2, 0x23000000);
+		guiGraphics.fill(left + 2, top, left + 3, bottom, 0x23000000);
+		guiGraphics.fill(right - 3, top, right - 2, bottom, 0x23000000);
+
+		// Layer 4: alpha 18
+		guiGraphics.fill(left, top + 3, right, top + 4, 0x12000000);
+		guiGraphics.fill(left, bottom - 4, right, bottom - 3, 0x12000000);
+		guiGraphics.fill(left + 3, top, left + 4, bottom, 0x12000000);
+		guiGraphics.fill(right - 4, top, right - 3, bottom, 0x12000000);
+
+		// Layer 5: outermost, alpha 8, nearly transparent
+		guiGraphics.fill(left, top + 4, right, top + 5, 0x08000000);
+		guiGraphics.fill(left, bottom - 5, right, bottom - 4, 0x08000000);
+		guiGraphics.fill(left + 4, top, left + 5, bottom, 0x08000000);
+		guiGraphics.fill(right - 5, top, right - 4, bottom, 0x08000000);
+
+		// Restore zoom state
+		if (zoomForShadow != 1.0F) {
+			poseStack.scale(1.0F / zoomForShadow, 1.0F / zoomForShadow, 1.0F);
+		}
+
 		guiGraphics.disableScissor();
 		poseStack.popPose();
 		RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
