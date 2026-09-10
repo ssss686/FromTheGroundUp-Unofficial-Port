@@ -18,6 +18,7 @@ import com.fuxingcheng.fromthegroundup.packet.server.RequestMessage;
 import com.fuxingcheng.fromthegroundup.technology.CapabilityTechnology;
 import com.fuxingcheng.fromthegroundup.technology.Technology;
 import com.fuxingcheng.fromthegroundup.technology.TechnologyManager;
+import com.fuxingcheng.fromthegroundup.util.RecipeHideHelper;
 import com.fuxingcheng.fromthegroundup.util.StackUtils;
 
 import net.fabricmc.api.EnvType;
@@ -130,6 +131,9 @@ public class EventHandler {
 				}
 
 				PacketDispatcher.sendTo(new TechnologyInfoMessage(TechnologyManager.INSTANCE.cache), player);
+
+				// Clean locked recipes from recipe book
+				RecipeHideHelper.cleanRecipeBook(player);
 			});
 		});
 

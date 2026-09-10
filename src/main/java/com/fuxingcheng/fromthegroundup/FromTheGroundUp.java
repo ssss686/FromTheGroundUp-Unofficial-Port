@@ -15,6 +15,7 @@ import com.fuxingcheng.fromthegroundup.packet.PacketDispatcher;
 import com.fuxingcheng.fromthegroundup.technology.CapabilityTechnology;
 import com.fuxingcheng.fromthegroundup.technology.Technology;
 import com.fuxingcheng.fromthegroundup.technology.TechnologyManager;
+import com.fuxingcheng.fromthegroundup.util.RecipeHideHelper;
 import com.fuxingcheng.fromthegroundup.util.StackUtils;
 
 import net.fabricmc.api.ModInitializer;
@@ -24,6 +25,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +95,10 @@ public class FromTheGroundUp implements ModInitializer {
 			if (success) {
 				TechnologyManager.INSTANCE.reload(server.getWorldPath(
 						net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
+				// Clean locked recipes for all online players
+				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+					RecipeHideHelper.cleanRecipeBook(player);
+				}
 			}
 		});
 
