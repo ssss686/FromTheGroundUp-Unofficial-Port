@@ -14,6 +14,7 @@ import ftgumod.packet.PacketDispatcher;
 import ftgumod.technology.CapabilityTechnology;
 import ftgumod.technology.Technology;
 import ftgumod.technology.TechnologyManager;
+import ftgumod.util.RecipeHideHelper;
 import ftgumod.util.StackUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.NeoForge;
@@ -90,6 +91,11 @@ public class FTGU {
 		if (server != null) {
 			TechnologyManager.INSTANCE.reload(server.getWorldPath(
 					net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
+
+			// /reload 后重新清理配方书
+			for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
+				RecipeHideHelper.cleanRecipeBook(player);
+			}
 		}
 	}
 
