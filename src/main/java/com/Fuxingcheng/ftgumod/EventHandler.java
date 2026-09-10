@@ -41,6 +41,7 @@ import com.Fuxingcheng.ftgumod.packet.server.RequestMessage;
 import com.Fuxingcheng.ftgumod.technology.CapabilityTechnology;
 import com.Fuxingcheng.ftgumod.technology.Technology;
 import com.Fuxingcheng.ftgumod.technology.TechnologyManager;
+import com.Fuxingcheng.ftgumod.util.RecipeHideHelper;
 import com.Fuxingcheng.ftgumod.util.StackUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -166,6 +167,9 @@ public class EventHandler {
 			}
 
 			PacketDispatcher.sendTo(new TechnologyInfoMessage(TechnologyManager.INSTANCE.cache), player);
+
+			// 清理配方书中锁定的配方
+			RecipeHideHelper.cleanRecipeBook(player);
 		}
 	}
 
@@ -229,6 +233,14 @@ public class EventHandler {
 	public void onEntityJoinLevel(EntityJoinLevelEvent event) {
 		if (event.getLevel().isClientSide() && event.getEntity() == Minecraft.getInstance().player)
 			PacketDispatcher.sendToServer(new RequestMessage());
+	}
+
+	@SubscribeEvent
+	public void onEntityJoinLevelServer(EntityJoinLevelEvent event) {
+		if (!event.getLevel().isClientSide() && event.getEntity() instanceof ServerPlayer player) {
+			// 延迟一tick清理配方书，确保配方同步完成
+			player.getServer().execute(() -> RecipeHideHelper.cleanRecipeBook(player));
+		}
 	}
 
 	@SubscribeEvent

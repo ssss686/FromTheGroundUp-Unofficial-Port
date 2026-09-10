@@ -14,6 +14,7 @@ import com.Fuxingcheng.ftgumod.packet.PacketDispatcher;
 import com.Fuxingcheng.ftgumod.technology.CapabilityTechnology;
 import com.Fuxingcheng.ftgumod.technology.Technology;
 import com.Fuxingcheng.ftgumod.technology.TechnologyManager;
+import com.Fuxingcheng.ftgumod.util.RecipeHideHelper;
 import com.Fuxingcheng.ftgumod.util.StackUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -100,6 +101,11 @@ public class FTGU {
 		MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
 		if (server != null) {
 			TechnologyManager.INSTANCE.reload(server.getWorldPath(LevelResource.ROOT).toFile());
+
+			// /reload 后重新清理配方书
+			for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
+				RecipeHideHelper.cleanRecipeBook(player);
+			}
 		}
 	}
 
