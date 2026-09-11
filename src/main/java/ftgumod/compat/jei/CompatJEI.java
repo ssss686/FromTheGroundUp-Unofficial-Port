@@ -1,8 +1,10 @@
 package ftgumod.compat.jei;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import ftgumod.ClientHooks;
 import ftgumod.Content;
 import ftgumod.FTGU;
+import ftgumod.FTGUConfig;
 import ftgumod.api.technology.puzzle.ResearchConnect;
 import ftgumod.api.technology.puzzle.ResearchMatch;
 import ftgumod.api.technology.recipe.IIdeaRecipe;
@@ -27,6 +29,7 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.gui.widgets.ISlottedRecipeWidget;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -74,6 +77,11 @@ public class CompatJEI implements IModPlugin {
 	private static final ResourceLocation PLUGIN_ID = ResourceLocation.fromNamespaceAndPath(FTGU.MODID, "main");
 
 	private static IJeiRuntime jeiRuntime;
+	/**
+	 * 研究指南的栏位类型。registerCategories 里才赋值 ——
+	 * RecipeType 在类加载阶段初始化会让插件发现失败（见下面的自定义栏位）
+	 */
+	private static RecipeType<ResearchGuideEntry> researchGuideRecipeType;
 
 	// 自定义栏位（延迟创建，避免类加载时初始化 RecipeType 导致插件发现失败）
 	private ResearchGuideCategory researchGuideCategory;
@@ -86,7 +94,17 @@ public class CompatJEI implements IModPlugin {
 	@Override
 	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
 		CompatJEI.jeiRuntime = jeiRuntime;
+		// 配置是在文件监听线程上热重载的，靠这个钩子把档位送回客户端主线程。
+		// 没装 JEI 时插件根本不会被加载，ClientHooks 里就一直是空实现。
+		ClientHooks.applyResearchGuideMode = CompatJEI::applyResearchGuideMode;
+		// 进世界时 JEI 才建运行时，这之前收到的档位在这里补上
+		applyResearchGuideMode();
 		LOGGER.info("JEI runtime available");
+	}
+
+	@Override
+	public void onRuntimeUnavailable() {
+		jeiRuntime = null;
 	}
 
 	@Override
@@ -94,8 +112,36 @@ public class CompatJEI implements IModPlugin {
 		LOGGER.info("JEI registerCategories called - adding research guide category");
 		IGuiHelper guiHelper = registration.getJeiHelpers().getGuiHelper();
 		researchGuideCategory = new ResearchGuideCategory(guiHelper);
+		researchGuideRecipeType = researchGuideCategory.getRecipeType();
 		registration.addRecipeCategories(researchGuideCategory);
 		LOGGER.info("Research guide category registered: {}", researchGuideCategory.getRecipeType());
+	}
+
+	/**
+	 * 按当前档位显示/隐藏研究指南栏位。
+	 *
+	 * 栏位是 registerCategories 时注册的，JEI 没有运行期注销的法子，隐藏得用
+	 * IRecipeManager 那对 hide/unhideRecipeCategory —— 这也正是 JEI 给进度类模组
+	 * 准备的接口（它自己的调试栏位就是这么切的）。那两个方法只允许在客户端主线程
+	 * 调用（JEI 里有 assertMainThread），而配置热重载是在文件监听线程上回调的，
+	 * 所以这里自己转线程。
+	 */
+	public static void applyResearchGuideMode() {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (minecraft != null && !minecraft.isSameThread()) {
+			minecraft.execute(CompatJEI::applyResearchGuideMode);
+			return;
+		}
+
+		IJeiRuntime runtime = jeiRuntime;
+		if (runtime == null || researchGuideRecipeType == null)
+			return;   // JEI 还没起（或已停）：运行时可用时会按档位再对一次
+
+		IRecipeManager recipeManager = runtime.getRecipeManager();
+		if (FTGUConfig.cachedResearchGuideMode == FTGUConfig.ResearchGuideMode.DISABLED)
+			recipeManager.hideRecipeCategory(researchGuideRecipeType);
+		else
+			recipeManager.unhideRecipeCategory(researchGuideRecipeType);
 	}
 
 	@Override
@@ -120,7 +166,9 @@ public class CompatJEI implements IModPlugin {
 		// 构建物品→科技映射
 		Map<Item, Technology> itemTechMap = buildItemTechMap();
 
-		// 为每个需要研究的物品创建研究引导页面
+		// 为每个需要研究的物品创建研究引导页面。
+		// 配置档位不在这里拦：配方是启动时注册一次的，档位却能运行期改，
+		// 展示哪部分一律交给 setRecipe / 页面组件现取，这样来回切档位不用重启。
 		List<ResearchGuideEntry> entries = new ArrayList<>();
 		for (Map.Entry<Item, Technology> entry : itemTechMap.entrySet()) {
 			Technology tech = entry.getValue();
@@ -547,23 +595,34 @@ public class CompatJEI implements IModPlugin {
 			builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT)
 					.addItemStack(entry.getItem());
 
-			// 创作台原料
-			IdeaDisplay idea = entry.getIdea();
-			if (idea != null) {
-				List<ItemPredicate> ingredients = idea.getIngredients();
-				for (int i = 0; i < ingredients.size(); i++) {
-					addDisplaySlot(builder, SLOT_IDEA + i, ingredients.get(i));
+			// 研究方法展示（创作台原料、研究台谜题）：只看科技链的档位不带这些槽位。
+			// 必须和页面组件一起拦 —— 没交给页面组件的槽位 JEI 会留在自己的坐标上画，
+			// 于是全堆到左上角去。档位运行期可改，而 setRecipe 每次重建布局都会重跑，
+			// 所以档位在这里现取。
+			if (showsResearchMethods()) {
+				// 创作台原料
+				IdeaDisplay idea = entry.getIdea();
+				if (idea != null) {
+					List<ItemPredicate> ingredients = idea.getIngredients();
+					for (int i = 0; i < ingredients.size(); i++) {
+						addDisplaySlot(builder, SLOT_IDEA + i, ingredients.get(i));
+					}
 				}
-			}
 
-			// 研究台谜题：配对是整张 3×3（空格位只画底图），连线只有两端
-			ResearchDisplay research = entry.getResearch();
-			if (research != null) {
-				List<ItemPredicate> slots = research.getSlots();
-				for (int i = 0; i < slots.size(); i++) {
-					addDisplaySlot(builder, SLOT_PUZZLE + i, slots.get(i));
+				// 研究台谜题：配对是整张 3×3（空格位只画底图），连线只有两端
+				ResearchDisplay research = entry.getResearch();
+				if (research != null) {
+					List<ItemPredicate> slots = research.getSlots();
+					for (int i = 0; i < slots.size(); i++) {
+						addDisplaySlot(builder, SLOT_PUZZLE + i, slots.get(i));
+					}
 				}
 			}
+		}
+
+		/** 档位是否要展示创作台/研究台这类"研究方法"；只看科技链的档位就跳过 */
+		private static boolean showsResearchMethods() {
+			return FTGUConfig.cachedResearchGuideMode != FTGUConfig.ResearchGuideMode.CHAIN_ONLY;
 		}
 
 		@Override
@@ -657,12 +716,15 @@ public class CompatJEI implements IModPlugin {
 				this.scrollbarMarker = jeiSprite(guiHelper, JEI_SCROLLBAR_MARKER);
 
 				Font font = Minecraft.getInstance().font;
+				// 档位现取：档位改了以后 JEI 重建布局时会重新构造本组件。
+				// 与 setRecipe 用的是同一个判断，两边都不带这些槽位，才对得上
+				boolean methods = showsResearchMethods();
 
 				claim(slotsView, SLOT_ITEM, centeredStart(1, CONTENT_WIDTH) + SLOT_INSET, ITEM_SLOT_Y);
 				int y = Math.max(appendHeader(entry, font), CONTENT_TOP);
 
 				// 创作台原料
-				IdeaDisplay idea = entry.getIdea();
+				IdeaDisplay idea = methods ? entry.getIdea() : null;
 				if (idea != null) {
 					List<ItemPredicate> ingredients = idea.getIngredients();
 
@@ -693,7 +755,7 @@ public class CompatJEI implements IModPlugin {
 				}
 
 				// 研究台谜题
-				ResearchDisplay research = entry.getResearch();
+				ResearchDisplay research = methods ? entry.getResearch() : null;
 				if (research != null) {
 					this.rows.add(Row.text(y,
 							textCell(Component.translatable("ftgu.jei.research_guide.puzzle")
@@ -716,7 +778,7 @@ public class CompatJEI implements IModPlugin {
 
 				// 前置科技链路
 				List<Prerequisite> prerequisites = entry.getPrerequisites();
-				boolean custom = entry.hasCustomUnlock();
+				boolean custom = methods && entry.hasCustomUnlock();
 				if (!prerequisites.isEmpty()) {
 					this.rows.add(Row.text(y,
 							textCell(Component.translatable("ftgu.jei.research_guide.prerequisites")
@@ -1048,14 +1110,16 @@ public class CompatJEI implements IModPlugin {
 				return HEIGHT - 2 * SCROLLBAR_INSET - markerHeight;
 			}
 
-			/** 滑块高度，按"看得见的部分占多少"算，下限 JEI 那个 14 */
+			/**
+			 * 滑块高度，按"看得见的部分占多少"算，下限 JEI 那个 14。
+			 *
+			 * 内容装得下时比例算出来大于 1，正好占满整条轨道 —— JEI 的滑块任何时候都在，
+			 * 只是这时候它填满轨道、挪不动（那边也是这么算的：visible/(visible+hidden)）。
+			 */
 			private int getMarkerHeight() {
-				int hidden = getHiddenAmount();
-				if (hidden <= 0)
-					return HEIGHT;
 				int track = HEIGHT - 2 * SCROLLBAR_INSET;
 				int height = Math.round(track * (HEIGHT / (float) contentHeight));
-				return Mth.clamp(height, MIN_SCROLLBAR_MARKER, HEIGHT);
+				return Mth.clamp(height, MIN_SCROLLBAR_MARKER, track);
 			}
 
 			/** 滑块顶边；0 是轨道顶边，真正落位还要再加那 1 像素的内缩 */
@@ -1067,7 +1131,12 @@ public class CompatJEI implements IModPlugin {
 				return (int) Math.round(span * (scrollY / hidden));
 			}
 
-			/** 滚动条：14 宽的轨道 + 左右各内缩 1 像素的滑块，两张贴图都是 JEI 自己的 */
+			/**
+			 * 滚动条：14 宽的轨道 + 左右各内缩 1 像素的滑块，两张贴图都是 JEI 自己的。
+			 *
+			 * 滑块无条件画（内容装得下时它占满整条轨道），与 JEI 的 AbstractScrollWidget 一致 ——
+			 * 那边 drawWidget 里背景和滑块都不做判断。
+			 */
 			private void drawScrollbar(GuiGraphics guiGraphics) {
 				int x = getScrollbarX();
 				if (scrollbarBackground != null) {
@@ -1076,8 +1145,6 @@ public class CompatJEI implements IModPlugin {
 					guiGraphics.fill(x, 0, x + SCROLLBAR_WIDTH, HEIGHT, SCROLLBAR_TRACK_COLOR);
 				}
 
-				if (getHiddenAmount() <= 0)
-					return;   // 内容装得下，只留一条空轨道
 				int markerHeight = getMarkerHeight();
 				int markerY = SCROLLBAR_INSET + getMarkerY(markerHeight);
 				if (scrollbarMarker != null) {

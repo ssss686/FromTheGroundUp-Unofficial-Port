@@ -21,11 +21,12 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefaultTechnologies,
-		FTGUConfig.HideJeiItems jeiHide, Map<String, Pair<String, Map<ResourceLocation, String>>> json)
+		FTGUConfig.ResearchGuideMode researchGuideMode, Map<String, Pair<String, Map<ResourceLocation, String>>> json)
 		implements CustomPacketPayload {
 
 	public TechnologyInfoMessage(Map<String, Pair<String, Map<ResourceLocation, String>>> json) {
-		this(FTGUConfig.cachedAllowResearchCopy, FTGUConfig.cachedLoadDefaultTechnologies, FTGUConfig.cachedJeiHide, json);
+		this(FTGUConfig.cachedAllowResearchCopy, FTGUConfig.cachedLoadDefaultTechnologies,
+				FTGUConfig.cachedResearchGuideMode, json);
 	}
 
 	public static final Type<TechnologyInfoMessage> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FTGU.MODID, "technology_info"));
@@ -35,7 +36,7 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 		public TechnologyInfoMessage decode(FriendlyByteBuf buf) {
 			boolean allowRC = buf.readBoolean();
 			boolean loadDT = buf.readBoolean();
-			FTGUConfig.HideJeiItems jeiH = FTGUConfig.HideJeiItems.values()[buf.readByte()];
+			FTGUConfig.ResearchGuideMode guideMode = FTGUConfig.ResearchGuideMode.byOrdinal(buf.readByte());
 
 			Map<String, Pair<String, Map<ResourceLocation, String>>> json = new HashMap<>();
 			int size = buf.readVarInt();
@@ -49,14 +50,14 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 				json.put(domain, Pair.of(context, map));
 			}
 
-			return new TechnologyInfoMessage(allowRC, loadDT, jeiH, json);
+			return new TechnologyInfoMessage(allowRC, loadDT, guideMode, json);
 		}
 
 		@Override
 		public void encode(FriendlyByteBuf buf, TechnologyInfoMessage msg) {
 			buf.writeBoolean(msg.allowResearchCopy());
 			buf.writeBoolean(msg.loadDefaultTechnologies());
-			buf.writeByte(msg.jeiHide().ordinal());
+			buf.writeByte(msg.researchGuideMode().ordinal());
 
 			buf.writeVarInt(msg.json().size());
 			for (var entry : msg.json().entrySet()) {
@@ -80,7 +81,9 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 		ctx.enqueueWork(() -> {
 			FTGUConfig.cachedLoadDefaultTechnologies = message.loadDefaultTechnologies();
 			FTGUConfig.cachedAllowResearchCopy = message.allowResearchCopy();
-			FTGUConfig.cachedJeiHide = message.jeiHide();
+			FTGUConfig.cachedResearchGuideMode = message.researchGuideMode();
+			// 服务端的档位可能和本地配置不一样（比如服务端禁用了指南），当场就对一次
+			ClientHooks.applyResearchGuideMode.run();
 
 			net.minecraft.core.RegistryAccess ra;
 			MinecraftServer server = ServerLifecycleHooks.getCurrentServer();

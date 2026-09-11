@@ -20,7 +20,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import ftgumod.api.util.BlockSerializable;
-import ftgumod.compat.jei.CompatJEI;
 import ftgumod.event.PlayerLockEvent;
 import ftgumod.item.ItemMagnifyingGlass;
 import ftgumod.item.ItemParchmentResearch;

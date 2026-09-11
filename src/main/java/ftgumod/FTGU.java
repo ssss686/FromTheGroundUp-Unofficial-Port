@@ -1,6 +1,7 @@
 package ftgumod;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,6 +10,7 @@ import ftgumod.api.technology.puzzle.ResearchMatch;
 import ftgumod.api.util.predicate.ItemFluid;
 import ftgumod.api.util.predicate.ItemLambda;
 import ftgumod.api.util.predicate.ItemMod;
+import ftgumod.client.FTGUClient;
 import ftgumod.command.CommandTechnology;
 import ftgumod.packet.PacketDispatcher;
 import ftgumod.technology.CapabilityTechnology;
@@ -26,6 +28,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(FTGU.MODID)
 public class FTGU {
@@ -63,6 +67,15 @@ public class FTGU {
 		configFolder = FMLPaths.CONFIGDIR.get().resolve(MODID).toFile();
 
 		modContainer.registerConfig(ModConfig.Type.COMMON, FTGUConfig.SPEC);
+
+		// 模组列表里的“配置”按钮：只有注册了这个扩展点 NeoForge 才点得动，
+		// 不注册的话按钮一直是灰的。用 Supplier 重载 —— ConfigurationScreen
+		// 和 FTGUClient 都是客户端类，专用服务器上不该被加载，
+		// 它们只在客户端真的要开界面时才求值。
+		// 带 filter 的那个构造器：没装 JEI 时把指南档位显示成灰色不可改。
+		Supplier<IConfigScreenFactory> configScreens = () -> (container, parent) -> new ConfigurationScreen(container,
+				parent, FTGUClient.CONFIG_FILTER);
+		modContainer.registerExtensionPoint(IConfigScreenFactory.class, configScreens);
 
 		modEventBus.addListener(this::loadComplete);
 

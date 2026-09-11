@@ -1,6 +1,7 @@
 package ftgumod.packet;
 
 import ftgumod.packet.client.HintMessage;
+import ftgumod.packet.client.ResearchGuideModeMessage;
 import ftgumod.packet.client.TechnologyInfoMessage;
 import ftgumod.packet.client.TechnologyMessage;
 import ftgumod.packet.server.CopyTechMessage;
@@ -21,6 +22,7 @@ public final class PacketDispatcher {
 
 			registrar.playToClient(TechnologyMessage.TYPE, TechnologyMessage.STREAM_CODEC, TechnologyMessage::handle);
 			registrar.playToClient(TechnologyInfoMessage.TYPE, TechnologyInfoMessage.STREAM_CODEC, TechnologyInfoMessage::handle);
+			registrar.playToClient(ResearchGuideModeMessage.TYPE, ResearchGuideModeMessage.STREAM_CODEC, ResearchGuideModeMessage::handle);
 			registrar.playToClient(HintMessage.TYPE, HintMessage.STREAM_CODEC, HintMessage::handle);
 
 			registrar.playToServer(CopyTechMessage.TYPE, CopyTechMessage.STREAM_CODEC, CopyTechMessage::handle);
@@ -46,6 +48,10 @@ public final class PacketDispatcher {
 	}
 
 	public static void sendToAll(TechnologyInfoMessage message) {
+		PacketDistributor.sendToAllPlayers(message);
+	}
+
+	public static void sendToAll(ResearchGuideModeMessage message) {
 		PacketDistributor.sendToAllPlayers(message);
 	}
 

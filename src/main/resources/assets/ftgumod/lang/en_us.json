@@ -16,7 +16,6 @@
   "technology.tabs": "Unlocks new tabs",
   "technology.toast": "Research Complete!",
   "chat.type.technology": "%s has researched %s",
-  "key.ftgumod.open": "Research Book",
   "key.categories.ftgumod": "From the Ground Up!",
   "technology.complete.already": "%s has already been researched",
   "technology.complete.understand": "You do not understand this technology",
@@ -217,7 +216,6 @@
   "ftgu.jei.research_guide.puzzle": "Research Table:",
   "ftgu.jei.research_guide.custom": "Also requires a specific condition",
   "key.ftgumod.research_book": "Open Research Book",
-  "key.categories.ftgumod": "From the Ground Up",
   "advancements.ftgumod.research.root.title": "From the Ground Up",
   "advancements.ftgumod.research.root.description": "Because nothing is free",
   "advancements.ftgumod.research.research.title": "Science!",
@@ -225,5 +223,13 @@
   "advancements.ftgumod.research.locked.title": "Locked Recipes",
   "advancements.ftgumod.research.locked.description": "Try to craft something not yet researched",
   "advancements.ftgumod.research.inspect.title": "Sherlock Holmes",
-  "advancements.ftgumod.research.inspect.description": "Find hidden meaning in a block"
+  "advancements.ftgumod.research.inspect.description": "Find hidden meaning in a block",
+  "ftgumod.configuration.title": "From the Ground Up",
+  "ftgumod.configuration.section.ftgumod.common.title": "From the Ground Up Config",
+  "ftgumod.configuration.ftgumod": "General",
+  "ftgumod.configuration.allowResearchCopy": "Allow Copying Researches",
+  "ftgumod.configuration.loadDefaultTechnologies": "Load Default Technologies",
+  "ftgumod.configuration.giveResearchBook": "Give a Research Book on First Join",
+  "ftgumod.configuration.researchGuideMode": "JEI Research Guide",
+  "ftgumod.configuration.requiresjei": "Requires JEI to be installed."
 }
