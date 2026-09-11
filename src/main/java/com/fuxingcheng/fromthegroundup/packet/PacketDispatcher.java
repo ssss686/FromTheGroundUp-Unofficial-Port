@@ -2,6 +2,7 @@ package com.fuxingcheng.fromthegroundup.packet;
 
 import com.fuxingcheng.fromthegroundup.FromTheGroundUp;
 import com.fuxingcheng.fromthegroundup.packet.client.HintMessage;
+import com.fuxingcheng.fromthegroundup.packet.client.ResearchGuideModeMessage;
 import com.fuxingcheng.fromthegroundup.packet.client.TechnologyInfoMessage;
 import com.fuxingcheng.fromthegroundup.packet.client.TechnologyMessage;
 import com.fuxingcheng.fromthegroundup.packet.server.CopyTechMessage;
@@ -29,6 +30,7 @@ public final class PacketDispatcher {
 		PayloadTypeRegistry.playS2C().register(TechnologyMessage.TYPE, TechnologyMessage.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(TechnologyInfoMessage.TYPE, TechnologyInfoMessage.STREAM_CODEC);
 		PayloadTypeRegistry.playS2C().register(HintMessage.TYPE, HintMessage.STREAM_CODEC);
+		PayloadTypeRegistry.playS2C().register(ResearchGuideModeMessage.TYPE, ResearchGuideModeMessage.STREAM_CODEC);
 
 		// Register server-side receivers for C2S packets
 		ServerPlayNetworking.registerGlobalReceiver(RequestMessage.TYPE, (payload, context) -> {
@@ -46,13 +48,16 @@ public final class PacketDispatcher {
 	public static void registerClientReceivers() {
 		// Register client-side receivers for S2C packets
 		ClientPlayNetworking.registerGlobalReceiver(TechnologyMessage.TYPE, (payload, context) -> {
-			TechnologyMessage.handle(payload, context);
+			com.fuxingcheng.fromthegroundup.client.ClientPacketHandlers.handleTechnologyMessage(payload, context);
 		});
 		ClientPlayNetworking.registerGlobalReceiver(TechnologyInfoMessage.TYPE, (payload, context) -> {
-			TechnologyInfoMessage.handle(payload, context);
+			com.fuxingcheng.fromthegroundup.client.ClientPacketHandlers.handleTechnologyInfoMessage(payload, context);
 		});
 		ClientPlayNetworking.registerGlobalReceiver(HintMessage.TYPE, (payload, context) -> {
-			HintMessage.handle(payload, context);
+			com.fuxingcheng.fromthegroundup.client.ClientPacketHandlers.handleHintMessage(payload, context);
+		});
+		ClientPlayNetworking.registerGlobalReceiver(ResearchGuideModeMessage.TYPE, (payload, context) -> {
+			ResearchGuideModeMessage.handle(payload, context);
 		});
 	}
 

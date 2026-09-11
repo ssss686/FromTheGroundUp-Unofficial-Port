@@ -18,8 +18,6 @@ public class FTGU {
 
 	public static final String MODID = FromTheGroundUp.MODID;
 
-	public static boolean JEI_LOADED = FromTheGroundUp.JEI_LOADED;
-
 	public static java.io.File configFolder = FromTheGroundUp.configFolder;
 
 	public static ResourceLocation id(String path) {

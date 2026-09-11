@@ -21,6 +21,9 @@
 		],
 		"client": [
 			"com.fuxingcheng.fromthegroundup.client.FTGUClient"
+		],
+		"jei_mod_plugin": [
+			"com.fuxingcheng.fromthegroundup.compat.jei.CompatJEI"
 		]
 	},
 	"mixins": [
@@ -31,5 +34,8 @@
 		"minecraft": "~1.21.1",
 		"java": ">=21",
 		"fabric-api": "*"
+	},
+	"suggests": {
+		"jei": "*"
 	}
 }

@@ -3,32 +3,23 @@ package com.fuxingcheng.fromthegroundup.packet.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fuxingcheng.fromthegroundup.ClientHooks;
 import com.fuxingcheng.fromthegroundup.FromTheGroundUp;
 import com.fuxingcheng.fromthegroundup.FTGUConfig;
-import com.fuxingcheng.fromthegroundup.packet.PacketDispatcher;
-import com.fuxingcheng.fromthegroundup.packet.server.RequestMessage;
-import com.fuxingcheng.fromthegroundup.technology.Technology;
-import com.fuxingcheng.fromthegroundup.technology.TechnologyManager;
 
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefaultTechnologies,
-		FTGUConfig.HideJeiItems jeiHide, Map<String, Pair<String, Map<ResourceLocation, String>>> json)
+		FTGUConfig.ResearchGuideMode researchGuideMode, Map<String, Pair<String, Map<ResourceLocation, String>>> json)
 		implements CustomPacketPayload {
 
 	public TechnologyInfoMessage(Map<String, Pair<String, Map<ResourceLocation, String>>> json) {
-		this(FTGUConfig.cachedAllowResearchCopy, FTGUConfig.cachedLoadDefaultTechnologies, FTGUConfig.cachedJeiHide, json);
+		this(FTGUConfig.cachedAllowResearchCopy, FTGUConfig.cachedLoadDefaultTechnologies,
+				FTGUConfig.cachedResearchGuideMode, json);
 	}
 
 	public static final Type<TechnologyInfoMessage> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(FromTheGroundUp.MODID, "technology_info"));
@@ -38,7 +29,7 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 		public TechnologyInfoMessage decode(FriendlyByteBuf buf) {
 			boolean allowRC = buf.readBoolean();
 			boolean loadDT = buf.readBoolean();
-			FTGUConfig.HideJeiItems jeiH = FTGUConfig.HideJeiItems.values()[buf.readByte()];
+			FTGUConfig.ResearchGuideMode guideMode = FTGUConfig.ResearchGuideMode.byOrdinal(buf.readByte());
 
 			Map<String, Pair<String, Map<ResourceLocation, String>>> json = new HashMap<>();
 			int size = buf.readVarInt();
@@ -52,14 +43,14 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 				json.put(domain, Pair.of(context, map));
 			}
 
-			return new TechnologyInfoMessage(allowRC, loadDT, jeiH, json);
+			return new TechnologyInfoMessage(allowRC, loadDT, guideMode, json);
 		}
 
 		@Override
 		public void encode(FriendlyByteBuf buf, TechnologyInfoMessage msg) {
 			buf.writeBoolean(msg.allowResearchCopy());
 			buf.writeBoolean(msg.loadDefaultTechnologies());
-			buf.writeByte(msg.jeiHide().ordinal());
+			buf.writeByte(msg.researchGuideMode().ordinal());
 
 			buf.writeVarInt(msg.json().size());
 			for (var entry : msg.json().entrySet()) {
@@ -77,34 +68,6 @@ public record TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefau
 	@Override
 	public Type<? extends CustomPacketPayload> type() {
 		return TYPE;
-	}
-
-	public static void handle(TechnologyInfoMessage message, ClientPlayNetworking.Context ctx) {
-		ctx.client().execute(() -> {
-			FTGUConfig.cachedLoadDefaultTechnologies = message.loadDefaultTechnologies();
-			FTGUConfig.cachedAllowResearchCopy = message.allowResearchCopy();
-			FTGUConfig.cachedJeiHide = message.jeiHide();
-
-			RegistryAccess ra;
-			MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
-			if (server != null)
-				ra = server.registryAccess();
-			else if (Minecraft.getInstance().getConnection() != null)
-				ra = Minecraft.getInstance().getConnection().registryAccess();
-			else
-				ra = RegistryAccess.EMPTY;
-			TechnologyManager.INSTANCE.setRegistryAccess(ra);
-
-			TechnologyManager.INSTANCE.clear();
-
-			TechnologyManager.INSTANCE.cache = message.json();
-			TechnologyManager.INSTANCE.load();
-
-			ClientHooks.initResearchBookGui.run();
-			ClientHooks.clearToasts.run();
-
-			PacketDispatcher.sendToServer(new RequestMessage());
-		});
 	}
 
 }

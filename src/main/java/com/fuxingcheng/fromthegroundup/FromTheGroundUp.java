@@ -41,8 +41,6 @@ public class FromTheGroundUp implements ModInitializer {
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	public static boolean JEI_LOADED = false;
-
 	public static File configFolder;
 
 	@Override
@@ -69,16 +67,13 @@ public class FromTheGroundUp implements ModInitializer {
 		// Register packets
 		PacketDispatcher.registerPackets();
 
-		// Config folder
+		// 自定义科技目录 config/ftgumod/（配置文件本身在 config/ftgumod-common.toml，由 FTGUConfig 自己定位）
 		Path configDir = FabricLoader.getInstance().getConfigDir().resolve(MODID);
 		configDir.toFile().mkdirs();
 		configFolder = configDir.toFile();
 
 		// Load config
 		FTGUConfig.load();
-
-		// Check JEI
-		JEI_LOADED = FabricLoader.getInstance().isModLoaded("jei");
 
 		// Server lifecycle events
 		ServerLifecycleEvents.SERVER_STARTED.register(server -> {

@@ -33,6 +33,9 @@ public final class FTGUClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		// Register client-only event handlers (item tooltips, key input, entity join)
+		ClientEventHandler.register();
+
 		// Register client-side packet receivers
 		PacketDispatcher.registerClientReceivers();
 

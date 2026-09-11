@@ -1,7 +1,9 @@
 package com.fuxingcheng.fromthegroundup.api.technology.recipe;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -24,6 +26,24 @@ public class IdeaRecipe implements IIdeaRecipe {
 	public IdeaRecipe(NonNullList<Pair<ItemPredicate, Boolean>> recipe, int needed) {
 		this.needed = needed;
 		this.recipe = recipe;
+	}
+
+	/**
+	 * 展示用：配方接受的材料（不含 consume 标志）。
+	 * 注意这几种材料是"任选"，见 {@link #getNeeded()}。
+	 */
+	public List<ItemPredicate> getIngredients() {
+		List<ItemPredicate> ingredients = new ArrayList<>(recipe.size());
+		for (Pair<ItemPredicate, Boolean> entry : recipe)
+			ingredients.add(entry.getLeft());
+		return ingredients;
+	}
+
+	/**
+	 * 展示用：至少要匹配到 {@link #getIngredients()} 里的几种
+	 */
+	public int getNeeded() {
+		return needed;
 	}
 
 	public static IdeaRecipe deserialize(JsonObject object, JsonContextPublic context) {
