@@ -356,11 +356,6 @@ public class EventHandler {
 			pc.tech().grantCriterion(player, pc.criterionName());
 	}
 
-	@SubscribeEvent
-	@OnlyIn(Dist.CLIENT)
-	public void onTick(ClientTickEvent.Pre event) {
-		if (FTGU.JEI_LOADED)
-			CompatJEI.refreshHiddenItems(true);
-	}
+	// JEI research guide - no longer needs tick refresh
 
 }
