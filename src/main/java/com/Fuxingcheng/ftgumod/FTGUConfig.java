@@ -9,7 +9,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-@Mod.EventBusSubscriber(modid = FTGU.MODID)
+// bus 必须显式写 MOD：Forge 的 @Mod.EventBusSubscriber 默认是 Bus.FORGE，而 ModConfigEvent
+// 是发在 mod 总线上的（FMLModContainer 的 configHandler 就是往自己的 eventBus 上 post）。
+// NeoForge 那边能靠 EventBusSubscriber 自动推断总线，Forge 没这个机制，不写就一次都收不到。
+@Mod.EventBusSubscriber(modid = FTGU.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class FTGUConfig {
 
 	public static final ForgeConfigSpec SPEC;
