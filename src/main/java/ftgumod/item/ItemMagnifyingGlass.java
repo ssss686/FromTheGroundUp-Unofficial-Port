@@ -27,6 +27,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class ItemMagnifyingGlass extends Item {
@@ -54,7 +55,11 @@ public class ItemMagnifyingGlass extends Item {
 				List<BlockSerializable> list = getInspected(item);
 
 				BlockState state = world.getBlockState(pos);
-				ItemStack pick = state.getBlock().getCloneItemStack(world, pos, state);
+				// 原版 3 参 getCloneItemStack 已弃用，改用 NeoForge 带命中信息的版本。
+				// UseOnContext.getHitResult() 是 protected，所以自行重建 BlockHitResult。
+				BlockHitResult hitResult = new BlockHitResult(
+						context.getClickLocation(), context.getClickedFace(), pos, context.isInside());
+				ItemStack pick = state.getCloneItemStack(hitResult, world, pos, player);
 
 				BlockSerializable block = new BlockSerializable(world, pos, state, pick);
 
@@ -77,7 +82,8 @@ public class ItemMagnifyingGlass extends Item {
 
 				if (event.isCanceled()) {
 					player.sendSystemMessage(Component.translatable("technology.decipher.understand"));
-					SoundType sound = state.getSoundType();
+					// 原版 0 参 getSoundType 也已弃用，改用 NeoForge 带上下文的版本
+					SoundType sound = state.getSoundType(world, pos, player);
 					world.playSound(null, pos, sound.getHitSound(), SoundSource.NEUTRAL,
 							(sound.getVolume() + 1.0F) / 4.0F, sound.getPitch() * 0.5F);
 				} else {

@@ -22,7 +22,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.bus.api.IEventBus;
@@ -36,8 +35,6 @@ public class FTGU {
 			.create();
 
 	public static final String MODID = "ftgumod";
-
-	public static boolean JEI_LOADED = false;
 
 	public static File configFolder;
 
@@ -66,8 +63,6 @@ public class FTGU {
 		configFolder = FMLPaths.CONFIGDIR.get().resolve(MODID).toFile();
 
 		modContainer.registerConfig(ModConfig.Type.COMMON, FTGUConfig.SPEC);
-
-		JEI_LOADED = ModList.get().isLoaded("jei");
 
 		modEventBus.addListener(this::loadComplete);
 
