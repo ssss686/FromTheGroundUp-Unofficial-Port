@@ -39,8 +39,6 @@ public class FTGU {
 
 	public static final String MODID = "ftgumod";
 
-	public static boolean JEI_LOADED = false;
-
 	public static File configFolder;
 
 	@SuppressWarnings("removal")
@@ -77,9 +75,6 @@ public class FTGU {
 
 		// 注册配置
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FTGUConfig.SPEC);
-
-		// JEI 检测
-		JEI_LOADED = net.minecraftforge.fml.ModList.get().isLoaded("jei");
 
 		// 其他事件监听
 		modEventBus.addListener(this::loadComplete);

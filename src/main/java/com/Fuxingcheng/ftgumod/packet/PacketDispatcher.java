@@ -2,6 +2,7 @@ package com.Fuxingcheng.ftgumod.packet;
 
 import com.Fuxingcheng.ftgumod.FTGU;
 import com.Fuxingcheng.ftgumod.packet.client.HintMessage;
+import com.Fuxingcheng.ftgumod.packet.client.ResearchGuideModeMessage;
 import com.Fuxingcheng.ftgumod.packet.client.TechnologyInfoMessage;
 import com.Fuxingcheng.ftgumod.packet.client.TechnologyMessage;
 import com.Fuxingcheng.ftgumod.packet.server.CopyTechMessage;
@@ -61,6 +62,13 @@ public final class PacketDispatcher {
 				.decoder(CopyTechMessage::decode)
 				.consumerMainThread(CopyTechMessage::handle)
 				.add();
+
+		// 新包追加到末尾（id 6），避免已有包 id 顺移导致版本不一致时错位解码
+		CHANNEL.messageBuilder(ResearchGuideModeMessage.class, packetId++, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(ResearchGuideModeMessage::encode)
+				.decoder(ResearchGuideModeMessage::decode)
+				.consumerMainThread(ResearchGuideModeMessage::handle)
+				.add();
 	}
 
 	public static void sendTo(TechnologyMessage message, ServerPlayer player) {
@@ -80,6 +88,10 @@ public final class PacketDispatcher {
 	}
 
 	public static void sendToAll(TechnologyInfoMessage message) {
+		CHANNEL.send(message, PacketDistributor.ALL.noArg());
+	}
+
+	public static void sendToAll(ResearchGuideModeMessage message) {
 		CHANNEL.send(message, PacketDistributor.ALL.noArg());
 	}
 }

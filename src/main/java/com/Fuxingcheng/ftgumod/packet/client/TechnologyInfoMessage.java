@@ -19,25 +19,25 @@ public class TechnologyInfoMessage {
 
 	private final boolean allowResearchCopy;
 	private final boolean loadDefaultTechnologies;
-	private final FTGUConfig.HideJeiItems jeiHide;
+	private final FTGUConfig.ResearchGuideMode researchGuideMode;
 	private final Map<String, Pair<String, Map<ResourceLocation, String>>> json;
 
 	public TechnologyInfoMessage(boolean allowResearchCopy, boolean loadDefaultTechnologies,
-			FTGUConfig.HideJeiItems jeiHide, Map<String, Pair<String, Map<ResourceLocation, String>>> json) {
+			FTGUConfig.ResearchGuideMode researchGuideMode, Map<String, Pair<String, Map<ResourceLocation, String>>> json) {
 		this.allowResearchCopy = allowResearchCopy;
 		this.loadDefaultTechnologies = loadDefaultTechnologies;
-		this.jeiHide = jeiHide;
+		this.researchGuideMode = researchGuideMode;
 		this.json = json;
 	}
 
 	public TechnologyInfoMessage(Map<String, Pair<String, Map<ResourceLocation, String>>> json) {
-		this(FTGUConfig.cachedAllowResearchCopy, FTGUConfig.cachedLoadDefaultTechnologies, FTGUConfig.cachedJeiHide, json);
+		this(FTGUConfig.cachedAllowResearchCopy, FTGUConfig.cachedLoadDefaultTechnologies, FTGUConfig.cachedResearchGuideMode, json);
 	}
 
 	public static void encode(TechnologyInfoMessage msg, FriendlyByteBuf buf) {
 		buf.writeBoolean(msg.allowResearchCopy);
 		buf.writeBoolean(msg.loadDefaultTechnologies);
-		buf.writeByte(msg.jeiHide.ordinal());
+		buf.writeByte(msg.researchGuideMode.ordinal());
 
 		buf.writeVarInt(msg.json.size());
 		for (var entry : msg.json.entrySet()) {
@@ -54,7 +54,7 @@ public class TechnologyInfoMessage {
 	public static TechnologyInfoMessage decode(FriendlyByteBuf buf) {
 		boolean allowRC = buf.readBoolean();
 		boolean loadDT = buf.readBoolean();
-		FTGUConfig.HideJeiItems jeiH = FTGUConfig.HideJeiItems.values()[buf.readByte()];
+		FTGUConfig.ResearchGuideMode rgm = FTGUConfig.ResearchGuideMode.byOrdinal(buf.readByte());
 
 		Map<String, Pair<String, Map<ResourceLocation, String>>> json = new HashMap<>();
 		int size = buf.readVarInt();
@@ -68,14 +68,15 @@ public class TechnologyInfoMessage {
 			json.put(domain, Pair.of(context, map));
 		}
 
-		return new TechnologyInfoMessage(allowRC, loadDT, jeiH, json);
+		return new TechnologyInfoMessage(allowRC, loadDT, rgm, json);
 	}
 
 	public static void handle(TechnologyInfoMessage message, CustomPayloadEvent.Context ctx) {
 		ctx.enqueueWork(() -> {
 			FTGUConfig.cachedLoadDefaultTechnologies = message.loadDefaultTechnologies;
 			FTGUConfig.cachedAllowResearchCopy = message.allowResearchCopy;
-			FTGUConfig.cachedJeiHide = message.jeiHide;
+			FTGUConfig.cachedResearchGuideMode = message.researchGuideMode;
+			ClientHooks.applyResearchGuideMode.run();
 
 			net.minecraft.core.RegistryAccess ra;
 			MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();

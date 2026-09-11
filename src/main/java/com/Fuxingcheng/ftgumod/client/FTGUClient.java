@@ -50,5 +50,9 @@ public final class FTGUClient {
 			GuiResearchBook.xScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
 			GuiResearchBook.yScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
 		};
+		ClientHooks.isConnectedToRemoteServer = () -> {
+			Minecraft minecraft = Minecraft.getInstance();
+			return minecraft.getConnection() != null && !minecraft.hasSingleplayerServer();
+		};
 	}
 }

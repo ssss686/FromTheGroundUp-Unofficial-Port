@@ -38,6 +38,14 @@ public class ResearchMatch implements IResearchRecipe {
 		this.consume = consume;
 	}
 
+	/**
+	 * 展示用：3×3 网格的答案，下标 = y * 3 + x。
+	 * 返回副本，避免调用方改动内部状态。
+	 */
+	public ItemPredicate[] getIngredients() {
+		return ingredients.clone();
+	}
+
 	@Nullable
 	public Hint getHint(int index) {
 		return hints[index];

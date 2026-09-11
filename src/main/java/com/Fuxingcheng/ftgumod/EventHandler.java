@@ -29,7 +29,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.Fuxingcheng.ftgumod.api.util.BlockSerializable;
-import com.Fuxingcheng.ftgumod.compat.jei.CompatJEI;
 import com.Fuxingcheng.ftgumod.event.PlayerLockEvent;
 import com.Fuxingcheng.ftgumod.item.ItemMagnifyingGlass;
 import com.Fuxingcheng.ftgumod.item.ItemParchmentResearch;
@@ -358,11 +357,4 @@ public class EventHandler {
 			pc.tech().grantCriterion(player, pc.criterionName());
 	}
 
-	@SubscribeEvent
-	@OnlyIn(Dist.CLIENT)
-	public void onTick(TickEvent.ClientTickEvent event) {
-		if (event.phase != TickEvent.Phase.START) return;
-		if (FTGU.JEI_LOADED)
-			CompatJEI.refreshHiddenItems(true);
-	}
 }
