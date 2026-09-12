@@ -1,7 +1,6 @@
 package com.Fuxingcheng.ftgumod.criterion;
 
 import java.util.Optional;
-import java.util.Set;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
@@ -34,11 +33,8 @@ public class TriggerItemInventory extends TriggerFTGU<TriggerItemInventory.Insta
 
 	public void trigger(ServerPlayer player) {
 		PlayerAdvancements advancements = player.getAdvancements();
-		Set<ListenerTech<Instance>> techSet = techListeners.get(advancements);
-		if (techSet == null || techSet.isEmpty())
-			return;
 
-		for (ListenerTech<Instance> listenerTech : techSet) {
+		for (ListenerTech<Instance> listenerTech : snapshotTechListeners(advancements)) {
 			Instance inst = listenerTech.triggerInstance();
 			ItemPredicate pred = inst.getPredicate();
 			if (pred == null)

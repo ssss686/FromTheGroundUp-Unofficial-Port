@@ -8,6 +8,7 @@ import com.Fuxingcheng.ftgumod.technology.TechnologyManager;
 import com.Fuxingcheng.ftgumod.util.StackUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.network.CustomPayloadEvent;
@@ -56,6 +57,9 @@ public class CopyTechMessage {
 							player.drop(result, true);
 						else
 							player.getInventory().add(result);
+
+						if (player instanceof ServerPlayer)
+							Content.c_copyResearch.get().trigger((ServerPlayer) player, tech);
 					}
 				}
 			}

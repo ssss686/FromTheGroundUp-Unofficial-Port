@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:iron_ingot"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.iron_age.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.iron_age.description"
+    },
+    "frame": "task"
+  },
+  "parent": "ftgumod:research/research",
+  "criteria": {
+    "ftgu": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/refinement"
+      }
+    }
+  }
+}

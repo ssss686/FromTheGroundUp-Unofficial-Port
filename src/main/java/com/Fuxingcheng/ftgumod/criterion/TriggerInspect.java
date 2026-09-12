@@ -1,7 +1,6 @@
 package com.Fuxingcheng.ftgumod.criterion;
 
 import java.util.Optional;
-import java.util.Set;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -29,13 +28,10 @@ public class TriggerInspect extends TriggerFTGU<TriggerInspect.Instance> {
 
 	public void trigger(ServerPlayer player, BlockPos pos, BlockState state, boolean success) {
 		PlayerAdvancements advancements = player.getAdvancements();
-		Set<Listener<Instance>> set = listeners.get(advancements);
-		if (set != null) {
-			ServerLevel world = player.serverLevel();
-			for (Listener<Instance> listener : set)
-				if (listener.trigger().test(world, pos, state, success))
-					listener.run(advancements);
-		}
+		ServerLevel world = player.serverLevel();
+		for (Listener<Instance> listener : snapshotListeners(advancements))
+			if (listener.trigger().test(world, pos, state, success))
+				listener.run(advancements);
 	}
 
 	public record Instance(Optional<ResourceLocation> block, Optional<Boolean> success) implements CriterionTriggerInstance {

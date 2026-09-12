@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.Fuxingcheng.ftgumod.block.BlockIdeaTable;
 import com.Fuxingcheng.ftgumod.block.BlockResearchTable;
+import com.Fuxingcheng.ftgumod.criterion.TriggerCopyResearch;
 import com.Fuxingcheng.ftgumod.criterion.TriggerInspect;
 import com.Fuxingcheng.ftgumod.criterion.TriggerItemInventory;
 import com.Fuxingcheng.ftgumod.criterion.TriggerRecipeLocked;
@@ -100,5 +101,6 @@ public final class Content {
 	public static final Supplier<TriggerRecipeLocked> c_itemLocked = TRIGGER_TYPES.register("recipe_locked", () -> new TriggerRecipeLocked("recipe_locked"));
 	public static final Supplier<TriggerInspect> c_inspect = TRIGGER_TYPES.register("block_inspected", () -> new TriggerInspect("block_inspected"));
 	public static final Supplier<TriggerItemInventory> c_itemInventory = TRIGGER_TYPES.register("item_inventory", () -> new TriggerItemInventory("item_inventory"));
+	public static final Supplier<TriggerCopyResearch> c_copyResearch = TRIGGER_TYPES.register("copy_research", () -> new TriggerCopyResearch("copy_research"));
 
 }
