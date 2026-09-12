@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.carpentry.desc"
-    },
-    "x": 2,
-    "y": 0
+    }
   },
   "parent": "ftgumod:construction/construction",
   "idea": {

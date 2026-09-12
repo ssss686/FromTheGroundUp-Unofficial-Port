@@ -5,8 +5,6 @@ import com.Fuxingcheng.ftgumod.Content;
 import com.Fuxingcheng.ftgumod.FTGU;
 import com.Fuxingcheng.ftgumod.client.gui.GuiResearchBook;
 import com.Fuxingcheng.ftgumod.client.gui.toast.ToastTechnology;
-import com.Fuxingcheng.ftgumod.technology.Technology;
-import com.Fuxingcheng.ftgumod.technology.TechnologyManager;
 import com.Fuxingcheng.ftgumod.client.gui.GuiIdeaTable;
 import com.Fuxingcheng.ftgumod.client.gui.GuiResearchTable;
 import net.minecraft.client.KeyMapping;
@@ -44,12 +42,6 @@ public final class FTGUClient {
 		ClientHooks.openResearchBook = p -> Minecraft.getInstance().setScreen(new GuiResearchBook(p));
 		ClientHooks.displayToast = t -> Minecraft.getInstance().getToasts().addToast(new ToastTechnology(t));
 		ClientHooks.clearToasts = () -> Minecraft.getInstance().getToasts().clear();
-		ClientHooks.initResearchBookGui = () -> {
-			java.util.function.Supplier<java.util.stream.Stream<Technology>> stream = TechnologyManager.INSTANCE.getRoots()::stream;
-			GuiResearchBook.zoom = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> 1.0F));
-			GuiResearchBook.xScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
-			GuiResearchBook.yScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
-		};
 		ClientHooks.isConnectedToRemoteServer = () -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			return minecraft.getConnection() != null && !minecraft.hasSingleplayerServer();

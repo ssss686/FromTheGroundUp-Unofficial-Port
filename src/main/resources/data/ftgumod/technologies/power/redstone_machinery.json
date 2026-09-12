@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.redstone_machinery.desc"
-    },
-    "x": 4,
-    "y": 0
+    }
   },
   "parent": "ftgumod:power/circuitry",
   "idea": {

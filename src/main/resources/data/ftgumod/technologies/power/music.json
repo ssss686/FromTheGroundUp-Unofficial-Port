@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.music.desc"
-    },
-    "x": 2,
-    "y": 2
+    }
   },
   "parent": "ftgumod:power/power",
   "idea": {

@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.circuitry.desc"
-    },
-    "x": 2,
-    "y": 0
+    }
   },
   "parent": "ftgumod:power/power",
   "idea": {

@@ -62,6 +62,9 @@ public class Technology implements ITechnology {
 	NonNullList<IUnlock> unlock;
 	Technology parent;
 
+	/** display 里的坐标是写死的（json 里 x / y 都写了），自动排版不会碰它 */
+	boolean fixedPosition;
+
 	AdvancementRewards rewards;
 	Map<String, Criterion<?>> criteria;
 	String[][] requirements;
@@ -77,10 +80,14 @@ public class Technology implements ITechnology {
 	Technology(ResourceLocation id, @Nullable Technology parent, DisplayInfo display, AdvancementRewards rewards,
 	           Map<String, Criterion<?>> criteria, String[][] requirements, boolean start, boolean copy,
 	           @Nullable NonNullList<IUnlock> unlock, @Nullable IIdeaRecipe idea, @Nullable IResearchRecipe research,
-	           String stage) {
+	           String stage, boolean fixedPosition) {
 		this.id = id;
 		this.parent = parent;
 		this.display = display;
+
+		// 走 API 建出来的科技没有别的办法表达"我要自己摆位置"，所以只要它不在默认的 (0,0) 上，
+		// 就也当成固定坐标。这里算一次存下来，之后反复排版的结果才是稳定的。
+		this.fixedPosition = fixedPosition || display.getX() != 0.0F || display.getY() != 0.0F;
 
 		this.start = start;
 		this.copy = copy;
@@ -171,14 +178,28 @@ public class Technology implements ITechnology {
 
 	@Override
 	public boolean isRoot() {
-		return !hasParent()
-				|| !getRegistryName().getPath().substring(0, getRegistryName().getPath().indexOf('/')).equals(parent
-				.getRegistryName().getPath().substring(0, parent.getRegistryName().getPath().indexOf('/')));
+		if (!hasParent())
+			return true;
+
+		// 同一个分类目录（id 里 '/' 前面那截）是一条链路，目录换了就是新的一条。
+		// 没有目录的 id（比如 addon 直接注册 addon:foo）原来会在这里 substring(0, -1) 崩掉，
+		// 现在按整个路径比。
+		return !category(getRegistryName().getPath()).equals(category(parent.getRegistryName().getPath()));
+	}
+
+	private static String category(String path) {
+		int index = path.indexOf('/');
+		return index < 0 ? path : path.substring(0, index);
 	}
 
 	@Override
 	public DisplayInfo getDisplayInfo() {
 		return display;
+	}
+
+	/** display 的坐标是不是写死的；false 表示交给 {@link TechnologyLayout} 自动排 */
+	public boolean isPositionFixed() {
+		return fixedPosition;
 	}
 
 	@Override
@@ -447,11 +468,14 @@ public class Technology implements ITechnology {
 		private final boolean start;
 		private final boolean copy;
 
+		private final boolean fixedPosition;
+
 		private Technology parent;
 
 		private Builder(@Nullable ResourceLocation parent, DisplayInfo display, AdvancementRewards rewards,
 		                Map<String, Criterion<?>> criteria, String[][] requirements, boolean start, boolean copy,
-		                @Nullable JsonArray unlock, @Nullable JsonObject idea, @Nullable JsonObject research, String stage) {
+		                @Nullable JsonArray unlock, @Nullable JsonObject idea, @Nullable JsonObject research, String stage,
+		                boolean fixedPosition) {
 			this.parentId = parent;
 			this.display = display;
 			this.rewards = rewards;
@@ -463,6 +487,7 @@ public class Technology implements ITechnology {
 			this.idea = idea;
 			this.research = research;
 			this.stage = stage;
+			this.fixedPosition = fixedPosition;
 		}
 
 		public boolean resolveParent(Map<ResourceLocation, Technology> map) {
@@ -483,7 +508,7 @@ public class Technology implements ITechnology {
 					: TechnologyManager.INSTANCE.getPuzzle(this.research, context, location);
 
 			Technology r = new Technology(location, parent, display, rewards, criteria, requirements, start, copy,
-					unlock, idea, research, stage);
+					unlock, idea, research, stage, fixedPosition);
 			if (research != null)
 				research.setTechnology(r);
 			return r;
@@ -518,8 +543,14 @@ public class Technology implements ITechnology {
 
 			DisplayInfo display = DisplayInfo.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, displayObject).getOrThrow(JsonSyntaxException::new);
 
-			if (displayObject.has("x") || displayObject.has("y"))
+			// x / y 可以省略：两个都写了才算固定坐标（原版进度的 json 里本来就没有这两个字段，
+			// 坐标是运行时算出来的）；只写了一个没法确定位置，当没写处理，留给自动排版。
+			boolean fixedPosition = displayObject.has("x") && displayObject.has("y");
+			if (fixedPosition)
 				display.setLocation(GsonHelper.getAsFloat(displayObject, "x"), GsonHelper.getAsFloat(displayObject, "y"));
+			else if (displayObject.has("x") || displayObject.has("y"))
+				LOGGER.warn("Technology '{}' only has one of display.x / display.y, both are needed for a fixed position — it will be placed automatically",
+						GsonHelper.getAsString(displayObject, "id", "?"));
 
 			AdvancementRewards rewards = AdvancementRewards.EMPTY;
 			if (json.has("rewards"))
@@ -599,7 +630,7 @@ public class Technology implements ITechnology {
 			boolean copy = GsonHelper.getAsBoolean(json, "copy", true);
 
 			return new Builder(parent, display, rewards, criteria, requirements, start, copy, unlock, idea, research,
-					stage);
+					stage, fixedPosition);
 		}
 
 	}

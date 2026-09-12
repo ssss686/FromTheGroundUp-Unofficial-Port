@@ -159,8 +159,10 @@ public class TechnologyBuilder implements ITechnologyBuilder {
 		if (this.parent != null && parent == null)
 			throw new NullPointerException("Unknown technology '" + this.parent + "'");
 
+		// 走 API 建出来的科技没有“我没写坐标”这种表达，最后一个参数传 false，
+		// 由 Technology 自己按 display 是不是还在 (0,0) 上判断要不要自动排版
 		original = new Technology(id, parent, display, rewards, criteria, requirements, start, copy, unlock, idea,
-				research, stage);
+				research, stage, false);
 		return original;
 	}
 

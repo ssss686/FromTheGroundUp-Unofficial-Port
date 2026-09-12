@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.ender_knowledge.desc"
-    },
-    "x": 8,
-    "y": 0
+    }
   },
   "parent": "ftgumod:research/glowing_eyes",
   "criteria": {

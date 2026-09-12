@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.smithing.desc"
-    },
-    "x": 6,
-    "y": 2
+    }
   },
   "parent": "ftgumod:survival/refinement",
   "idea": {
