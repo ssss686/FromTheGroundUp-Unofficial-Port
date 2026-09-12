@@ -58,6 +58,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 
 import net.minecraft.util.GsonHelper;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -228,7 +229,12 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 			if (object.has("recipe_types")) {
 				recipeTypes = new java.util.HashSet<>();
 				for (JsonElement e : object.getAsJsonArray("recipe_types")) {
-					recipeTypes.add(ResourceLocation.parse(e.getAsString()));
+					ResourceLocation type = ResourceLocation.parse(e.getAsString());
+					// 写错的类型 id 会让这条 unlock 一条配方也匹配不到，而且全程没有别的报错，这里提前点出来
+					if (!BuiltInRegistries.RECIPE_TYPE.containsKey(type))
+						error("Unknown recipe type " + type + " in technology " + tech,
+								"Nothing will match this unlock entry");
+					recipeTypes.add(type);
 				}
 			}
 			return new UnlockRecipe(StackUtils.INSTANCE.getItemPredicate(element, context).getIngredient(), recipeTypes);
