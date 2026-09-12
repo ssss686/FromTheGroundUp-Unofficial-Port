@@ -223,5 +223,17 @@
   "advancements.ftgumod.research.locked.title": "配方锁定",
   "advancements.ftgumod.research.locked.description": "尝试合成一些还没有研究过的东西",
   "advancements.ftgumod.research.inspect.title": "夏洛克・福尔摩斯",
-  "advancements.ftgumod.research.inspect.description": "在一个方块中找到隐藏的秘密"
+  "advancements.ftgumod.research.inspect.description": "在一个方块中找到隐藏的秘密",
+  "advancements.ftgumod.research.explorer.title": "探查者",
+  "advancements.ftgumod.research.explorer.description": "用放大镜寻找灵感却一无所获",
+  "advancements.ftgumod.research.iron_age.title": "铁器时代",
+  "advancements.ftgumod.research.iron_age.description": "研究出冶炼技术",
+  "advancements.ftgumod.research.industrial_revolution.title": "工业革命",
+  "advancements.ftgumod.research.industrial_revolution.description": "研究出能源技术",
+  "advancements.ftgumod.research.enchanting_master.title": "附魔大师",
+  "advancements.ftgumod.research.enchanting_master.description": "研究出附魔技术",
+  "advancements.ftgumod.research.knowledge_spreader.title": "知识传播者",
+  "advancements.ftgumod.research.knowledge_spreader.description": "用空白羊皮纸抄录一项已研究的技术",
+  "advancements.ftgumod.research.omniscient.title": "全知全能",
+  "advancements.ftgumod.research.omniscient.description": "研究出全部 36 项技术"
 }

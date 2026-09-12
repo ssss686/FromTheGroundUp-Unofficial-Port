@@ -8,8 +8,6 @@ import com.fuxingcheng.fromthegroundup.client.gui.GuiIdeaTable;
 import com.fuxingcheng.fromthegroundup.client.gui.GuiResearchBook;
 import com.fuxingcheng.fromthegroundup.client.gui.GuiResearchTable;
 import com.fuxingcheng.fromthegroundup.client.gui.toast.ToastTechnology;
-import com.fuxingcheng.fromthegroundup.technology.Technology;
-import com.fuxingcheng.fromthegroundup.technology.TechnologyManager;
 
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -50,12 +48,6 @@ public final class FTGUClient implements ClientModInitializer {
 		ClientHooks.openResearchBook = p -> Minecraft.getInstance().setScreen(new GuiResearchBook(p));
 		ClientHooks.displayToast = t -> Minecraft.getInstance().getToasts().addToast(new ToastTechnology(t));
 		ClientHooks.clearToasts = () -> Minecraft.getInstance().getToasts().clear();
-		ClientHooks.initResearchBookGui = () -> {
-			java.util.function.Supplier<java.util.stream.Stream<Technology>> stream = TechnologyManager.INSTANCE.getRoots()::stream;
-			GuiResearchBook.zoom = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> 1.0F));
-			GuiResearchBook.xScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
-			GuiResearchBook.yScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
-		};
 
 		FromTheGroundUp.LOGGER.info("FromTheGroundUp client initialized!");
 	}

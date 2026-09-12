@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.bibliography.desc"
-    },
-    "x": 2,
-    "y": 0
+    }
   },
   "parent": "ftgumod:research/research",
   "idea": {

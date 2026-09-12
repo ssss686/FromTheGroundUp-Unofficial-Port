@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.stoneworking.desc"
-    },
-    "x": 2,
-    "y": 3
+    }
   },
   "parent": "ftgumod:survival/survival",
   "idea": {

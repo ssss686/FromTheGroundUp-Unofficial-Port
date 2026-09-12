@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.lapidary.desc"
-    },
-    "x": 8,
-    "y": 2
+    }
   },
   "parent": "ftgumod:survival/smithing",
   "idea": {

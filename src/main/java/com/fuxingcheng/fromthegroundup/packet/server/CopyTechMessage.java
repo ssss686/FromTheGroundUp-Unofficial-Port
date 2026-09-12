@@ -53,6 +53,8 @@ public record CopyTechMessage(String id) implements CustomPacketPayload {
 						player.drop(result, true);
 					else
 						player.getInventory().add(result);
+
+					Content.c_copyResearch.trigger(player, tech);
 				}
 			}
 		}

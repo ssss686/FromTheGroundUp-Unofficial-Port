@@ -1,0 +1,233 @@
+{
+  "display": {
+    "icon": {
+      "id": "ftgumod:research_book"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.omniscient.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.omniscient.description"
+    },
+    "frame": "challenge"
+  },
+  "parent": "ftgumod:research/research",
+  "criteria": {
+    "construction_activation": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/activation"
+      }
+    },
+    "construction_brickwork": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/brickwork"
+      }
+    },
+    "construction_carpentry": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/carpentry"
+      }
+    },
+    "construction_construction": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/construction"
+      }
+    },
+    "construction_glassworking": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/glassworking"
+      }
+    },
+    "construction_prismarine": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/prismarine"
+      }
+    },
+    "construction_purpur": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/purpur"
+      }
+    },
+    "construction_quartz": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/quartz"
+      }
+    },
+    "construction_stonemasonry": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/stonemasonry"
+      }
+    },
+    "power_cartography": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/cartography"
+      }
+    },
+    "power_circuitry": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/circuitry"
+      }
+    },
+    "power_music": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/music"
+      }
+    },
+    "power_power": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/power"
+      }
+    },
+    "power_redstone_machinery": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/redstone_machinery"
+      }
+    },
+    "research_bibliography": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/bibliography"
+      }
+    },
+    "research_brewing": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/brewing"
+      }
+    },
+    "research_enchanting": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/enchanting"
+      }
+    },
+    "research_ender_knowledge": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/ender_knowledge"
+      }
+    },
+    "research_glowing_eyes": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/glowing_eyes"
+      }
+    },
+    "research_research": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/research"
+      }
+    },
+    "survival_agriculture": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/agriculture"
+      }
+    },
+    "survival_boats": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/boats"
+      }
+    },
+    "survival_carts": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/carts"
+      }
+    },
+    "survival_cooking": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/cooking"
+      }
+    },
+    "survival_defense": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/defense"
+      }
+    },
+    "survival_dyes": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/dyes"
+      }
+    },
+    "survival_explosives": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/explosives"
+      }
+    },
+    "survival_gem_armor": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/gem_armor"
+      }
+    },
+    "survival_gilded_cuisine": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/gilded_cuisine"
+      }
+    },
+    "survival_lapidary": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/lapidary"
+      }
+    },
+    "survival_metal_armor": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/metal_armor"
+      }
+    },
+    "survival_refinement": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/refinement"
+      }
+    },
+    "survival_smithing": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/smithing"
+      }
+    },
+    "survival_stoneworking": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/stoneworking"
+      }
+    },
+    "survival_survival": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/survival"
+      }
+    },
+    "survival_transportation": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/transportation"
+      }
+    }
+  }
+}

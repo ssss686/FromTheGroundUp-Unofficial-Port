@@ -46,6 +46,20 @@ public abstract class TriggerFTGU<T extends CriterionTriggerInstance> implements
 		techListeners.remove(playerAdvancements);
 	}
 
+	/**
+	 * 遍历用的快照。原版在 grant 之后会立刻 unregisterListener，直接遍历原集合会抛
+	 * ConcurrentModificationException（和原版 SimpleCriterionTrigger 先 toArray 是一个道理）。
+	 */
+	protected Set<Listener<T>> snapshotListeners(PlayerAdvancements advancements) {
+		Set<Listener<T>> set = listeners.get(advancements);
+		return set == null ? Set.of() : new HashSet<>(set);
+	}
+
+	protected Set<ListenerTech<T>> snapshotTechListeners(PlayerAdvancements advancements) {
+		Set<ListenerTech<T>> set = techListeners.get(advancements);
+		return set == null ? Set.of() : new HashSet<>(set);
+	}
+
 	public void addTechListener(PlayerAdvancements pa, T instance, ListenerTechnology listenerTech) {
 		techListeners.computeIfAbsent(pa, p -> new HashSet<>())
 				.add(new ListenerTech<>(instance, listenerTech));

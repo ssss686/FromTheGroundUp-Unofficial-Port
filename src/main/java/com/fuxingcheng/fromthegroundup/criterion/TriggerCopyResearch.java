@@ -5,18 +5,16 @@ import java.util.Optional;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.fuxingcheng.fromthegroundup.FTGU;
+import com.fuxingcheng.fromthegroundup.technology.Technology;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.critereon.CriterionValidator;
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.PlayerAdvancements;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.resources.ResourceLocation;
 
-public class TriggerRecipeLocked extends TriggerFTGU<TriggerRecipeLocked.Instance> {
+public class TriggerCopyResearch extends TriggerFTGU<TriggerCopyResearch.Instance> {
 
-	public TriggerRecipeLocked(String id) {
+	public TriggerCopyResearch(String id) {
 		super(ResourceLocation.fromNamespaceAndPath(FTGU.MODID, id));
 	}
 
@@ -25,23 +23,21 @@ public class TriggerRecipeLocked extends TriggerFTGU<TriggerRecipeLocked.Instanc
 		return Instance.CODEC;
 	}
 
-	public void trigger(ServerPlayer player, RecipeHolder<?> recipe, ItemStack stack) {
+	public void trigger(ServerPlayer player, Technology technology) {
 		PlayerAdvancements advancements = player.getAdvancements();
 		for (Listener<Instance> listener : snapshotListeners(advancements))
-			if (listener.trigger().test(recipe, stack))
+			if (listener.trigger().test(technology))
 				listener.run(advancements);
 	}
 
-	public record Instance(Optional<ResourceLocation> recipe, Optional<ItemPredicate> item) implements CriterionTriggerInstance {
+	public record Instance(Optional<ResourceLocation> technology) implements CriterionTriggerInstance {
 
 		public static final Codec<Instance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				ResourceLocation.CODEC.optionalFieldOf("recipe").forGetter(Instance::recipe),
-				ItemPredicate.CODEC.optionalFieldOf("item").forGetter(Instance::item)
+				ResourceLocation.CODEC.optionalFieldOf("technology").forGetter(Instance::technology)
 		).apply(instance, Instance::new));
 
-		public boolean test(RecipeHolder<?> recipe, ItemStack stack) {
-			return (this.recipe.isEmpty() || (recipe != null && this.recipe.get().equals(recipe.id())))
-					&& (this.item.isEmpty() || this.item.get().test(stack));
+		public boolean test(Technology technology) {
+			return this.technology.isEmpty() || this.technology.get().equals(technology.getRegistryName());
 		}
 
 		@Override

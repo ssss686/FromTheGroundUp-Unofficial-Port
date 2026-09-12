@@ -13,9 +13,7 @@
     },
     "description": {
       "translate": "technology.brewing.desc"
-    },
-    "x": 2,
-    "y": 1
+    }
   },
   "parent": "ftgumod:research/research",
   "criteria": {

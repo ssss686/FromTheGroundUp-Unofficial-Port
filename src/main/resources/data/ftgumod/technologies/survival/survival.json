@@ -9,9 +9,7 @@
     "description": {
       "translate": "technology.survival.desc"
     },
-    "background": "minecraft:textures/block/dirt.png",
-    "x": 0,
-    "y": 0
+    "background": "minecraft:textures/block/dirt.png"
   },
   "start": true,
   "unlock": [

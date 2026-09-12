@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.transportation.desc"
-    },
-    "x": 8,
-    "y": 0
+    }
   },
   "parent": "ftgumod:survival/carts",
   "idea": {

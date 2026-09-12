@@ -1,0 +1,20 @@
+{
+  "display": {
+    "icon": {
+      "id": "ftgumod:parchment_research"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.knowledge_spreader.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.knowledge_spreader.description"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:research/research",
+  "criteria": {
+    "ftgu": {
+      "trigger": "ftgumod:copy_research"
+    }
+  }
+}

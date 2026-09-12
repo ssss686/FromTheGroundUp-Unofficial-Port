@@ -8,12 +8,16 @@
     },
     "description": {
       "translate": "advancements.ftgumod.research.inspect.description"
-    }
+    },
+    "frame": "goal"
   },
-  "parent": "ftgumod:research/research",
+  "parent": "ftgumod:research/explorer",
   "criteria": {
     "ftgu": {
-      "trigger": "ftgumod:block_inspected"
+      "trigger": "ftgumod:block_inspected",
+      "conditions": {
+        "success": true
+      }
     }
   }
 }

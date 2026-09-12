@@ -2,6 +2,7 @@ package com.fuxingcheng.fromthegroundup;
 
 import com.fuxingcheng.fromthegroundup.block.BlockIdeaTable;
 import com.fuxingcheng.fromthegroundup.block.BlockResearchTable;
+import com.fuxingcheng.fromthegroundup.criterion.TriggerCopyResearch;
 import com.fuxingcheng.fromthegroundup.criterion.TriggerInspect;
 import com.fuxingcheng.fromthegroundup.criterion.TriggerItemInventory;
 import com.fuxingcheng.fromthegroundup.criterion.TriggerRecipeLocked;
@@ -73,6 +74,7 @@ public final class Content {
 	public static TriggerRecipeLocked c_itemLocked;
 	public static TriggerInspect c_inspect;
 	public static TriggerItemInventory c_itemInventory;
+	public static TriggerCopyResearch c_copyResearch;
 
 	public static void registerAll() {
 		// Register blocks
@@ -135,6 +137,7 @@ public final class Content {
 		c_itemLocked = registerTrigger("recipe_locked", new TriggerRecipeLocked("recipe_locked"));
 		c_inspect = registerTrigger("block_inspected", new TriggerInspect("block_inspected"));
 		c_itemInventory = registerTrigger("item_inventory", new TriggerItemInventory("item_inventory"));
+		c_copyResearch = registerTrigger("copy_research", new TriggerCopyResearch("copy_research"));
 	}
 
 	private static Block registerBlock(String name, Block block) {

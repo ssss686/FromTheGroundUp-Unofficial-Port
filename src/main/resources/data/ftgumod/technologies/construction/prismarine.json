@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.prismarine.desc"
-    },
-    "x": 6,
-    "y": 0
+    }
   },
   "parent": "ftgumod:construction/glassworking",
   "criteria": {

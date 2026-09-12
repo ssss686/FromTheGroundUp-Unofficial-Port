@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.boats.desc"
-    },
-    "x": 2,
-    "y": 0
+    }
   },
   "parent": "ftgumod:survival/survival",
   "idea": {

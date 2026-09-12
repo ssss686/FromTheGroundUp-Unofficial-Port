@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:redstone"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.industrial_revolution.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.industrial_revolution.description"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:research/research",
+  "criteria": {
+    "ftgu": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/power"
+      }
+    }
+  }
+}

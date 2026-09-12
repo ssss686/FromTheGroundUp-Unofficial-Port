@@ -593,6 +593,11 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 	public void registerAll(ITechnology... values) {
 		for (ITechnology tech : values)
 			register(tech);
+
+		// 全部注册完之后再排一次版：没写 display.x / display.y 的科技在这里拿到坐标。
+		// load() 走的就是这里，客户端收到服务端 json 后重新 load() 也会重新算一遍，
+		// 两边输入相同、遍历顺序固定，算出来是同一个结果。
+		TechnologyLayout.apply();
 	}
 
 	@Override

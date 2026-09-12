@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.activation.desc"
-    },
-    "x": 4,
-    "y": 2
+    }
   },
   "parent": "ftgumod:construction/stonemasonry",
   "idea": {

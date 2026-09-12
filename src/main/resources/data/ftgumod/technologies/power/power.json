@@ -9,9 +9,7 @@
     "description": {
       "translate": "technology.power.desc"
     },
-    "background": "minecraft:textures/block/quartz_block_bottom.png",
-    "x": 0,
-    "y": 1
+    "background": "minecraft:textures/block/quartz_block_bottom.png"
   },
   "parent": "ftgumod:construction/activation",
   "idea": {
