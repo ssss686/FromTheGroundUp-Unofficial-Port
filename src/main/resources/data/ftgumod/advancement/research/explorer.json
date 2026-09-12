@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:glass"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.explorer.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.explorer.description"
+    }
+  },
+  "parent": "ftgumod:research/research",
+  "criteria": {
+    "ftgu": {
+      "trigger": "ftgumod:block_inspected",
+      "conditions": {
+        "success": false
+      }
+    }
+  }
+}

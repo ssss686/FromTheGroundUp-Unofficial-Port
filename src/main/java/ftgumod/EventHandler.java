@@ -151,6 +151,12 @@ public class EventHandler {
 					tech.addRecipes(player);
 				}
 			}
+
+			// 补发成就触发：已研究完成的科技不会再走一遍 setResearched，老存档登录时补上
+			for (Technology tech : TechnologyManager.INSTANCE)
+				if (cap.isResearched(tech.getRegistryName().toString()))
+					Content.c_technologyResearched.get().trigger(player, tech);
+
 			if (cap.isNew()) {
 				if (FTGUConfig.cachedGiveResearchBook) {
 					player.getInventory().add(new ItemStack(Content.i_researchBook.get()));

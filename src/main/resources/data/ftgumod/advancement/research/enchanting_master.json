@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:enchanting_table"
+    },
+    "title": {
+      "translate": "advancements.ftgumod.research.enchanting_master.title"
+    },
+    "description": {
+      "translate": "advancements.ftgumod.research.enchanting_master.description"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:research/research",
+  "criteria": {
+    "ftgu": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:research/enchanting"
+      }
+    }
+  }
+}
