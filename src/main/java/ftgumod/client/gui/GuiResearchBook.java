@@ -1,5 +1,7 @@
 package ftgumod.client.gui;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -39,7 +42,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
 
 @OnlyIn(Dist.CLIENT)
 public class GuiResearchBook extends Screen {
@@ -49,7 +51,6 @@ public class GuiResearchBook extends Screen {
 			"textures/gui/achievement/achievement_background.png");
 	private static final ResourceLocation STAINED_CLAY = ResourceLocation.parse(
 			"textures/block/cyan_terracotta.png");
-	public static Map<ResourceLocation, Float> zoom = new HashMap<>();
 	public static Map<ResourceLocation, Double> xScrollO = new HashMap<>();
 	public static Map<ResourceLocation, Double> yScrollO = new HashMap<>();
 	private static boolean state = true;
@@ -69,9 +70,10 @@ public class GuiResearchBook extends Screen {
 	private double yScrollP;
 	private double xScrollTarget;
 	private double yScrollTarget;
-	private int scrolling;
-	private double xLastScroll;
-	private double yLastScroll;
+	/** 这次拖动是不是从书页里按下去的（按在按钮上、页面外都不算） */
+	private boolean dragFromPage;
+	/** 原版 AdvancementScreen 的闸：第一次拖动只置位，从第二个事件开始才真的平移 */
+	private boolean isScrolling;
 	private int pages;
 
 	public GuiResearchBook(Player player) {
@@ -94,8 +96,6 @@ public class GuiResearchBook extends Screen {
 			xScrollO.put(root.getRegistryName(), 0.0D);
 		if (!yScrollO.containsKey(root.getRegistryName()))
 			yScrollO.put(root.getRegistryName(), 0.0D);
-		if (!zoom.containsKey(root.getRegistryName()))
-			zoom.put(root.getRegistryName(), 1.0F);
 	}
 
 	@Override
@@ -118,26 +118,54 @@ public class GuiResearchBook extends Screen {
 			Set<Technology> tree = new HashSet<>();
 			root.getChildren(tree, true);
 
-			x_min = (int) root.getDisplayInfo().getX();
-			y_min = (int) root.getDisplayInfo().getY();
-			x_max = (int) root.getDisplayInfo().getX();
-			y_max = (int) root.getDisplayInfo().getY();
+			// 整块内容占的像素范围：图标框画在格原点 -2 的地方、26 像素见方（见
+			// drawResearchScreen 里那个 blit），所以最边上的框决定范围
+			int minX = (int) root.getDisplayInfo().getX();
+			int maxX = minX;
+			int minY = (int) root.getDisplayInfo().getY();
+			int maxY = minY;
 
 			for (Technology technology : tree) {
-				if (technology.getDisplayInfo().getX() < x_min)
-					x_min = (int) technology.getDisplayInfo().getX();
-				else if (technology.getDisplayInfo().getX() > x_max)
-					x_max = (int) technology.getDisplayInfo().getX();
-				if (technology.getDisplayInfo().getY() < y_min)
-					y_min = (int) technology.getDisplayInfo().getY();
-				else if (technology.getDisplayInfo().getY() > y_max)
-					y_max = (int) technology.getDisplayInfo().getY();
+				int x = (int) technology.getDisplayInfo().getX();
+				int y = (int) technology.getDisplayInfo().getY();
+				if (x < minX)
+					minX = x;
+				else if (x > maxX)
+					maxX = x;
+				if (y < minY)
+					minY = y;
+				else if (y > maxY)
+					maxY = y;
 			}
 
-			x_min = x_min * 24 - 112;
-			y_min = y_min * 24 - 112;
-			x_max = x_max * 24 - 77;
-			y_max = y_max * 24 - 77;
+			int left = minX * 28 - 2;
+			int right = maxX * 28 + 24;
+			int top = minY * 27 - 2;
+			int bottom = maxY * 27 + 24;
+
+			// x_min / y_min / x_max / y_max 就是滚动量（画面上的偏移）的允许范围，两头都算。
+			// 视口是页面里那块 224 × 155（见 drawResearchScreen 的 enableScissor）。
+			//
+			// 照原版 AdvancementTab 的做法：第一次画的时候把整块内容摆在视口正中间
+			// （原版是 scrollX = 117 - (maxX + minX) / 2，117 就是它视口宽度的一半），
+			// 而且哪根轴装得下就不让那根轴滚动（原版 scroll() 外面套的 if (maxX - minX > 234)）。
+			// 装不下时两头卡在内容边上，滚到头就停，不会把内容推出页面外。
+			if (right - left <= 224)
+				x_min = x_max = (left + right) / 2 - 112;
+			else {
+				x_min = left; // 滚到贴左
+				x_max = right - 224; // 滚到贴右
+			}
+
+			if (bottom - top <= 155)
+				y_min = y_max = (top + bottom) / 2 - 77;
+			else {
+				y_min = top; // 滚到贴顶
+				y_max = bottom - 155; // 滚到贴底
+			}
+
+			xScrollP = xScrollTarget = Mth.clamp(xScrollP, (double) x_min, (double) x_max);
+			yScrollP = yScrollTarget = Mth.clamp(yScrollP, (double) y_min, (double) y_max);
 
 			Button pageButton = Button.builder(root.getDisplayInfo().getTitle(),
 					btn -> {
@@ -216,46 +244,8 @@ public class GuiResearchBook extends Screen {
 		if (root == null)
 			return;
 
-		if (state) {
-			long window = this.minecraft.getWindow().getWindow();
-			if (GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS) {
-				int i = (width - imageWidth) / 2;
-				int j = (height - imageHeight) / 2;
-				int k = i + 8;
-				int l = j + 17;
-
-				if ((scrolling == 0 || scrolling == 1) && mouseX >= k && mouseX < k + 224 && mouseY >= l
-						&& mouseY < l + 155) {
-					if (scrolling == 0) {
-						scrolling = 1;
-					} else {
-						Float zoomDrag = zoom.get(root.getRegistryName());
-						if (zoomDrag == null) zoomDrag = 1.0F;
-						xScrollP -= (float) (mouseX - xLastScroll) * zoomDrag;
-						yScrollP -= (float) (mouseY - yLastScroll) * zoomDrag;
-
-						xScrollTarget = xScrollP;
-						yScrollTarget = yScrollP;
-
-						xScrollO.put(root.getRegistryName(), xScrollP);
-						yScrollO.put(root.getRegistryName(), yScrollP);
-					}
-					xLastScroll = mouseX;
-					yLastScroll = mouseY;
-				}
-			} else {
-				scrolling = 0;
-			}
-
-			if (xScrollTarget < x_min)
-				xScrollTarget = x_min;
-			if (yScrollTarget < y_min)
-				yScrollTarget = y_min;
-			if (xScrollTarget >= x_max)
-				xScrollTarget = x_max - 1;
-			if (yScrollTarget >= y_max)
-				yScrollTarget = y_max - 1;
-		}
+		// 滚动量只在鼠标事件里改（mouseScrolled / mouseDragged），改的时候顺手夹进 init() 算好的
+		// 范围，所以这里不用再管
 
 		renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 		drawResearchScreen(guiGraphics, mouseX, mouseY, partialTick);
@@ -322,27 +312,14 @@ public class GuiResearchBook extends Screen {
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		if (state && root != null) {
-			Float zoomCurrent = zoom.get(root.getRegistryName());
-			if (zoomCurrent == null) zoomCurrent = 1.0F;
-			float f3 = zoomCurrent;
-			zoom.put(root.getRegistryName(),
-					(float) Mth.clamp(scrollY < 0 ? f3 + 0.25F : scrollY > 0 ? f3 - 0.25F : f3, 1.0F, 2.0F));
+			// 和原版进度页一样一格 16 像素、两个轴都收（原版就是 scroll(scrollX * 16, scrollY * 16)），
+			// 而且一次到位：xScrollO / yScrollO 也一起写，画面才不会因为 partialTick 那层插值慢半拍。
+			// 普通鼠标只有上下那一个轴，横向得触控板或者带横向滚轮的鼠标才有
+			xScrollP = xScrollTarget = Mth.clamp(xScrollP - scrollX * 16.0D, (double) x_min, (double) x_max);
+			yScrollP = yScrollTarget = Mth.clamp(yScrollP - scrollY * 16.0D, (double) y_min, (double) y_max);
 
-			if (zoom.get(root.getRegistryName()) != f3) {
-				float f4 = f3 * imageWidth;
-				float f = f3 * imageHeight;
-				float f1 = zoom.get(root.getRegistryName()) * imageWidth;
-				float f2 = zoom.get(root.getRegistryName()) * imageHeight;
-
-				xScrollP -= (f1 - f4) * 0.5F;
-				yScrollP -= (f2 - f) * 0.5F;
-
-				xScrollTarget = xScrollP;
-				yScrollTarget = yScrollP;
-
-				xScrollO.put(root.getRegistryName(), xScrollP);
-				yScrollO.put(root.getRegistryName(), yScrollP);
-			}
+			xScrollO.put(root.getRegistryName(), xScrollP);
+			yScrollO.put(root.getRegistryName(), yScrollP);
 		} else if (!state && selected != null) {
 			if (scrollY < 0)
 				scroll = Math.min(scroll + 1, pages);
@@ -353,7 +330,45 @@ public class GuiResearchBook extends Screen {
 	}
 
 	@Override
+	public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+		if (button != 0)
+			isScrolling = false;
+
+		if (button != 0 || !state || root == null || !dragFromPage)
+			return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+
+		if (!isScrolling) {
+			// 原版 AdvancementScreen 也是这样：第一次拖动只把闸拉上，从第二个事件开始才真的平移，
+			// 免得手抖把单击当成一次小拖动
+			isScrolling = true;
+		} else {
+			// 1:1 跟着鼠标走（原版就是 scroll(dragX, dragY)）。这里连 xScrollO / yScrollO 一起写，
+			// 画面才不会因为 partialTick 那层插值比鼠标慢半拍
+			xScrollP = Mth.clamp(xScrollP - dragX, (double) x_min, (double) x_max);
+			yScrollP = Mth.clamp(yScrollP - dragY, (double) y_min, (double) y_max);
+
+			xScrollTarget = xScrollP;
+			yScrollTarget = yScrollP;
+
+			xScrollO.put(root.getRegistryName(), xScrollP);
+			yScrollO.put(root.getRegistryName(), yScrollP);
+		}
+		return true;
+	}
+
+	/** 鼠标在不在书页那块 224 × 155 的视口里（书页外面是边框和按钮） */
+	private boolean inPage(double mouseX, double mouseY) {
+		int k = (width - imageWidth) / 2 + 16;
+		int l = (height - imageHeight) / 2 + 17;
+		return mouseX >= k && mouseX < k + 224 && mouseY >= l && mouseY < l + 155;
+	}
+
+	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		// 左键从书页里按下去才算这次拖动；按在按钮上或者页面外，这次拖不动画面
+		dragFromPage = state && button == 0 && inPage(mouseX, mouseY);
+		isScrolling = false;
+
 		if (state && button == 0 && selected != null && selected.isResearched(player)) {
 			state = false;
 			init();
@@ -364,18 +379,11 @@ public class GuiResearchBook extends Screen {
 
 	@Override
 	public void tick() {
+		// 这里原来有一层"慢慢追上去"的缓动，现在滚轮和拖动都是一步到位（跟原版进度页一样），
+		// xScrollTarget 和 xScrollP 每次都一起写，缓动成了空转，删掉；留着它只会让人以为画面会滞后
 		if (root != null) {
 			xScrollO.put(root.getRegistryName(), xScrollP);
 			yScrollO.put(root.getRegistryName(), yScrollP);
-			double d0 = xScrollTarget - xScrollP;
-			double d1 = yScrollTarget - yScrollP;
-			if (d0 * d0 + d1 * d1 < 4D) {
-				xScrollP += d0;
-				yScrollP += d1;
-			} else {
-				xScrollP += d0 * 0.85D;
-				yScrollP += d1 * 0.85D;
-			}
 		}
 	}
 
@@ -414,10 +422,6 @@ public class GuiResearchBook extends Screen {
 		guiGraphics.enableScissor(k + 16, l + 17, k + 16 + 224, l + 17 + 155);
 
 		if (state) {
-			Float zoomVal = zoom.get(root.getRegistryName());
-			if (zoomVal == null) zoomVal = 1.0F;
-			poseStack.scale(1.0F / zoomVal, 1.0F / zoomVal, 1.0F);
-
 			Double xScrollOld = xScrollO.get(root.getRegistryName());
 			Double yScrollOld = yScrollO.get(root.getRegistryName());
 			double xOld = xScrollOld != null ? xScrollOld : 0.0D;
@@ -425,14 +429,8 @@ public class GuiResearchBook extends Screen {
 			int i = Mth.floor(xOld + (xScrollP - xOld) * partialTick);
 			int j = Mth.floor(yOld + (yScrollP - yOld) * partialTick);
 
-			if (i < x_min)
-				i = x_min;
-			if (j < y_min)
-				j = y_min;
-			if (i >= x_max)
-				i = x_max - 1;
-			if (j >= y_max)
-				j = y_max - 1;
+			i = Mth.clamp(i, x_min, x_max);
+			j = Mth.clamp(j, y_min, y_max);
 
 			Set<Technology> tech = new HashSet<>();
 			root.getChildren(tech, true);
@@ -450,61 +448,48 @@ public class GuiResearchBook extends Screen {
 			}
 
 			try {
+				// 连接线照原版 AdvancementWidget.drawConnectivity 画：从父图标中心横着出去，
+				// 在两框之间那条缝里拐个弯，再横着进子图标中心。先铺一遍三像素宽的黑色描边，
+				// 再用本色盖一遍一像素宽的本体，看起来和进度页是同一种线：没研究的绿，研究过的白。
+				//
+				// 和原版有一处不一样：一个父节点挂着好几条腿的时候，主干和父节点那一行是共用的，
+				// 这里按父节点整组画，顺便按注册名排个序，免得遍历顺序让画面随进程变。每个子节点
+				// 各画一遍的话，后画的会把自己的颜色和黑描边盖到先画好的线上，上下分叉的地方看
+				// 上去就是两条线压在一起（原版的线全是白的才看不出，这边有绿有白，一压就露馅）。
+				Map<Technology, List<Technology>> branches = new TreeMap<>(
+						Comparator.comparing(Technology::getRegistryName));
+				// 线得两头都画得出来：可见的子节点，配上同样可见的父节点（可见性见 isVisible）
 				for (Technology t1 : tech) {
-					boolean t1visible = t1.canResearchIgnoreResearched(player)
-							|| hasResearchedDescendant.contains(t1);
-					if (!t1visible)
-						continue;
-					if (t1.getDisplayInfo().isHidden() && !t1.hasProgress(player))
+					if (!isVisible(t1, player, hasResearchedDescendant))
 						continue;
 					Technology parent = t1.getParent();
-					if (parent == null || !tech.contains(parent))
+					if (parent == null || !tech.contains(parent) || !isVisible(parent, player, hasResearchedDescendant))
 						continue;
-					boolean parentVisible = parent.canResearchIgnoreResearched(player)
-							|| hasResearchedDescendant.contains(parent);
-					if (!parentVisible)
-						continue;
-					int xStart = (int) ((t1.getDisplayInfo().getX() * 24 - i) + 11);
-					int yStart = (int) ((t1.getDisplayInfo().getY() * 24 - j) + 11);
-					int xStop = (int) ((parent.getDisplayInfo().getX() * 24 - i) + 11);
-					int yStop = (int) ((parent.getDisplayInfo().getY() * 24 - j) + 11);
-
-					boolean flag = t1.isResearched(player);
-
-					int l4 = flag ? 0xffa0a0a0 : 0xff00ff00;
-
-					guiGraphics.hLine(xStart, xStop, yStart, l4);
-					guiGraphics.vLine(xStop, yStart, yStop, l4);
-
-					if (xStart > xStop)
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, xStart - 11 - 7, yStart - 5, 114,
-								234, 7, 11, 256, 256);
-					else if (xStart < xStop)
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, xStart + 11, yStart - 5, 107,
-								234, 7, 11, 256, 256);
-					else if (yStart > yStop)
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, xStart - 5, yStart - 11 - 7, 96,
-								234, 11, 7, 256, 256);
-					else if (yStart < yStop)
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, xStart - 5, yStart + 11, 96,
-								241, 11, 7, 256, 256);
+					List<Technology> siblings = branches.get(parent);
+					if (siblings == null)
+						branches.put(parent, siblings = new ArrayList<>());
+					siblings.add(t1);
 				}
+
+				// 描边和本色分两遍整片走，跟原版一样（原版是先 drawLine=true 递归一整遍、
+				// 再 false 递归一整遍）。顺序反了的话，后画的那一组的黑边会切进先画的那一组
+				// 的线里，看着就是一个黑豁口。
+				for (Technology parent : branches.keySet())
+					drawBranch(guiGraphics, parent, branches.get(parent), player, i, j, true);
+				for (Technology parent : branches.keySet())
+					drawBranch(guiGraphics, parent, branches.get(parent), player, i, j, false);
 
 				selected = null;
 
-				float f3 = (mouseX - i1) * zoomVal;
-				float f4 = (mouseY - j1) * zoomVal;
+				float f3 = mouseX - i1;
+				float f4 = mouseY - j1;
 
 				for (Technology t2 : tech) {
-					boolean t2visible = t2.canResearchIgnoreResearched(player)
-							|| hasResearchedDescendant.contains(t2);
-					if (!t2visible)
+					if (!isVisible(t2, player, hasResearchedDescendant))
 						continue;
-					if (t2.getDisplayInfo().isHidden() && !t2.hasProgress(player))
-						continue;
-					int l6 = (int) (t2.getDisplayInfo().getX() * 24 - i);
-					int j7 = (int) (t2.getDisplayInfo().getY() * 24 - j);
-					if (l6 < -24 || j7 < -24 || l6 > 224F * zoomVal || j7 > 155F * zoomVal)
+					int l6 = (int) (t2.getDisplayInfo().getX() * 28 - i);
+					int j7 = (int) (t2.getDisplayInfo().getY() * 27 - j);
+					if (l6 < -28 || j7 < -27 || l6 > 224F || j7 > 155F)
 						continue;
 
 					RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
@@ -615,13 +600,6 @@ public class GuiResearchBook extends Screen {
 
 		// 内框渐变效果（在 scissor 区域内绘制，参考原版进度 UI）
 		// 原版风格：精简层次、柔和过渡、轻薄凹陷感
-		// 临时重置缩放，使阴影保持固定像素大小
-		Float zoomForShadow = zoom.get(root.getRegistryName());
-		if (zoomForShadow == null) zoomForShadow = 1.0F;
-		if (zoomForShadow != 1.0F) {
-			poseStack.scale(zoomForShadow, zoomForShadow, 1.0F);
-		}
-
 		int left = 0;
 		int top = 0;
 		int right = 224;
@@ -658,16 +636,96 @@ public class GuiResearchBook extends Screen {
 		guiGraphics.fill(left + 4, top, left + 5, bottom, 0x08000000);
 		guiGraphics.fill(right - 5, top, right - 4, bottom, 0x08000000);
 
-		// 恢复缩放状态（如果需要）
-		if (zoomForShadow != 1.0F) {
-			poseStack.scale(1.0F / zoomForShadow, 1.0F / zoomForShadow, 1.0F);
-		}
-
 		guiGraphics.disableScissor();
 
 		poseStack.popPose();
 		RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
 		guiGraphics.blit(ACHIEVEMENT_BACKGROUND, k, l, 0, 0, imageWidth, imageHeight, 256, 256);
+	}
+
+	/**
+	 * 画一个科技到它所有子科技之间的连接线：从父图标中心横着出去，在两框之间那条缝里拐个
+	 * 弯，再横着进子图标中心。一个父节点挂好几条腿的时候，主干和父节点那一行是共用的，
+	 * 所以按父节点整组画，主干还要按“这一段兜着哪几条腿”分段上色 —— 这一组里还有没研究完
+	 * 的腿，主干那一段就还是绿的，全研究完了才是白的。
+	 *
+	 * @param outline true 画三像素宽的黑描边，false 画一像素宽的本色；两遍分开整片走，
+	 *                不然后一组的黑边会切进前一组的线里
+	 */
+	private static void drawBranch(GuiGraphics guiGraphics, Technology parent, List<Technology> siblings, Player player,
+			int i, int j, boolean outline) {
+		int xParent = (int) ((parent.getDisplayInfo().getX() * 28 - i) + 11);
+		int yParent = (int) ((parent.getDisplayInfo().getY() * 27 - j) + 11);
+
+		// 拐点：原版是“父格 + 30”（父框右边再出去一像素），书里的框画在 l6 - 2、
+		// 比原版的 l6 + 3 整体靠左五像素，所以这里用 + 25，落点一样 —— 两框之间那
+		// 两像素缝的右半边。子节点一定在父节点右边（自动排版保证），和原版的前提相同。
+		int elbow = (int) (parent.getDisplayInfo().getX() * 28 - i) + 25;
+
+		// 主干要从最上面那条腿连到最下面那条腿，中间一定经过父节点那一行
+		int top = yParent;
+		int bottom = yParent;
+		boolean open = false;
+		Map<Integer, Boolean> legs = new HashMap<>();
+		for (Technology child : siblings) {
+			int yChild = (int) ((child.getDisplayInfo().getY() * 27 - j) + 11);
+			top = Math.min(top, yChild);
+			bottom = Math.max(bottom, yChild);
+			legs.put(yChild, child.isResearched(player));
+			open |= !child.isResearched(player);
+		}
+
+		if (outline) {
+			guiGraphics.vLine(elbow - 1, top, bottom, 0xff000000);
+			guiGraphics.vLine(elbow + 1, top, bottom, 0xff000000);
+			guiGraphics.hLine(elbow, xParent, yParent - 1, 0xff000000);
+			guiGraphics.hLine(elbow + 1, xParent, yParent, 0xff000000);
+			guiGraphics.hLine(elbow, xParent, yParent + 1, 0xff000000);
+			for (Technology child : siblings) {
+				int xChild = (int) ((child.getDisplayInfo().getX() * 28 - i) + 11);
+				int yChild = (int) ((child.getDisplayInfo().getY() * 27 - j) + 11);
+				guiGraphics.hLine(xChild, elbow - 1, yChild - 1, 0xff000000);
+				guiGraphics.hLine(xChild, elbow - 1, yChild, 0xff000000);
+				guiGraphics.hLine(xChild, elbow - 1, yChild + 1, 0xff000000);
+			}
+			return;
+		}
+
+		// 父节点那一行也是共用的：这一组还有没研究完的腿，它就还是绿的
+		guiGraphics.hLine(elbow, xParent, yParent, open ? 0xff00ff00 : 0xffffffff);
+
+		// 主干本色分段画：把父节点那一行和每条腿那一行排好，相邻两行之间算一段，
+		// 从离父节点最远的一段往回走，越往近走这一段兜着的腿越多
+		List<Integer> rows = new ArrayList<>(legs.keySet());
+		rows.add(yParent);
+		rows.sort(null);
+		int parentRow = rows.indexOf(yParent);
+
+		open = false;
+		for (int step = 0; step < parentRow; step++) {
+			open |= !legs.get(rows.get(step));
+			guiGraphics.vLine(elbow, rows.get(step), rows.get(step + 1), open ? 0xff00ff00 : 0xffffffff);
+		}
+
+		open = false;
+		for (int step = rows.size() - 1; step > parentRow; step--) {
+			open |= !legs.get(rows.get(step));
+			guiGraphics.vLine(elbow, rows.get(step - 1), rows.get(step), open ? 0xff00ff00 : 0xffffffff);
+		}
+
+		// 每条腿只管自己那一截：从主干拐出去，横着进子图标中心
+		for (Technology child : siblings) {
+			int xChild = (int) ((child.getDisplayInfo().getX() * 28 - i) + 11);
+			int yChild = (int) ((child.getDisplayInfo().getY() * 27 - j) + 11);
+			guiGraphics.hLine(xChild, elbow, yChild, legs.get(yChild) ? 0xffffffff : 0xff00ff00);
+		}
+	}
+
+	/** 研究之书里这个科技画不画：能研究、或者通向某个已经研究过的科技；隐藏的科技自己没进度也不画 */
+	private static boolean isVisible(Technology technology, Player player, Set<Technology> hasResearchedDescendant) {
+		if (!technology.canResearchIgnoreResearched(player) && !hasResearchedDescendant.contains(technology))
+			return false;
+		return !technology.getDisplayInfo().isHidden() || technology.hasProgress(player);
 	}
 
 }

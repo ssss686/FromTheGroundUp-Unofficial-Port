@@ -9,9 +9,7 @@
     "description": {
       "translate": "technology.research.desc"
     },
-    "background": "ftgumod:textures/gui/advancements/backgrounds/parchment.png",
-    "x": 0,
-    "y": 0
+    "background": "ftgumod:textures/gui/advancements/backgrounds/parchment.png"
   },
   "start": true,
   "parent": "ftgumod:survival/survival",

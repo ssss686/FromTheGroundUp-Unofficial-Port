@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.cooking.desc"
-    },
-    "x": 6,
-    "y": 4
+    }
   },
   "parent": "ftgumod:survival/agriculture",
   "idea": {

@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.glassworking.desc"
-    },
-    "x": 4,
-    "y": 0
+    }
   },
   "parent": "ftgumod:construction/carpentry",
   "idea": {

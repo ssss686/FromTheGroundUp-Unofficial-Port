@@ -5,8 +5,6 @@ import ftgumod.Content;
 import ftgumod.FTGU;
 import ftgumod.client.gui.GuiResearchBook;
 import ftgumod.client.gui.toast.ToastTechnology;
-import ftgumod.technology.Technology;
-import ftgumod.technology.TechnologyManager;
 import ftgumod.client.gui.GuiIdeaTable;
 import ftgumod.client.gui.GuiResearchTable;
 import net.minecraft.ChatFormatting;
@@ -73,12 +71,6 @@ public final class FTGUClient {
 		ClientHooks.isConnectedToRemoteServer = () -> {
 			Minecraft minecraft = Minecraft.getInstance();
 			return minecraft.getConnection() != null && !minecraft.hasSingleplayerServer();
-		};
-		ClientHooks.initResearchBookGui = () -> {
-			java.util.function.Supplier<java.util.stream.Stream<Technology>> stream = TechnologyManager.INSTANCE.getRoots()::stream;
-			GuiResearchBook.zoom = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> 1.0F));
-			GuiResearchBook.xScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
-			GuiResearchBook.yScrollO = stream.get().collect(java.util.stream.Collectors.toMap(Technology::getRegistryName, tech -> -82.0));
 		};
 	}
 

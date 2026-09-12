@@ -228,8 +228,12 @@
   "ftgumod.configuration.section.ftgumod.common.title": "From the Ground Up Config",
   "ftgumod.configuration.ftgumod": "General",
   "ftgumod.configuration.allowResearchCopy": "Allow Copying Researches",
+  "ftgumod.configuration.allowResearchCopy.tooltip": "When enabled, researches can be copied",
   "ftgumod.configuration.loadDefaultTechnologies": "Load Default Technologies",
+  "ftgumod.configuration.loadDefaultTechnologies.tooltip": "When disabled, the default technologies are not loaded",
   "ftgumod.configuration.giveResearchBook": "Give a Research Book on First Join",
+  "ftgumod.configuration.giveResearchBook.tooltip": "When enabled, players receive a research book the first time they join a new world or server",
   "ftgumod.configuration.researchGuideMode": "JEI Research Guide",
+  "ftgumod.configuration.researchGuideMode.tooltip": "How much of the research guide is shown in JEI.\nFULL = prerequisite chain + research methods (Idea Table ingredients, Research Table puzzles, extra unlock requirements)\nCHAIN_ONLY = prerequisite chain only\nDISABLED = no research guide in JEI at all",
   "ftgumod.configuration.requiresjei": "Requires JEI to be installed."
 }

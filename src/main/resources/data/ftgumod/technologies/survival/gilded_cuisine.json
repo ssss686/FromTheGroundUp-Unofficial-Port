@@ -8,9 +8,7 @@
     },
     "description": {
       "translate": "technology.gilded_cuisine.desc"
-    },
-    "x": 8,
-    "y": 4
+    }
   },
   "parent": "ftgumod:survival/cooking",
   "idea": {
