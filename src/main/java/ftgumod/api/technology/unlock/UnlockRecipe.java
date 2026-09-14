@@ -88,8 +88,10 @@ public class UnlockRecipe implements IUnlock {
 
 	@Override
 	public void lock(ServerPlayer player) {
-		for (RecipeHolder<?> holder : getRecipeList())
-			player.getRecipeBook().remove(holder);
+		// 必须走 removeRecipes：它除了清服务端的 known，还会给客户端发 REMOVE 包。
+		// RecipeBook.remove 只改服务端那个集合，客户端配方书里的配方会一直留着，
+		// 于是撤销研究后配方看着还是解锁的（RecipeHideHelper 用的也是 removeRecipes）。
+		player.getRecipeBook().removeRecipes(getRecipeList(), player);
 	}
 
 }

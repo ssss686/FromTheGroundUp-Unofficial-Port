@@ -168,8 +168,11 @@ public class CommandTechnology {
 		sender.sendSuccess(() -> Component.translatable(
 				"commands.technology." + type.name + ".everything.success", player.getName(), set.size()), true);
 
-		if (type == ActionType.GRANT)
-			PacketDispatcher.sendTo(new TechnologyMessage(player, true, set.toArray(new Technology[0])), player);
+		// 授予和撤销都要回传：这条消息带的是"已研究"全集，客户端照着它增删。
+		// 只在授予时发的话，撤销后客户端会一直停在研究完成的样子（书里节点还亮着、
+		// 配方书里那些配方也还留着）。toast 只该在授予时弹，撤销时给空数组。
+		Technology[] toasts = type == ActionType.GRANT ? set.toArray(new Technology[0]) : new Technology[0];
+		PacketDispatcher.sendTo(new TechnologyMessage(player, true, toasts), player);
 		return 1;
 	}
 
@@ -182,8 +185,11 @@ public class CommandTechnology {
 			throw mode.fail(type, tech.getRegistryName().toString(), player.getName());
 		mode.success(sender, type, tech.getRegistryName().toString(), player.getName(), set.size());
 
-		if (type == ActionType.GRANT)
-			PacketDispatcher.sendTo(new TechnologyMessage(player, true, set.toArray(new Technology[0])), player);
+		// 授予和撤销都要回传：这条消息带的是"已研究"全集，客户端照着它增删。
+		// 只在授予时发的话，撤销后客户端会一直停在研究完成的样子（书里节点还亮着、
+		// 配方书里那些配方也还留着）。toast 只该在授予时弹，撤销时给空数组。
+		Technology[] toasts = type == ActionType.GRANT ? set.toArray(new Technology[0]) : new Technology[0];
+		PacketDispatcher.sendTo(new TechnologyMessage(player, true, toasts), player);
 		return 1;
 	}
 
