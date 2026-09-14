@@ -12,10 +12,17 @@
   },
   "parent": "ftgumod:survival/stoneworking",
   "idea": {
-    "amount": 1,
+    "amount": 2,
     "ingredients": [
-      "minecraft:stone",
-      "minecraft:sandstone"
+      [
+        {
+          "tag": "c:cobblestones"
+        }
+      ],
+      [
+        "minecraft:sand",
+        "minecraft:red_sand"
+      ]
     ]
   },
   "unlock": [
@@ -45,26 +52,31 @@
     ],
       "minecraft:mossy_cobblestone",
     [
+      "minecraft:mossy_cobblestone_stairs",
+      "minecraft:mossy_cobblestone_slab",
+      "minecraft:mossy_cobblestone_wall"
+    ],
+    [
+      "minecraft:cobblestone_stairs",
       "minecraft:cobblestone_slab",
-      "minecraft:cobblestone_stairs"
+      "minecraft:cobblestone_wall"
     ],
-    [
+      "minecraft:stone",
       "minecraft:sandstone",
-      "minecraft:red_sandstone"
-    ],
-    [
-      "minecraft:sandstone_slab",
-      "minecraft:red_sandstone_slab"
-    ],
     [
       "minecraft:sandstone_stairs",
-      "minecraft:red_sandstone_stairs"
+      "minecraft:sandstone_slab",
+      "minecraft:sandstone_wall"
+    ],
+    "minecraft:red_sandstone",
+    [
+      "minecraft:red_sandstone_stairs",
+      "minecraft:red_sandstone_slab",
+      "minecraft:red_sandstone_wall"
     ],
     [
       "minecraft:snow_block",
       "minecraft:snow"
-    ],
-    "minecraft:nether_wart_block",
-    "minecraft:item_frame"
+    ]
   ]
 }
