@@ -89,6 +89,7 @@
     "minecraft:lead",
     "minecraft:coarse_dirt",
     "minecraft:jack_o_lantern",
-    "minecraft:leather"
+    "minecraft:leather",
+    "minecraft:nether_wart_block"
   ]
 }
