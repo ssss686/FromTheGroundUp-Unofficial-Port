@@ -53,6 +53,7 @@
     },
     "minecraft:chest",
     "minecraft:ladder",
+    "minecraft:item_frame",
     "minecraft:painting",
     {
       "tag": "minecraft:wool"
