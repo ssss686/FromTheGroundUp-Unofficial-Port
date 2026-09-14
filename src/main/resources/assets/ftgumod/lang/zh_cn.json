@@ -215,6 +215,8 @@
   "technology.hint.frame": "框架",
   "technology.turtles.name": "龟仙人",
   "technology.turtles.desc": "龟派气功不在本次研究范围内",
+  "technology.glazed_tiles.name": "琉璃匠",
+  "technology.glazed_tiles.desc": "再烧一遍就上釉了",
   "ftgu.jei.research_guide": "研究指南",
   "ftgu.jei.research_guide.requires.prefix": "此物品需要研究 ",
   "ftgu.jei.research_guide.requires.suffix": " 科技才能解锁",
