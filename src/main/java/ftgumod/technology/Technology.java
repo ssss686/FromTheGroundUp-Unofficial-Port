@@ -560,6 +560,12 @@ public class Technology implements ITechnology {
 									.create(com.mojang.serialization.JsonOps.INSTANCE, TechnologyManager.INSTANCE.getRegistryAccess());
 							Criterion<?> c = Criterion.CODEC.parse(ops, entry.getValue()).getOrThrow(JsonSyntaxException::new);
 							criteria.put(entry.getKey(), c);
+							// 解析得出来不代表判得出来：除了 EventHandler 里那几个触发器，其余的都没人消费，
+							// 条件永远不会达成，而且全程没有任何报错，这里直接点出来
+							if (!TechnologyManager.isTriggerHandled(c.trigger()))
+								LOGGER.warn("Criterion '{}' uses trigger '{}', which no listener handles, so it can never be satisfied",
+										entry.getKey(),
+										net.minecraft.core.registries.BuiltInRegistries.TRIGGER_TYPES.getKey(c.trigger()));
 						} catch (JsonSyntaxException e) {
 							if (e.getMessage() == null || !e.getMessage().contains("Can't access registry"))
 								LOGGER.warn("Skipping unparseable criterion '{}': {}", entry.getKey(), e.getMessage());

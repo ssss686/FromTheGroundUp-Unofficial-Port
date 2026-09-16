@@ -40,6 +40,7 @@ import ftgumod.api.technology.unlock.IUnlock;
 import ftgumod.api.technology.unlock.UnlockCompound;
 import ftgumod.api.technology.unlock.UnlockRecipe;
 import ftgumod.api.util.JsonContextPublic;
+import ftgumod.criterion.TriggerFTGU;
 import ftgumod.packet.PacketDispatcher;
 import ftgumod.packet.client.TechnologyMessage;
 
@@ -49,6 +50,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.world.item.ItemStack;
@@ -270,6 +272,41 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 		technologies.clear();
 
 		createCallback.forEach(Runnable::run);
+	}
+
+	/**
+	 * /reload 之后调用。clear() 换了整批 Technology 对象，而 pendingCriteria / fakeAdvancements
+	 * 里挂的还是旧引用 —— 条件即使再次触发，也只会写进一张作废的 progress 表，静默失效，得重登才好。
+	 * 这里把它们全清掉，再按新的 Technology 对象给在线玩家重新登记。
+	 */
+	public void refreshListeners(MinecraftServer server) {
+		pendingCriteria.clear();
+		fakeAdvancements.clear();
+
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			// 原版触发器那条路是我们自己挂在 pendingCriteria 上的（上面已清空），但 TriggerFTGU 的
+			// tech 监听是存在触发器内部的，得挨个清，否则会越积越多、且都指向旧 Technology
+			for (CriterionTrigger<?> trigger : BuiltInRegistries.TRIGGER_TYPES)
+				if (trigger instanceof TriggerFTGU<?> ftgu)
+					ftgu.clearTechListeners(player.getAdvancements());
+
+			for (Technology tech : technologies.values())
+				if (tech.hasCustomUnlock() && tech.canResearchIgnoreCustomUnlock(player))
+					tech.registerListeners(player);
+		}
+	}
+
+	/**
+	 * EventHandler 会消费的 criterion 触发器白名单 —— 只有这些触发器存在真正判定的代码路径。
+	 * 不在名单里的（原版绝大多数触发器）解析得出来、也登记得进去，但永远不会授予，
+	 * 加载时由 Technology 的反序列化给出告警。
+	 */
+	public static boolean isTriggerHandled(CriterionTrigger<?> trigger) {
+		return trigger instanceof TriggerFTGU
+				|| trigger == CriteriaTriggers.LOCATION
+				|| trigger == CriteriaTriggers.PLAYER_KILLED_ENTITY
+				|| trigger == CriteriaTriggers.EFFECTS_CHANGED
+				|| trigger == CriteriaTriggers.START_RIDING_TRIGGER;
 	}
 
 	/** Load technologies from built-in mod resources on the client side. */

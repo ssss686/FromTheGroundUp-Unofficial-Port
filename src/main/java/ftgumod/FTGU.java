@@ -100,6 +100,9 @@ public class FTGU {
 			TechnologyManager.INSTANCE.reload(server.getWorldPath(
 					net.minecraft.world.level.storage.LevelResource.ROOT).toFile());
 
+			// clear() 换掉了整批 Technology 对象，监听得按新的重新挂一遍，否则条件静默失效
+			TechnologyManager.INSTANCE.refreshListeners(server);
+
 			// /reload 后重新清理配方书
 			for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
 				RecipeHideHelper.cleanRecipeBook(player);

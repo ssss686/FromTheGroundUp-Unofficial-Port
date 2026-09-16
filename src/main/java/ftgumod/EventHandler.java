@@ -3,11 +3,15 @@ package ftgumod;
 import java.util.List;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import net.minecraft.advancements.critereon.EffectsChangedTrigger;
+import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.advancements.critereon.KilledTrigger;
 import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.advancements.critereon.StartRidingTrigger;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -52,6 +56,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -60,6 +65,9 @@ import org.lwjgl.glfw.GLFW;
 public class EventHandler {
 
 	private ItemStack stack = ItemStack.EMPTY;
+
+	/** 上一 tick 骑上坐骑的玩家，延后一 tick 再判 started_riding，见 {@link #checkRideCriteria()} */
+	private final Set<ServerPlayer> pendingRideCheck = new HashSet<>();
 
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
@@ -250,6 +258,8 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public void onServerTick(ServerTickEvent.Post event) {
+		checkRideCriteria();
+
 		for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
 			var fakeMap = TechnologyManager.INSTANCE.getFakeAdvancements().get(player);
 			if (fakeMap != null && !fakeMap.isEmpty()) {
@@ -359,6 +369,51 @@ public class EventHandler {
 
 		for (TechnologyManager.PendingCriterion pc : matched)
 			pc.tech().grantCriterion(player, pc.criterionName());
+	}
+
+	@SubscribeEvent
+	public void onEntityMount(EntityMountEvent event) {
+		if (event.getLevel().isClientSide() || !event.isMounting())
+			return;
+		if (event.getEntityMounting() instanceof ServerPlayer player)
+			pendingRideCheck.add(player);
+	}
+
+	/**
+	 * 判定 started_riding 条件。
+	 *
+	 * EntityMountEvent 由 Entity#startRiding 里的 canMountEntity 抛出，位置在 this.vehicle = vehicle
+	 * 之前 —— 事件触发那一刻 player.getVehicle() 还是空的，vehicle 谓词必然不成立。原版的
+	 * START_RIDING_TRIGGER 是在 vehicle / addPassenger 都设好之后才抛的，所以这里延后一 tick 再判，
+	 * 语义和原版 SimpleCriterionTrigger.trigger 对齐（玩家谓词同样是拿 createContext(player, player) 判）。
+	 *
+	 * 不能图省事用 player.server.execute(...)：BlockableEventLoop#execute 在服务器线程上调用时
+	 * scheduleExecutables() 返回 false，会当场 inline 执行，等于没延后。
+	 */
+	private void checkRideCriteria() {
+		if (pendingRideCheck.isEmpty())
+			return;
+
+		for (ServerPlayer player : pendingRideCheck) {
+			List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
+			if (pending == null || pending.isEmpty())
+				continue;
+
+			LootContext ctx = EntityPredicate.createContext(player, player);
+			List<TechnologyManager.PendingCriterion> matched = new ArrayList<>();
+			for (TechnologyManager.PendingCriterion pc : pending) {
+				if (pc.instance() instanceof StartRidingTrigger.TriggerInstance si) {
+					var playerPred = si.player();
+					if (playerPred.isEmpty() || playerPred.get().matches(ctx))
+						matched.add(pc);
+				}
+			}
+
+			for (TechnologyManager.PendingCriterion pc : matched)
+				pc.tech().grantCriterion(player, pc.criterionName());
+		}
+
+		pendingRideCheck.clear();
 	}
 
 	// JEI research guide - no longer needs tick refresh
