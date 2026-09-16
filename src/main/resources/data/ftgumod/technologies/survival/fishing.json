@@ -1,0 +1,41 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:fishing_rod"
+    },
+    "title": {
+      "translate": "technology.fishing.name"
+    },
+    "description": {
+      "translate": "technology.fishing.desc"
+    }
+  },
+  "parent": "ftgumod:survival/survival",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:stick",
+        "minecraft:bamboo",
+        "minecraft:blaze_rod",
+        "minecraft:breeze_rod"
+      ],
+      "minecraft:string",
+      [
+        "minecraft:spider_eye",
+        "minecraft:slime_ball",
+        "minecraft:rotten_flesh",
+        "minecraft:sweet_berries",
+        "minecraft:apple",
+        "minecraft:glow_berries",
+        "minecraft:sea_pickle",
+        "minecraft:kelp",
+        "minecraft:egg",
+        "minecraft:totem_of_undying"
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:fishing_rod"
+  ]
+}
