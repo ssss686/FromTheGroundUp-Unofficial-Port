@@ -275,17 +275,31 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 	}
 
 	/**
-	 * /reload 之后调用。clear() 换了整批 Technology 对象，而 pendingCriteria / fakeAdvancements
-	 * 里挂的还是旧引用 —— 条件即使再次触发，也只会写进一张作废的 progress 表，静默失效，得重登才好。
-	 * 这里把它们全清掉，再按新的 Technology 对象给在线玩家重新登记。
+	 * 科技集合被重建（load() 换掉一整批 Technology 对象）之后，把监听重挂一遍。
+	 *
+	 * 不重挂就会出事：pendingCriteria / fakeAdvancements / TriggerFTGU 的 tech 监听里挂的还是旧对象，
+	 * 旧条目既写不进新的 progress 表（静默失效，得重登才好），又会和新条目各判一次 —— 同一个条件
+	 * 解锁两遍。单机下尤其容易撞上：客户端和服务端共用同一个 TechnologyManager.INSTANCE，两边各自
+	 * load() 一次，后 load 的那边就把先前注册的监听全变成了旧对象（先进服注册、随后客户端收到服务端
+	 * json 再 load 一次，就是这个顺序）。
 	 */
-	public void refreshListeners(MinecraftServer server) {
+	public void refreshListeners(@Nullable MinecraftServer server) {
 		pendingCriteria.clear();
 		fakeAdvancements.clear();
 
+		if (server == null)
+			return;
+
+		if (!server.isSameThread()) {
+			// 单机的客户端 load() 跑在 Render 线程上，直接动 PlayerAdvancements / pendingCriteria
+			// 会和服务器线程打架，排到服务器线程上再做
+			server.execute(() -> refreshListeners(server));
+			return;
+		}
+
 		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-			// 原版触发器那条路是我们自己挂在 pendingCriteria 上的（上面已清空），但 TriggerFTGU 的
-			// tech 监听是存在触发器内部的，得挨个清，否则会越积越多、且都指向旧 Technology
+			// 原版触发器那条路挂在 pendingCriteria 上（上面已清空），TriggerFTGU 的 tech 监听存在
+			// 触发器内部，得挨个清，否则会越积越多、且都指向旧 Technology
 			for (CriterionTrigger<?> trigger : BuiltInRegistries.TRIGGER_TYPES)
 				if (trigger instanceof TriggerFTGU<?> ftgu)
 					ftgu.clearTechListeners(player.getAdvancements());
@@ -520,6 +534,10 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 		registerAll(technologies.values().toArray(new Technology[technologies.size()]));
 
+		// 所有加载路径都汇到这里（reload / loadClient / 客户端收到服务端 json 后的 load），
+		// 对象换完了就把监听重挂一遍，见 refreshListeners
+		refreshListeners(ServerLifecycleHooks.getCurrentServer());
+
 		int size = this.technologies.size();
 		info("Loaded " + size + " technolog" + (size != 1 ? "ies" : "y"));
 	}
@@ -656,7 +674,11 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 
 	public void trackCriterion(ServerPlayer player, Technology tech, String name, CriterionTriggerInstance instance, CriterionTrigger<?> trigger) {
-		pendingCriteria.computeIfAbsent(player, k -> new ArrayList<>()).add(new PendingCriterion(tech, name, instance, trigger));
+		List<PendingCriterion> list = pendingCriteria.computeIfAbsent(player, k -> new ArrayList<>());
+		// 同一个条件可能被重复登记（revoke / 再次 registerListeners），留两份没意义
+		if (list.stream().anyMatch(pc -> pc.tech == tech && pc.criterionName.equals(name)))
+			return;
+		list.add(new PendingCriterion(tech, name, instance, trigger));
 	}
 
 	public void untrackCriterion(ServerPlayer player, Technology tech, String name) {
