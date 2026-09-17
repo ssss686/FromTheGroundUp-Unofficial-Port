@@ -220,6 +220,11 @@ public class EventHandler {
 	public void onPlayerInGui(ScreenEvent.Render.Pre evt) {
 		if (evt.getScreen() instanceof AbstractContainerScreen<?> screen) {
 			AbstractContainerMenu menu = screen.getMenu();
+
+			// 切石机左边那排配方不走配方书，客户端这份是本地现查的（服务端那份在自己那边摘，
+			// 两边下标要对上，详见 RecipeHideHelper.filterStonecutterRecipes）
+			RecipeHideHelper.filterStonecutterRecipes(menu, Minecraft.getInstance().player);
+
 			for (Slot s : menu.slots) {
 				if (s.container instanceof ResultContainer resultContainer) {
 					ItemStack slotStack = s.container.getItem(0);

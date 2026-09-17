@@ -1,6 +1,7 @@
 package ftgumod;
 
 import ftgumod.event.PlayerLockEvent;
+import ftgumod.util.RecipeHideHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -21,6 +22,10 @@ public class CraftingListener implements ContainerListener {
 
 	@Override
 	public void slotChanged(AbstractContainerMenu menu, int index, ItemStack stack) {
+		// 切石机左边那排配方不走配方书，得单独摘。原版换输入物时会重新查一份列表，
+		// 所以每次广播都过一遍（没变的话 RecipeHideHelper 里会直接跳过）
+		RecipeHideHelper.filterStonecutterRecipes(menu, player);
+
 		if (stack.isEmpty())
 			return;
 
