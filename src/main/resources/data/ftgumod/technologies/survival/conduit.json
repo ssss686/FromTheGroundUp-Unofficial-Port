@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "technology.conduit.desc"
-    }
+    },
+    "frame": "challenge"
   },
   "parent": "ftgumod:survival/smithing",
   "criteria": {

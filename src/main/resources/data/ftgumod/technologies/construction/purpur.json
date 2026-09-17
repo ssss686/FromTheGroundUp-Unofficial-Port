@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "technology.purpur.desc"
-    }
+    },
+    "frame": "challenge"
   },
   "parent": "ftgumod:construction/quartz",
   "criteria": {
