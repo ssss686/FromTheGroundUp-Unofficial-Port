@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
@@ -48,19 +49,41 @@ public final class TechnologyLayout {
 	 */
 	private static final float STEP = 1.0F;
 
+	/** 全量排版：所有科技都算数（加载时用） */
 	public static void apply() {
+		apply(technology -> true);
+	}
+
+	/** 每一页都按 visible 过滤之后重排 */
+	public static void apply(Predicate<Technology> visible) {
 		List<Technology> roots = new ArrayList<>();
 		for (Technology technology : TechnologyManager.INSTANCE.getRoots())
 			roots.add(technology);
 		roots.sort(BY_NAME);
 
 		for (Technology root : roots)
-			layoutPage(root);
+			layoutPage(root, visible);
 	}
 
-	private static void layoutPage(Technology root) {
+	/**
+	 * 单独一页重排，只算 visible 认下来的科技 —— 研究之书每次打开都调这个。
+	 * <p>
+	 * 为什么非过滤不可：Reingold–Tilford 把父科技摆在它所有孩子的正中间。看不见的科技要是也算一份，
+	 * 父科技就会停在"画得出来的孩子"和"画不出来的那个"中间那一行 —— 半格；而画得出来的孩子在自己
+	 * 的整格上，两者错开半格，26 像素的框都叠上了，连线也只能先横出去再拐个弯。过滤掉之后这一层
+	 * 只剩一个孩子，父科技就落在孩子那一行，两框之间那两像素里直接出一条直线；等它完成、重新进到
+	 * 排版里，父科技再挪回中间，连线自然变成多分枝。
+	 * <p>
+	 * 横向同理：x 是"看得见的层数"，所以看不见的那层被跳过时，它下面画得出来的科技会补上那一列，
+	 * 不会在中间留一条空列。
+	 */
+	public static void apply(Technology root, Predicate<Technology> visible) {
+		layoutPage(root, visible);
+	}
+
+	private static void layoutPage(Technology root, Predicate<Technology> visible) {
 		Node tree = new Node(root, null, null, 1, 0);
-		tree.buildChildren();
+		tree.buildChildren(visible);
 
 		// 整页都写死了坐标：原样保留，一个字都不动
 		if (!hasAuto(tree))
@@ -177,19 +200,36 @@ public final class TechnologyLayout {
 			return null;
 		}
 
-		void buildChildren() {
+		void buildChildren(Predicate<Technology> visible) {
 			List<Technology> kids = new ArrayList<>();
-			for (ITechnology child : tech.getChildren())
-				if (child instanceof Technology && !((Technology) child).isRoot()
-						&& TechnologyManager.INSTANCE.contains(child.getRegistryName()))
-					kids.add((Technology) child);
+			gatherVisible(tech, visible, kids);
 			kids.sort(BY_NAME);
 
 			for (Technology child : kids) {
 				Node node = new Node(child, this, children.isEmpty() ? null : children.get(children.size() - 1),
 						children.size() + 1, x + 1);
 				children.add(node);
-				node.buildChildren();
+				node.buildChildren(visible);
+			}
+		}
+
+		/**
+		 * 画得出来的孩子。中间夹着几层画不出来的（隐藏且没进度、还没解锁的）就直接穿过去，挂到最近的
+		 * 可见祖先上 —— 和 GuiResearchBook.visibleAncestor 给连线找父节点是同一个取法，这样"进到排版里的"
+		 * 和"画出来的"永远是同一批科技，不会有谁带着旧坐标偷偷留在那儿。
+		 */
+		private static void gatherVisible(Technology parent, Predicate<Technology> visible, List<Technology> out) {
+			for (ITechnology child : parent.getChildren()) {
+				if (!(child instanceof Technology))
+					continue;
+				Technology technology = (Technology) child;
+				// 别的页面的根：它连同它下面那一支都不归这一页管
+				if (technology.isRoot() || !TechnologyManager.INSTANCE.contains(child.getRegistryName()))
+					continue;
+				if (visible.test(technology))
+					out.add(technology);
+				else
+					gatherVisible(technology, visible, out);
 			}
 		}
 
