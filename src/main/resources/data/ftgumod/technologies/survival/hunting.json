@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:bow"
+    },
+    "title": {
+      "translate": "technology.hunting.name"
+    },
+    "description": {
+      "translate": "technology.hunting.desc"
+    }
+  },
+  "parent": "ftgumod:survival/fishing",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:fishing_rod",
+        "minecraft:stick",
+        "minecraft:bamboo",
+        "minecraft:blaze_rod",
+        "minecraft:breeze_rod"
+      ],
+      "minecraft:string",
+      [
+        "minecraft:flint",
+        "minecraft:prismarine_shard",
+        "minecraft:amethyst_shard",
+        {
+          "tag": "c:nuggets"
+        }
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:bow",
+    "minecraft:arrow"
+  ]
+}

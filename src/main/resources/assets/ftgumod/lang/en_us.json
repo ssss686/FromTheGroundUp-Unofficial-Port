@@ -175,6 +175,8 @@
   "technology.boats.desc": "Big bowls that float",
   "technology.fishing.name": "Fishing Ballad",
   "technology.fishing.desc": "Bigger bowls need bigger fish",
+  "technology.hunting.name": "Hunting",
+  "technology.hunting.desc": "Winner takes the buck.",
   "technology.carrot_protocol.name": "The Carrot Protocol",
   "technology.carrot_protocol.desc": "The pig doesn't get a vote",
   "technology.carts.name": "Carts",
