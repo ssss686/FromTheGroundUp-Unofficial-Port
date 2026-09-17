@@ -23,10 +23,12 @@ import ftgumod.packet.server.CopyTechMessage;
 import ftgumod.client.FTGUClient;
 import ftgumod.technology.Technology;
 import ftgumod.technology.TechnologyManager;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -51,6 +53,9 @@ public class GuiResearchBook extends Screen {
 			"textures/gui/achievement/achievement_background.png");
 	private static final ResourceLocation STAINED_CLAY = ResourceLocation.parse(
 			"textures/block/cyan_terracotta.png");
+	/** 详情面板里解锁物品槽的底框，用的就是原版 task 未完成那套边框 */
+	private static final ResourceLocation SLOT_FRAME = AdvancementWidgetType.UNOBTAINED
+			.frameSprite(AdvancementType.TASK);
 	public static Map<ResourceLocation, Double> xScrollO = new HashMap<>();
 	public static Map<ResourceLocation, Double> yScrollO = new HashMap<>();
 	private static boolean state = true;
@@ -492,15 +497,12 @@ public class GuiResearchBook extends Screen {
 					if (l6 < -28 || j7 < -27 || l6 > 224F || j7 > 155F)
 						continue;
 
-					RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
-					RenderSystem.enableBlend();
-					if (t2.hasCustomUnlock())
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, l6 - 2, j7 - 2, 26, 202, 26, 26,
-								256, 256);
-					else
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, l6 - 2, j7 - 2, 0, 202, 26, 26,
-								256, 256);
-					RenderSystem.disableBlend();
+					// 边框用原版的三套（task / goal / challenge，由科技 json 的 display.frame 指定），
+					// 完成与否看研究状态 —— 原版是看进度做完没，语义对得上
+					AdvancementWidgetType widgetType = t2.isResearched(player) ? AdvancementWidgetType.OBTAINED
+							: AdvancementWidgetType.UNOBTAINED;
+					guiGraphics.blitSprite(widgetType.frameSprite(t2.getDisplayInfo().getType()), l6 - 2, j7 - 2,
+							26, 26);
 
 					guiGraphics.renderItem(t2.getDisplayInfo().getIcon(), l6 + 3, j7 + 3);
 
@@ -529,11 +531,7 @@ public class GuiResearchBook extends Screen {
 
 				ItemStack item = list[index];
 
-				RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
-				RenderSystem.enableBlend();
-				guiGraphics.blit(ACHIEVEMENT_BACKGROUND, 6, 37 + (pos * 28), 0, 202, 26, 26, 256,
-						256);
-				RenderSystem.disableBlend();
+				guiGraphics.blitSprite(SLOT_FRAME, 6, 37 + (pos * 28), 26, 26);
 
 				guiGraphics.renderItem(item, 11, 42 + (pos * 28));
 
