@@ -1,7 +1,11 @@
 package ftgumod.command;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import ftgumod.packet.PacketDispatcher;
@@ -111,6 +115,7 @@ public class CommandTechnology {
 						.then(Commands.argument("player", StringArgumentType.word())
 								.suggests(PLAYER_SUGGEST)
 								.then(Commands.argument("technology", StringArgumentType.greedyString())
+										.suggests(TECH_SUGGEST)
 										.executes(ctx -> test(ctx.getSource(),
 												getPlayer(ctx, "player"),
 												StringArgumentType.getString(ctx, "technology"),
@@ -125,9 +130,56 @@ public class CommandTechnology {
 	private static final SuggestionProvider<CommandSourceStack> PLAYER_SUGGEST =
 			(ctx, builder) -> SharedSuggestionProvider.suggest(
 					ctx.getSource().getOnlinePlayerNames(), builder);
-	private static final SuggestionProvider<CommandSourceStack> TECH_SUGGEST =
-			(ctx, builder) -> SharedSuggestionProvider.suggest(
-					TechnologyManager.INSTANCE.getRegistryNames().stream().map(Object::toString), builder);
+
+	/**
+	 * 科技 id 的补全。
+	 *
+	 * 原版那套（SharedSuggestionProvider.matchesSubStr）是"输入得是整串的前缀，或者串里某个词的前缀"，
+	 * 词按 . 和 _ 分 —— 所以 /locate structure mo 能出 minecraft:monument（monument 正好是词首）。
+	 * 科技的 id 都长在路径那截上（ftgumod:construction/stonemasonry），照原版那套就得
+	 * ftgumod:construction/st 一路敲下来，所以这里把 : 和 / 也当词边界，打 st 就能出上面那条。
+	 */
+	private static final SuggestionProvider<CommandSourceStack> TECH_SUGGEST = (ctx, builder) -> {
+		String input = builder.getRemaining().toLowerCase(Locale.ROOT);
+
+		List<String> matches = new ArrayList<>();
+		for (ResourceLocation id : TechnologyManager.INSTANCE.getRegistryNames()) {
+			String name = id.toString().toLowerCase(Locale.ROOT);
+			if (matchesSubStr(input, name))
+				matches.add(name);
+		}
+
+		// 越贴的排越前：整串前缀 → 路径前缀 → 路径里某一段的前缀。
+		// 客户端只会把"以输入开头"的挑到前面（CommandSuggestions#sortSuggestions），剩下的保持这个顺序；
+		// getRegistryNames 是个 Set，不排一下每次顺序都不一定。
+		matches.sort(Comparator.comparingInt((String name) -> techRank(input, name)).thenComparing(name -> name));
+
+		for (String name : matches)
+			builder.suggest(name);
+		return builder.buildFuture();
+	};
+
+	/** 输入算不算这个 id 的候选：整串的前缀，或者串里某个词（. _ : / 之后那几个）的前缀 */
+	private static boolean matchesSubStr(String input, String id) {
+		if (id.startsWith(input))
+			return true;
+		for (int i = 0; i + 1 < id.length(); i++) {
+			char c = id.charAt(i);
+			if ((c == '.' || c == '_' || c == ':' || c == '/') && id.startsWith(input, i + 1))
+				return true;
+		}
+		return false;
+	}
+
+	private static int techRank(String input, String id) {
+		if (id.startsWith(input))
+			return 0;
+		int colon = id.indexOf(':');
+		// 打了冒号就是在写整串，不再按路径前缀放宽
+		if (colon >= 0 && !input.contains(":") && id.startsWith(input, colon + 1))
+			return 1;
+		return 2;
+	}
 
 	private static ServerPlayer getPlayer(com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx, String name) throws CommandSyntaxException {
 		ServerPlayer player = ctx.getSource().getServer().getPlayerList().getPlayerByName(StringArgumentType.getString(ctx, name));
