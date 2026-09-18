@@ -223,6 +223,8 @@
   "technology.turtles.desc": "Kamehameha not included",
   "technology.glazed_tiles.name": "Glazed Tiles",
   "technology.glazed_tiles.desc": "Just fire it once more",
+  "technology.clockwork_malice.name": "Clockwork Malice",
+  "technology.clockwork_malice.desc": "Springs do not forgive",
   "ftgu.jei.research_guide": "Research Guide",
   "ftgu.jei.research_guide.requires.prefix": "This item requires the ",
   "ftgu.jei.research_guide.requires.suffix": " technology to unlock",

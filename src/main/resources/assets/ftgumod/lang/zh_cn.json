@@ -223,6 +223,8 @@
   "technology.turtles.desc": "龟派气功不在本次研究范围内",
   "technology.glazed_tiles.name": "琉璃匠",
   "technology.glazed_tiles.desc": "再烧一遍就上釉了",
+  "technology.clockwork_malice.name": "发条恶意",
+  "technology.clockwork_malice.desc": "弹簧不会原谅你",
   "ftgu.jei.research_guide": "研究指南",
   "ftgu.jei.research_guide.requires.prefix": "此物品需要研究 ",
   "ftgu.jei.research_guide.requires.suffix": " 科技才能解锁",
