@@ -28,6 +28,7 @@ import ftgumod.api.util.JsonContextPublic;
 import ftgumod.event.TechnologyEvent;
 import ftgumod.util.ListenerTechnology;
 import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
@@ -249,8 +250,11 @@ public class Technology implements ITechnology {
 				if (child.isRoot() && child.isUnlocked(player))
 					player.sendSystemMessage(
 							Component.translatable("technology.complete.unlock.root", child.displayText));
-			player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
-					SoundSource.PLAYERS, 1.0F, 1.0F);
+			// 挑战科技不放这声：客户端那边 toast 弹出来时会放原版那个挑战完成音效
+			// （AdvancementToast 的做法，见 ToastTechnology），两声叠一起太糊
+			if (display.getType() != AdvancementType.CHALLENGE)
+				player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
+						SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 	}
 
