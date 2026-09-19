@@ -61,6 +61,7 @@ public class FTGU {
 		CapabilityTechnology.ATTACHMENT_TYPES.register(modEventBus);
 		NeoForge.EVENT_BUS.register(new CapabilityTechnology());
 		NeoForge.EVENT_BUS.register(new EventHandler());
+		NeoForge.EVENT_BUS.register(new VillagerTradesHandler());
 
 		PacketDispatcher.registerPackets(modEventBus);
 
