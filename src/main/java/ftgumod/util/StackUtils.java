@@ -33,7 +33,6 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.block.SuspiciousEffectHolder;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import com.mojang.serialization.JsonOps;
@@ -45,8 +44,6 @@ public class StackUtils implements IStackUtils {
 	private static final Map<ResourceLocation, ItemPredicate.Factory> REGISTRY = new HashMap<>();
 
 	private static ItemStack[] TIPPED_ARROW_STACKS = null;
-
-	private static ItemStack[] SUSPICIOUS_STEW_STACKS = null;
 
 
 	static {
@@ -77,10 +74,6 @@ public class StackUtils implements IStackUtils {
 			JsonObject object = new JsonObject();
 			if ("minecraft:tipped_arrow".equals(item))
 				return new ItemPredicate(Ingredient.of(getTippedArrowStacks()));
-			// 谜之炖菜同理：效果存在组件里，只写物品 id 的话页面上是"一份没有效果的炖菜"。
-			// 按持有者展开成各个效果的炖菜，科技页和 JEI 就能一条条列出哪种花出哪种效果。
-			if ("minecraft:suspicious_stew".equals(item))
-				return new ItemPredicate(Ingredient.of(getSuspiciousStewStacks()));
 			object.addProperty("item", item);
 			return new ItemIngredient(parseIngredient(object));
 		}
@@ -131,27 +124,6 @@ public class StackUtils implements IStackUtils {
 			TIPPED_ARROW_STACKS = list.toArray(ItemStack[]::new);
 		}
 		return TIPPED_ARROW_STACKS;
-	}
-
-	private static ItemStack[] getSuspiciousStewStacks() {
-		if (SUSPICIOUS_STEW_STACKS == null) {
-			List<ItemStack> list = new ArrayList<>();
-			for (SuspiciousEffectHolder holder : SuspiciousEffectHolder.getAllEffectHolders()) {
-				ItemStack stew = new ItemStack(Items.SUSPICIOUS_STEW);
-				stew.set(DataComponents.SUSPICIOUS_STEW_EFFECTS, holder.getSuspiciousEffects());
-				// 十四种花里有重复的效果（四种郁金香都是虚弱、火把花和虞美人都是夜视），同效果的只留一条
-				boolean duplicate = false;
-				for (ItemStack other : list)
-					if (ItemStack.isSameItemSameComponents(other, stew)) {
-						duplicate = true;
-						break;
-					}
-				if (!duplicate)
-					list.add(stew);
-			}
-			SUSPICIOUS_STEW_STACKS = list.toArray(ItemStack[]::new);
-		}
-		return SUSPICIOUS_STEW_STACKS;
 	}
 
 	@Nullable
