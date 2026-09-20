@@ -1,0 +1,82 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:conduit"
+    },
+    "title": {
+      "translate": "technology.conduit.name"
+    },
+    "description": {
+      "translate": "technology.conduit.desc"
+    },
+    "frame": "challenge"
+  },
+  "parent": "ftgumod:survival/smithing",
+  "criteria": {
+    "wreck": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [{
+          "condition": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "location": {
+              "structures": [
+            "minecraft:shipwreck",
+            "minecraft:ocean_ruin_cold",
+            "minecraft:ocean_ruin_warm",
+            "minecraft:buried_treasure"
+          ]
+            }
+          }
+        }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      "minecraft:nautilus_shell",
+      "minecraft:kelp",
+      [
+        "minecraft:prismarine_crystals",
+        "minecraft:prismarine_shard",
+        "minecraft:prismarine",
+        "minecraft:dark_prismarine",
+        "minecraft:prismarine_bricks"
+      ]
+    ]
+  },
+  "research": {
+    "type": "ftgumod:match",
+    "pattern": [
+      "PPP",
+      "PCP",
+      "PPP"
+    ],
+    "key": {
+      "C": {
+        "item": "minecraft:nautilus_shell",
+        "hint": {
+          "translate": "technology.hint.core"
+        }
+      },
+      "P": {
+        "item": [
+          "minecraft:prismarine_crystals",
+          "minecraft:prismarine_shard",
+          "minecraft:prismarine",
+          "minecraft:dark_prismarine",
+          "minecraft:prismarine_bricks"
+        ],
+        "hint": {
+          "translate": "technology.hint.frame"
+        }
+      }
+    }
+  },
+  "unlock": [
+    "minecraft:conduit"
+  ]
+}

@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "technology.prismarine.desc"
-    }
+    },
+    "frame": "challenge"
   },
   "parent": "ftgumod:construction/glassworking",
   "criteria": {
@@ -42,8 +43,15 @@
   },
   "unlock": [
     "minecraft:prismarine",
+    "minecraft:prismarine_stairs",
+    "minecraft:prismarine_slab",
+    "minecraft:prismarine_wall",
     "minecraft:prismarine_bricks",
+    "minecraft:prismarine_brick_stairs",
+    "minecraft:prismarine_brick_slab",
     "minecraft:dark_prismarine",
+    "minecraft:dark_prismarine_stairs",
+    "minecraft:dark_prismarine_slab",
     "minecraft:sea_lantern"
   ]
 }

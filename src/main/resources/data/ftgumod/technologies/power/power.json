@@ -11,7 +11,7 @@
     },
     "background": "minecraft:textures/block/quartz_block_bottom.png"
   },
-  "parent": "ftgumod:construction/activation",
+  "parent": "ftgumod:survival/refinement",
   "idea": {
     "amount": 2,
     "ingredients": [

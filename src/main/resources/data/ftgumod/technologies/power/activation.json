@@ -10,7 +10,7 @@
       "translate": "technology.activation.desc"
     }
   },
-  "parent": "ftgumod:construction/stonemasonry",
+  "parent": "ftgumod:power/power",
   "idea": {
     "amount": 2,
     "ingredients": [

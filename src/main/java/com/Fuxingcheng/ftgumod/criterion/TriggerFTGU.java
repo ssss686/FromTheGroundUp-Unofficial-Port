@@ -14,7 +14,7 @@ import net.minecraft.server.PlayerAdvancements;
 public abstract class TriggerFTGU<T extends CriterionTriggerInstance> implements CriterionTrigger<T> {
 
 	protected final Map<PlayerAdvancements, Set<Listener<T>>> listeners = new HashMap<>();
-	protected final Map<PlayerAdvancements, Set<ListenerTech<T>>> techListeners = new HashMap<>();
+	protected final Map<PlayerAdvancements, Set<TriggerFTGU.ListenerTech<T>>> techListeners = new HashMap<>();
 	private final ResourceLocation id;
 
 	public TriggerFTGU(ResourceLocation id) {
@@ -63,6 +63,14 @@ public abstract class TriggerFTGU<T extends CriterionTriggerInstance> implements
 	public void addTechListener(PlayerAdvancements pa, T instance, ListenerTechnology listenerTech) {
 		techListeners.computeIfAbsent(pa, p -> new HashSet<>())
 				.add(new ListenerTech<>(instance, listenerTech));
+	}
+
+	/**
+	 * /reload 时用：旧的 Technology 对象已经作废，tech 监听里挂的还是旧引用，全清掉等重新登记。
+	 * 只动 tech 监听，不碰原版成就挂在 listeners 里的那些。
+	 */
+	public void clearTechListeners(PlayerAdvancements playerAdvancements) {
+		techListeners.remove(playerAdvancements);
 	}
 
 	public void removeTechListener(PlayerAdvancements pa, T instance, ListenerTechnology listenerTech) {

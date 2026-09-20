@@ -66,6 +66,7 @@ public class FTGU {
 		// 注册事件监听
 		MinecraftForge.EVENT_BUS.register(new CapabilityTechnology());
 		MinecraftForge.EVENT_BUS.register(new EventHandler());
+		MinecraftForge.EVENT_BUS.register(new VillagerTradesHandler());
 
 		// 网络包
 		PacketDispatcher.registerPackets();

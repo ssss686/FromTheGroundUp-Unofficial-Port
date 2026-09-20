@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "technology.glowing_eyes.desc"
-    }
+    },
+    "frame": "challenge"
   },
   "parent": "ftgumod:research/enchanting",
   "criteria": {

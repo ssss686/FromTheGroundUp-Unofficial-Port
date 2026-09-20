@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:ice"
+    },
+    "title": {
+      "translate": "technology.ice_harvesting.name"
+    },
+    "description": {
+      "translate": "technology.ice_harvesting.desc"
+    }
+  },
+  "parent": "ftgumod:construction/stonemasonry",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      "minecraft:ice",
+      [
+        "minecraft:water_bucket",
+        "minecraft:bucket"
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:packed_ice",
+    "minecraft:blue_ice"
+  ]
+}

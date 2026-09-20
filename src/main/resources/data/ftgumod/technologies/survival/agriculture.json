@@ -86,9 +86,12 @@
     "minecraft:melon",
     "minecraft:melon_seeds",
     "minecraft:pumpkin_seeds",
+    "minecraft:composter",
     "minecraft:lead",
+    "minecraft:smoker",
     "minecraft:coarse_dirt",
     "minecraft:jack_o_lantern",
-    "minecraft:leather"
+    "minecraft:leather",
+    "minecraft:nether_wart_block"
   ]
 }

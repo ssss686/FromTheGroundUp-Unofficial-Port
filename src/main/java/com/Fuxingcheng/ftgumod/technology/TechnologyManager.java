@@ -38,6 +38,7 @@ import com.Fuxingcheng.ftgumod.api.technology.unlock.IUnlock;
 import com.Fuxingcheng.ftgumod.api.technology.unlock.UnlockCompound;
 import com.Fuxingcheng.ftgumod.api.technology.unlock.UnlockRecipe;
 import com.Fuxingcheng.ftgumod.api.util.JsonContextPublic;
+import com.Fuxingcheng.ftgumod.criterion.TriggerFTGU;
 import com.Fuxingcheng.ftgumod.packet.PacketDispatcher;
 import com.Fuxingcheng.ftgumod.packet.client.TechnologyMessage;
 import com.Fuxingcheng.ftgumod.util.StackUtils;
@@ -46,6 +47,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.world.item.ItemStack;
@@ -57,6 +59,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModFileInfo;
 import net.minecraftforge.forgespi.language.IModInfo;
@@ -270,6 +273,55 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 		createCallback.forEach(Runnable::run);
 	}
 
+	/**
+	 * 科技集合被重建（load() 换掉一整批 Technology 对象）之后，把监听重挂一遍。
+	 *
+	 * 不重挂就会出事：pendingCriteria / fakeAdvancements / TriggerFTGU 的 tech 监听里挂的还是旧对象，
+	 * 旧条目既写不进新的 progress 表（静默失效，得重登才好），又会和新条目各判一次 —— 同一个条件
+	 * 解锁两遍。单机下尤其容易撞上：客户端和服务端共用同一个 TechnologyManager.INSTANCE，两边各自
+	 * load() 一次，后 load 的那边就把先前注册的监听全变成了旧对象（先进服注册、随后客户端收到服务端
+	 * json 再 load 一次，就是这个顺序）。
+	 */
+	public void refreshListeners(@Nullable MinecraftServer server) {
+		pendingCriteria.clear();
+		fakeAdvancements.clear();
+
+		if (server == null)
+			return;
+
+		if (!server.isSameThread()) {
+			// 单机的客户端 load() 跑在 Render 线程上，直接动 PlayerAdvancements / pendingCriteria
+			// 会和服务器线程打架，排到服务器线程上再做
+			server.execute(() -> refreshListeners(server));
+			return;
+		}
+
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			// 原版触发器那条路挂在 pendingCriteria 上（上面已清空），TriggerFTGU 的 tech 监听存在
+			// 触发器内部，得挨个清，否则会越积越多、且都指向旧 Technology
+			for (CriterionTrigger<?> trigger : BuiltInRegistries.TRIGGER_TYPES)
+				if (trigger instanceof TriggerFTGU<?> ftgu)
+					ftgu.clearTechListeners(player.getAdvancements());
+
+			for (Technology tech : technologies.values())
+				if (tech.hasCustomUnlock() && tech.canResearchIgnoreCustomUnlock(player))
+					tech.registerListeners(player);
+		}
+	}
+
+	/**
+	 * EventHandler 会消费的 criterion 触发器白名单 —— 只有这些触发器存在真正判定的代码路径。
+	 * 不在名单里的（原版绝大多数触发器）解析得出来、也登记得进去，但永远不会授予，
+	 * 加载时由 Technology 的反序列化给出告警。
+	 */
+	public static boolean isTriggerHandled(CriterionTrigger<?> trigger) {
+		return trigger instanceof TriggerFTGU
+				|| trigger == CriteriaTriggers.LOCATION
+				|| trigger == CriteriaTriggers.PLAYER_KILLED_ENTITY
+				|| trigger == CriteriaTriggers.EFFECTS_CHANGED
+				|| trigger == CriteriaTriggers.START_RIDING_TRIGGER;
+	}
+
 	/** Load technologies from built-in mod resources on the client side. */
 	public void loadClient() {
 		clear();
@@ -481,6 +533,10 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 
 		registerAll(technologies.values().toArray(new Technology[technologies.size()]));
 
+		// 所有加载路径都汇到这里（reload / loadClient / 客户端收到服务端 json 后的 load），
+		// 对象换完了就把监听重挂一遍，见 refreshListeners
+		refreshListeners(ServerLifecycleHooks.getCurrentServer());
+
 		int size = this.technologies.size();
 		info("Loaded " + size + " technolog" + (size != 1 ? "ies" : "y"));
 	}
@@ -617,7 +673,11 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 
 
 	public void trackCriterion(ServerPlayer player, Technology tech, String name, CriterionTriggerInstance instance, CriterionTrigger<?> trigger) {
-		pendingCriteria.computeIfAbsent(player, k -> new ArrayList<>()).add(new PendingCriterion(tech, name, instance, trigger));
+		List<PendingCriterion> list = pendingCriteria.computeIfAbsent(player, k -> new ArrayList<>());
+		// 同一个条件可能被重复登记（revoke / 再次 registerListeners），留两份没意义
+		if (list.stream().anyMatch(pc -> pc.tech == tech && pc.criterionName.equals(name)))
+			return;
+		list.add(new PendingCriterion(tech, name, instance, trigger));
 	}
 
 	public void untrackCriterion(ServerPlayer player, Technology tech, String name) {

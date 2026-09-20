@@ -28,6 +28,7 @@ import com.Fuxingcheng.ftgumod.api.util.JsonContextPublic;
 import com.Fuxingcheng.ftgumod.event.TechnologyEvent;
 import com.Fuxingcheng.ftgumod.util.ListenerTechnology;
 import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.advancements.CriterionTriggerInstance;
@@ -249,8 +250,11 @@ public class Technology implements ITechnology {
 				if (child.isRoot() && child.isUnlocked(player))
 					player.sendSystemMessage(
 							Component.translatable("technology.complete.unlock.root", child.displayText));
-			player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
-					SoundSource.PLAYERS, 1.0F, 1.0F);
+			// 挑战科技不放这声：客户端那边 toast 弹出来时会放原版那个挑战完成音效
+			// （AdvancementToast 的做法，见 ToastTechnology），两声叠一起太糊
+			if (display.getType() != AdvancementType.CHALLENGE)
+				player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
+						SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 	}
 
@@ -566,6 +570,12 @@ public class Technology implements ITechnology {
 								.create(com.mojang.serialization.JsonOps.INSTANCE, TechnologyManager.INSTANCE.getRegistryAccess());
 						Criterion<?> c = Criterion.CODEC.parse(ops, entry.getValue()).getOrThrow(JsonSyntaxException::new);
 						criteria.put(entry.getKey(), c);
+						// 解析得出来不代表判得出来：除了 EventHandler 里那几个触发器，其余的都没人消费，
+						// 条件永远不会达成，而且全程没有任何报错，这里直接点出来
+						if (!TechnologyManager.isTriggerHandled(c.trigger()))
+							LOGGER.warn("Criterion '{}' uses trigger '{}', which no listener handles, so it can never be satisfied",
+									entry.getKey(),
+									net.minecraft.core.registries.BuiltInRegistries.TRIGGER_TYPES.getKey(c.trigger()));
 					} catch (JsonSyntaxException e) {
 						if (e.getMessage() == null || !e.getMessage().contains("Can't access registry"))
 							LOGGER.warn("Skipping unparseable criterion '{}': {}", entry.getKey(), e.getMessage());

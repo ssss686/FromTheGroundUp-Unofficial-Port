@@ -1,0 +1,55 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:carrot_on_a_stick"
+    },
+    "title": {
+      "translate": "technology.carrot_protocol.name"
+    },
+    "description": {
+      "translate": "technology.carrot_protocol.desc"
+    }
+  },
+  "parent": "ftgumod:survival/fishing",
+  "criteria": {
+    "ride_pig": {
+      "trigger": "minecraft:started_riding",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "vehicle": {
+                "type": [
+                  "minecraft:pig"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:stick",
+        "minecraft:string",
+        "minecraft:bamboo",
+        "minecraft:blaze_rod",
+        "minecraft:breeze_rod",
+        "minecraft:fishing_rod"
+      ],
+      [
+        "minecraft:carrot",
+        "minecraft:potato",
+        "minecraft:beetroot"
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:carrot_on_a_stick"
+  ]
+}
