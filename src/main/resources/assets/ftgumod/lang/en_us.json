@@ -167,6 +167,8 @@
   "technology.cooking.desc": "Basically just thermal decomposition",
   "technology.gilded_cuisine.name": "Gilded Cuisine",
   "technology.gilded_cuisine.desc": "Eating gold to regenerate your health",
+  "technology.flower_language.name": "Flower Language",
+  "technology.flower_language.desc": "The language of flowers is a prescription",
   "technology.dyes.name": "Dyes",
   "technology.dyes.desc": "Extracting color from plants",
   "technology.smithing.name": "Smithing",
