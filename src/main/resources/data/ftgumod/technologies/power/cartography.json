@@ -25,6 +25,7 @@
   "unlock": [
     "minecraft:compass",
     "minecraft:clock",
-    "minecraft:map"
+    "minecraft:map",
+    "minecraft:cartography_table"
   ]
 }
