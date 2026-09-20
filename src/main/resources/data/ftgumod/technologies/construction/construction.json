@@ -77,6 +77,7 @@
     [
       "minecraft:snow_block",
       "minecraft:snow"
-    ]
+    ],
+    "minecraft:stonecutter"
   ]
 }
