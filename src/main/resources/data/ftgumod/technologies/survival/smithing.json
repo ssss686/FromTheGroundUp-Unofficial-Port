@@ -34,6 +34,7 @@
   "unlock": [
     "minecraft:anvil",
     "minecraft:bucket",
+    "minecraft:smithing_table",
     "minecraft:iron_bars",
     "minecraft:iron_door",
     "minecraft:iron_trapdoor",
