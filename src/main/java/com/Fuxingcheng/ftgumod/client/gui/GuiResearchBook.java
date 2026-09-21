@@ -524,8 +524,9 @@ public class GuiResearchBook extends Screen {
 
 					guiGraphics.renderItem(t2.getDisplayInfo().getIcon(), l6 + 3, j7 + 3);
 
-					if (f3 >= l6 && f3 <= l6 + 22 && f4 >= j7 && f4 <= j7 + 22
-							&& t2.canResearchIgnoreResearched(player))
+					// 命中判定也按这一份 visible 走：画得出来的就都选得上，跟原版进度页一样，
+					// 看得见就悬停给你看名字。选中只影响提示框，真要翻到物品页还得已经研究过（见 mouseClicked）
+					if (f3 >= l6 && f3 <= l6 + 22 && f4 >= j7 && f4 <= j7 + 22)
 						selected = t2;
 				}
 			} catch (ConcurrentModificationException e) {
@@ -770,11 +771,15 @@ public class GuiResearchBook extends Screen {
 		return page;
 	}
 
-	/** 研究之书里这个科技画不画：能研究、或者通向某个已经研究过的科技；隐藏的科技自己没进度也不画 */
+	/**
+	 * 研究之书里这个科技画不画：位置够得着（criteria 不参与）、或者通向某个已经研究过的科技；
+	 * 隐藏只认科技 json 里的 display.hidden —— 跟原版进度一样，写了的科技自己没进度就不画，有了进度自己冒出来。
+	 */
 	private static boolean isVisible(Technology technology, Player player, Set<Technology> hasResearchedDescendant) {
-		if (!technology.canResearchIgnoreResearched(player) && !hasResearchedDescendant.contains(technology))
+		if (technology.getDisplayInfo().isHidden() && !technology.hasProgress(player))
 			return false;
-		return !technology.getDisplayInfo().isHidden() || technology.hasProgress(player);
+		return technology.canResearchIgnoreResearchedAndCustomUnlock(player)
+				|| hasResearchedDescendant.contains(technology);
 	}
 
 }
