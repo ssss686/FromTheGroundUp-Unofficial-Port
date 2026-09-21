@@ -1,7 +1,7 @@
 # From the Ground Up (Unofficial Port) — Wiki
 
-> This wiki covers gameplay, the technology tree, commands, installation, and FAQ for this mod.
-> Chinese and English tech names are both listed; English original names appear in parentheses where they differ.
+> This wiki covers gameplay, the technology tree, commands, installation and common questions.
+> Chinese / English technology names are listed together.
 >
 > 🌐 [中文 Wiki](WIKI_CN.md)
 
@@ -12,381 +12,433 @@
 1. [Gameplay & Getting Started](#gameplay--getting-started)
 2. [Technology Tree Overview](#technology-tree-overview)
 3. [Technology Details](#technology-details)
-4. [Command Reference](#command-reference)
-5. [Custom Technologies (Data Pack)](#custom-technologies-data-pack)
-6. [Installation & Building](#installation--building)
-7. [FAQ](#faq)
-8. [License](#license)
+4. [Research Recipes (Idea Table & Research Table)](#research-recipes-idea-table--research-table)
+5. [Research Criteria & Triggers](#research-criteria--triggers)
+6. [Command Reference](#command-reference)
+7. [Custom Technologies (Data Pack)](#custom-technologies-data-pack)
+8. [Installation & Building](#installation--building)
+9. [FAQ](#faq)
+10. [License](#license)
 
 ---
 
 ## Gameplay & Getting Started
 
-This mod adds a **research system** to Minecraft: instead of knowing every recipe from the start, you must study and unlock technologies through research before you can use the corresponding items and recipes.
+This mod adds a **research system** to Minecraft: you no longer start with every recipe. You have to research your way through a technology tree before you can use the matching items and recipes.
 
 ### Core Items
 
 | Item | Purpose |
 |---|---|
-| **Research Book** | Opens the technology tree interface to view researched / unlocked / available technologies. Default key: `R`. |
-| **Magnifying Glass** | Right-click blocks in the world to "observe" them and gain knowledge. Some secrets must be deciphered from a hint. |
-| **Idea Table** | Combine items in it to spark "ideas", unlocking new research branches. |
-| **Research Table** | Insert research parchment and solve a **puzzle** (match or connect types) to complete the research. |
-| **Research Parchment** | The vessel of research — written with an idea at the Idea Table, then solved at the Research Table. |
-| **Idea Parchment** | The vessel of ideas from the Idea Table. Can be crafted together with Research Parchment into Empty Parchment to recover mistaken parchments. |
+| **Research Book** | Opens the technology tree screen. Default key: `R`. |
+| **Magnifying Glass** | Right-click blocks in the world to "inspect" them and gain knowledge. Some secrets must be deciphered first. |
+| **Idea Table** | Combine items inside it to trigger an "idea" and open up a new research branch. |
+| **Research Table** | Put a research parchment in and solve the **puzzle** (match / connect) to finish the research. |
+| **Research Parchment** | The carrier of a research. Write to it after getting an idea, then solve it on the research table. |
+| **Idea Parchment** | Holds the idea produced by the idea table. Combine it with a research parchment into an empty parchment to recycle a mistake. |
 
 ### Getting Started
 
-1. **Craft a Research Book**, press `R` to open the technology tree, and first research **Survival** — the root technology.
-2. Research **Research** to unlock the Idea Table, Research Table, Research Book, and Magnifying Glass — the real research gameplay begins.
-3. Observe blocks with the **Magnifying Glass**, or fulfill **criteria** (e.g. having an effect, killing a specific mob) to satisfy a technology's research prerequisites.
-4. Place recipe items in the **Idea Table** to spark an idea, then write it onto a **Research Parchment**.
-5. Put the parchment in the **Research Table**, solve the puzzle (place the right items / connect the right lines), and the technology is unlocked.
+1. **Craft a research book**, press `R` and research **Survival** first — it is the root technology.
+2. Researching **Research** unlocks the idea table, research table, research book and magnifying glass, which is what actually starts the research gameplay.
+3. Satisfy a technology's **criteria** — inspect blocks with the magnifying glass, or meet a condition (having an effect, killing a certain mob, ...).
+4. Put the right items into the **idea table** to get an idea, and write it onto a **research parchment**.
+5. Put the parchment into the **research table** and solve the puzzle (place the right items / connect the two items). The technology is unlocked once you finish.
+
+### Research Book Screen
+
+- **Scroll** to zoom, **hold left click and drag** to pan; the page recenters itself and stops at the edges.
+- Technology positions are **laid out automatically** (the same algorithm as the vanilla advancement screen) — data packs never need to specify coordinates. Technologies on a page are ordered by name.
+- Every technology has a **frame**: task, goal, or **challenge**. Finishing a challenge research plays a sound.
+- **Hidden technologies**: a technology whose JSON sets `display.hidden` is not drawn on the book until its criteria are met, then it shows up (the ocean monument, end city, ender dragon, shipwreck, witch, riding a pig and crossbow pillager ones work this way).
 
 ### Research Criteria
 
-Each technology's research requires meeting certain conditions. Common types:
+A technology's criteria are written exactly like vanilla advancement criteria. The common ones are:
 
-- **effects_changed** — obtain a potion effect
-- **player_killed_entity** — kill a specific mob (e.g. a witch)
-- **item_inventory** — have an item in your inventory
-- **player_trigger / location** — trigger at a specific location
+- **effects_changed** — gain a status effect
+- **player_killed_entity** — kill a specific mob (a witch, a crossbow-wielding pillager, ...)
+- **started_riding** — start riding a specific vehicle (a pig)
+- **location** — visit a structure (an ocean monument, an end city)
+- **ftgumod:item_inventory** — hold a specific item
+
+See [Research Criteria & Triggers](#research-criteria--triggers) for the full list and its limits.
 
 ### Decipher
 
-When the Magnifying Glass observes certain blocks (e.g. beds, cauldrons, nether stars), the result is not shown directly and must be **deciphered**. After observing, press the decipher key and follow the hint (which points to a specific block / location) to complete the decipher and gain the corresponding knowledge.
+Inspecting some blocks (beds, cauldrons, nether stars) with the magnifying glass does not reveal them directly — they must be **deciphered**. Inspect, then press the decipher key and follow the hint (it points at a specific block or place) to gain the knowledge.
+
+### JEI Research Guide
+
+With JEI installed, pressing **R** on any item shows not only its recipes but also its **unlock requirements, prerequisite technology chain, and how to research it** (what to put on the idea table, how to solve the research puzzle, which extra criteria are still missing).
+
+How much is shown is controlled by `researchGuideMode` in `config/ftgumod-common.toml`:
+
+| `researchGuideMode` | Effect |
+|---|---|
+| `FULL` (default) | Prerequisite chain + full research method |
+| `CHAIN_ONLY` | Prerequisite technology chain only |
+| `DISABLED` | No research guide in JEI at all |
 
 ---
 
 ## Technology Tree Overview
 
-- `survival` (Survival) is the only root technology — it has no prerequisites.
-- Arrows mean **prerequisite → successor**; you must research a prerequisite before its successor.
+- `survival` (Survival) and `research` (Research) are the two root technologies — they have no prerequisites, everything else hangs below them.
+- Arrows mean **prerequisite → dependent**: you must research the former before the latter.
+- `[challenge]` marks a challenge-framed technology; `[hidden]` marks one that does not appear on the research book until its criteria are met.
 
 ```
-survival Survival
+survival (root)
 ├─ stoneworking Stoneworking
 │   ├─ construction Construction
 │   │   ├─ stonemasonry Stonemasonry
-│   │   │   ├─ activation Activation ──→ (power Power)
-│   │   │   └─ brickwork Brickwork ──→ quartz Quartz ──→ purpur Purpur
-│   │   └─ carpentry Carpentry ──→ glassworking Glassworking ──→ prismarine Prismarine
+│   │   │   ├─ brickwork Brickwork
+│   │   │   │   ├─ quartz Quartz
+│   │   │   │   │   └─ purpur Purpur  [challenge, hidden]
+│   │   │   │   └─ glazed_tiles Glazed Tiles
+│   │   │   └─ ice_harvesting Ice Harvesting
+│   │   └─ carpentry Carpentry
+│   │       ├─ emblems Emblems
+│   │       └─ glassworking Glassworking
+│   │           └─ prismarine Prismarine  [challenge, hidden]
 │   ├─ agriculture Agriculture
-│   │   ├─ cooking Cooking ──→ gilded_cuisine Gilded Cuisine
+│   │   ├─ cooking Cooking
+│   │   │   ├─ flower_language Flower Language
+│   │   │   └─ gilded_cuisine Gilded Cuisine
 │   │   └─ dyes Dyes
 │   └─ refinement Refinement
-│       ├─ smithing Smithing ──→ lapidary Lapidary
-│       └─ explosives Explosives
+│       ├─ smithing Smithing
+│       │   ├─ conduit Conduit Power  [challenge, hidden]
+│       │   └─ lapidary Lapidary
+│       └─ power Power
+│           ├─ activation Activation
+│           │   └─ explosives Explosives
+│           ├─ cartography Cartography
+│           ├─ carts Carts
+│           │   └─ transportation Transportation
+│           ├─ circuitry Circuitry
+│           │   └─ redstone_machinery Redstone Machinery
+│           └─ music Music
 ├─ boats Boats
-│   └─ carts Carts ──→ transportation Transportation
 ├─ defense Defense
-│   └─ metal_armor Metal Armor ──→ gem_armor Crystalline Armor
-└─ research Research  (research root)
-    ├─ bibliography Bibliography ──→ enchanting Enchanting ──→ glowing_eyes Glowing Eyes ──→ ender_knowledge Ender Knowledge
-    └─ brewing Brewing
-
-power Power  (prerequisite = construction/activation)
-├─ cartography Cartography
-├─ circuitry Circuitry ──→ redstone_machinery Redstone Machinery
-└─ music Music
+│   └─ metal_armor Metal Armor
+│       ├─ gem_armor Crystalline Armor
+│       └─ turtles Turtle Hermit
+├─ fishing Fishing Ballad
+│   ├─ carrot_protocol The Carrot Protocol
+│   └─ hunting Hunting
+│       └─ clockwork_malice Clockwork Malice  [goal]
+└─ research Research (root)
+    ├─ bibliography Bibliography
+    │   └─ enchanting Enchanting  [challenge, hidden]
+    │       └─ glowing_eyes Glowing Eyes  [challenge, hidden]
+    │           └─ ender_knowledge Ender Knowledge  [challenge, hidden]
+    └─ brewing Brewing  [challenge, hidden]
 ```
 
-> Note: although `power` is a Power-category tech, its prerequisite is the construction-category `activation`; the `research` category's prerequisite is `survival`. Cross-category references are normal.
+> Note: the **Power** group hangs off **Refinement**, while `activation`, `carts`, `explosives` and `transportation` live on the power page; **Research** is an independent root, not connected to Survival. Cross-group references are normal.
 
 ---
 
 ## Technology Details
 
-> Unlock entries are listed by Minecraft item registry name (English ID); the corresponding in-game Chinese names follow the game language.
+> Unlocks are listed by their in-game English names; `any ××` means any item of that tag counts. Technology IDs look like `ftgumod:construction/stonemasonry`.
 
 ### Survival
 
-| Technology | Prerequisite | Unlocks |
+| Technology | Requires | Unlocks |
 |---|---|---|
-| **Survival** | (root) | wooden_sword, wooden_shovel, wooden_pickaxe, wooden_axe, crafting_table, torch, bowl, wooden tools & planks |
-| **Stoneworking** | Survival | stone_sword, stone_shovel, stone_pickaxe, stone_axe (stone tools) |
-| **Construction** | Stoneworking | granite/diorite/andesite/tuff/deepslate/basalt & polished variants, mossy cobblestone, cobblestone slab/stairs, sandstone/red sandstone & slab/stairs, snow/snow layer, nether wart block, item frame |
-| **Stonemasonry** | Construction | stone slab/stairs, stone bricks/chiseled/mossy, stone brick slab/stairs, cobblestone wall/mossy, concrete powder (any color) |
-| **Activation** | Stonemasonry | wooden button (any wood), stone/polished blackstone button, wooden pressure plate (any wood), stone/polished blackstone/light/heavy pressure plate, lever |
-| **Brickwork** | Stonemasonry | bricks, brick slab/stairs, flower pot, nether brick/slab/stairs/fence, red nether bricks, end stone bricks, clay, terracotta (any color) |
-| **Quartz** | Brickwork | quartz block/chiseled/pillar/slab/stairs, glowstone, magma block |
-| **Purpur** | Quartz | purpur block/pillar/slab/stairs, end rod, shulker box, shulker box (any color) |
-| **Carpentry** | Construction | wooden door (any wood), wooden trapdoor (any wood), wooden fence (any wood), fence gate (any wood), sign (any wood), chest, ladder, painting, wool (any color), bed (any color), carpet (any color), banner (any color) |
-| **Glassworking** | Carpentry | stained glass, stained glass pane, glass pane, glass bottle |
-| **Prismarine** | Glassworking | prismarine, prismarine bricks, dark prismarine, sea lantern |
-| **Agriculture** | Stoneworking | wooden/stone hoe, wheat, hay block, melon/melon seeds, pumpkin seeds, lead, coarse dirt, jack o'lantern, leather |
-| **Cooking** | Agriculture | sugar, mushroom/rabbit/beetroot stew, bread, cookie, cake, pumpkin pie, fishing rod, carrot on a stick |
-| **Gilded Cuisine** | Cooking | golden apple, golden carrot, glistering melon slice |
-| **Dyes** | Agriculture | light gray/gray/cyan/light blue/purple/magenta/pink/orange/lime dye |
-| **Refinement** | Stoneworking | furnace, iron ingot/nugget/block, flint & steel, gold ingot/nugget/block, diamond/block, emerald/block, coal/block, lapis/block, redstone/block, slime ball/block, bone meal/block |
-| **Smithing** | Refinement | anvil, bucket, iron bars, iron door/trapdoor, full iron & gold tool sets, shears |
-| **Lapidary** | Smithing | full diamond tool set (sword/shovel/pickaxe/axe/hoe) |
-| **Explosives** | Refinement | tnt, tnt_minecart, firework_charge, fireworks, fire charge |
-| **Boats** | Survival | boats |
-| **Carts** | Boats | minecart, furnace_minecart, rail |
-| **Transportation** | Carts | hopper, golden/detector/activator rail, chest minecart, hopper minecart |
-| **Defense** | Survival | full leather armor, armor stand, bow, arrow, shield |
-| **Metal Armor** | Defense | full iron & gold armor |
-| **Crystalline Armor** | Metal Armor | full diamond armor |
+| **Survival** | (root) | any planks, any wooden slab, any wooden stairs, Stick, Wooden Sword, Wooden Shovel, Wooden Pickaxe, Wooden Axe, Crafting Table, Torch, Bowl, Campfire |
+| **Stoneworking** | Survival | Stone Sword, Stone Shovel, Stone Pickaxe, Stone Axe |
+| **Agriculture** | Stoneworking | Wooden Hoe, Stone Hoe, Wheat Crops, Hay Bale, Melon, Melon Seeds, Pumpkin Seeds, Composter, Lead, Smoker, Coarse Dirt, Jack o'Lantern, Leather, Nether Wart Block |
+| **Cooking** | Agriculture | Sugar, Mushroom Stew, Rabbit Stew, Beetroot Soup, Bread, Cookie, Cake, Pumpkin Pie, Dried Kelp |
+| **Flower Language** | Cooking | Suspicious Stew |
+| **Gilded Cuisine** | Cooking | Golden Apple, Golden Carrot, Glistering Melon Slice |
+| **Dyes** | Agriculture | Light Gray Dye, Gray Dye, Cyan Dye, Light Blue Dye, Purple Dye, Magenta Dye, Pink Dye, Orange Dye, Lime Dye |
+| **Refinement** | Stoneworking | Furnace, Iron Ingot, Iron Nugget, Block of Iron, Flint and Steel, Gold Ingot, Gold Nugget, Block of Gold, Diamond, Block of Diamond, Emerald, Block of Emerald, Coal, Block of Coal, Lapis Lazuli, Block of Lapis Lazuli, Redstone Dust, Block of Redstone, Slimeball, Slime Block, Nether Quartz, Bone Meal, Bone Block, Dried Kelp Block |
+| **Smithing** | Refinement | Anvil, Bucket, Smithing Table, Blast Furnace, Lantern, Iron Bars, Iron Door, Iron Trapdoor, Iron Sword, Iron Shovel, Iron Pickaxe, Iron Axe, Iron Hoe, Shears, Golden Sword, Golden Shovel, Golden Pickaxe, Golden Axe, Golden Hoe |
+| **Conduit Power** `[challenge, hidden]` | Smithing | Conduit |
+| **Lapidary** | Smithing | Diamond Sword, Diamond Shovel, Diamond Pickaxe, Diamond Axe, Diamond Hoe |
+| **Boats** | Survival | every boat (including the bamboo raft) |
+| **Defense** | Survival | Leather Cap, Leather Tunic, Leather Pants, Leather Boots, Leather Horse Armor, Armor Stand, Shield |
+| **Metal Armor** | Defense | Iron Helmet, Iron Chestplate, Iron Leggings, Iron Boots, Golden Helmet, Golden Chestplate, Golden Leggings, Golden Boots |
+| **Crystalline Armor** | Metal Armor | Diamond Helmet, Diamond Chestplate, Diamond Leggings, Diamond Boots |
+| **Turtle Hermit** | Metal Armor | Turtle Shell |
+| **Fishing Ballad** | Survival | Fishing Rod |
+| **The Carrot Protocol** | Fishing Ballad | Carrot on a Stick |
+| **Hunting** | Fishing Ballad | Bow, Arrow, Fletching Table |
+| **Clockwork Malice** `[goal]` | Hunting | Crossbow |
 
 ### Research
 
-| Technology | Prerequisite | Unlocks |
+| Technology | Requires | Unlocks |
 |---|---|---|
-| **Research** | Survival | paper, empty parchment, Idea Table, Research Table, Research Book, Magnifying Glass |
-| **Bibliography** | Research | book, writable_book, bookshelf |
-| **Enchanting** | Bibliography | enchanting_table, spectral_arrow |
-| **Glowing Eyes** | Enchanting | ender_eye |
-| **Ender Knowledge** | Glowing Eyes | end_crystal, ender_chest, beacon |
-| **Brewing** | Research | brewing_stand, cauldron, blaze_powder, magma_cream, fermented_spider_eye, tipped_arrow |
+| **Research** | (root) | Paper, Empty Parchment, Idea Table, Research Table, Research Book, Magnifying Glass |
+| **Bibliography** | Research | Book, Book and Quill, Bookshelf, Lectern |
+| **Enchanting** `[challenge, hidden]` | Bibliography | Enchanting Table, Spectral Arrow, Grindstone |
+| **Glowing Eyes** `[challenge, hidden]` | Enchanting | Eye of Ender |
+| **Ender Knowledge** `[challenge, hidden]` | Glowing Eyes | End Crystal, Ender Chest, Beacon |
+| **Brewing** `[challenge, hidden]` | Research | Brewing Stand, Cauldron, Blaze Powder, Magma Cream, Fermented Spider Eye, Tipped Arrow |
+
+### Construction
+
+| Technology | Requires | Unlocks |
+|---|---|---|
+| **Construction** | Stoneworking | Granite/Polished Granite, Diorite/Polished Diorite, Andesite/Polished Andesite, Tuff/Polished Tuff, Deepslate/Polished Deepslate, Basalt/Polished Basalt, Mossy Cobblestone, Mossy Cobblestone Stairs/Slab/Wall, Cobblestone Stairs/Slab/Wall, Stone, Sandstone, Sandstone Stairs/Slab/Wall, Red Sandstone, Red Sandstone Stairs/Slab/Wall, Snow Block/Snow, Stonecutter |
+| **Stonemasonry** | Construction | Stone Bricks, Cracked Stone Bricks, Chiseled Stone Bricks, Stone Brick Stairs/Slab/Wall, Stone Stairs/Slab, Smooth Stone, Smooth Sandstone, Cut Sandstone, Cut Sandstone Slab, Smooth Sandstone Stairs/Slab, Smooth Red Sandstone, Cut Red Sandstone, Cut Red Sandstone Slab, Smooth Red Sandstone Stairs/Slab, Mossy Stone Bricks, Mossy Stone Brick Stairs/Slab/Wall, Granite Stairs/Slab/Wall, Polished Granite Stairs/Slab, Diorite Stairs/Slab/Wall, Polished Diorite Stairs/Slab, Andesite Stairs/Slab/Wall, Polished Andesite Stairs/Slab, any concrete powder |
+| **Brickwork** | Stonemasonry | Bricks, Brick Stairs, Brick Slab, Brick Wall, Flower Pot, Nether Brick, Nether Bricks, Nether Brick Stairs/Slab/Wall, Nether Brick Fence, Red Nether Bricks, Red Nether Brick Stairs/Slab/Wall, End Stone Bricks, End Stone Brick Stairs/Slab/Wall, Clay, any terracotta |
+| **Quartz** | Brickwork | Block of Quartz, Chiseled Quartz Block, Quartz Pillar, Smooth Quartz Block, Quartz Bricks, Quartz Slab, Quartz Stairs, Smooth Quartz Stairs, Smooth Quartz Slab, Glowstone, Magma Block |
+| **Purpur** `[challenge, hidden]` | Quartz | Purpur Block, Purpur Pillar, Purpur Slab, Purpur Stairs, End Rod, any shulker box |
+| **Glazed Tiles** | Brickwork | 16 colors of glazed terracotta |
+| **Ice Harvesting** | Stonemasonry | Packed Ice, Blue Ice |
+| **Carpentry** | Construction | any wooden door, any wooden trapdoor, any wooden fence, any fence gate, any sign, Chest, Barrel, Loom, Ladder, Scaffolding, Item Frame, Painting, any wool, any carpet, any banner, any bed |
+| **Emblems** | Carpentry | 8 banner patterns (`flower` / `creeper` / `skull` / `mojang` / `globe` / `piglin` / `flow` / `guster`) |
+| **Glassworking** | Carpentry | any glass block, any glass pane, Glass Bottle |
+| **Prismarine** `[challenge, hidden]` | Glassworking | Prismarine, Prismarine Stairs/Slab/Wall, Prismarine Bricks, Prismarine Brick Stairs/Slab, Dark Prismarine, Dark Prismarine Stairs/Slab, Sea Lantern |
 
 ### Power
 
-| Technology | Prerequisite | Unlocks |
+| Technology | Requires | Unlocks |
 |---|---|---|
-| **Power** | Construction · Activation | redstone_torch, tripwire_hook, trapped_chest, redstone_lamp |
-| **Cartography** | Power | compass, clock, map |
-| **Circuitry** | Power | repeater, comparator, piston, sticky_piston |
-| **Redstone Machinery** | Circuitry | dispenser, dropper, observer, daylight_detector |
-| **Music** | Power | noteblock, jukebox |
+| **Power** | Refinement | Redstone Torch, Tripwire Hook, Trapped Chest, Redstone Lamp |
+| **Activation** | Power | any wooden button, Stone Button/Polished Blackstone Button, any wooden pressure plate, Stone Pressure Plate/Polished Blackstone Pressure Plate, Light Weighted Pressure Plate, Heavy Weighted Pressure Plate, Lever |
+| **Explosives** | Activation | TNT, Minecart with TNT, Firework Rocket, Firework Star, Fire Charge |
+| **Cartography** | Power | Compass, Clock, Empty Map, Cartography Table |
+| **Carts** | Power | Minecart, Minecart with Furnace, Rail |
+| **Transportation** | Carts | Hopper, Powered Rail, Detector Rail, Activator Rail, Minecart with Chest, Minecart with Hopper |
+| **Circuitry** | Power | Redstone Repeater, Redstone Comparator, Piston, Sticky Piston |
+| **Redstone Machinery** | Circuitry | Dispenser, Dropper, Observer, Daylight Detector |
+| **Music** | Power | Note Block, Jukebox |
 
 ---
 
 ## Research Recipes (Idea Table & Research Table)
 
-Besides meeting the **research criteria**, most technologies require two "recipe" steps before they fully unlock:
+Besides meeting the **criteria**, most technologies also need two "recipe" steps before they actually unlock:
 
-1. **Idea Table**: place the specified items into the Idea Table (order doesn't matter) to spark an **idea**, then write it onto a parchment.
-2. **Research Table**: put the parchment into the Research Table and solve the puzzle — either a **match** (place the right items in a 3×3 grid) or a **connect** (place 3 items forming a production chain).
+1. **Idea table**: put the listed items in (order does not matter) to trigger an **idea**, then write it onto a parchment. `n kinds` means you need n ingredient groups; one item from each group is enough.
+2. **Research table**: put the parchment in and solve the puzzle — a **match** (place the right items on a 3×3 grid) or a **connect** (link the two items of a production chain).
 
-> Notes: `{"tag": "xxx"}` is a tag reference (any item under that tag); `[a, b, c]` is an item list (pick any one); `.` means an empty cell. Items are listed by registry name; in-game they display in your language.
+> In the grids, `[Name]` is the **hint label** shown in game for that slot; one hint usually accepts several items, see the note under each entry. `.` means the slot is empty. **Survival** and **Research** are roots: no idea table or research table step, they unlock as soon as their criteria are met.
 
 ### Construction
 
-- **Stoneworking**
-  - Idea Table: stick / any wooden tool + cobblestone
-  - Puzzle (match):
-    ```
-    .   [string/reeds]  cobblestone
-    .   stick         [string/reeds]
-    stick  .            .
-    ```
-- **Construction**
-  - Idea Table: stone / sandstone
-- **Stonemasonry**
-  - Idea Table: stone / polished_granite / polished_diorite / polished_andesite / polished_deepslate / polished_tuff / smooth_basalt / polished_blackstone
-  - Puzzle (match):
-    ```
-    [stone slabs]  [stone slabs]  [stone slabs]
-    [stone types]     .          [stone types]
-    [stone types]  [stone stairs]  [stone types]
-    ```
-    > `[stone slabs]` = all slab variants; `[stone types]` = stone / polished_granite etc.; `[stone stairs]` = all stair variants.
-- **Activation**
-  - Idea Table: stick + redstone dust + [doors/fence gates/trapdoors]
-  - Puzzle (connect): iron door → lever
-- **Brickwork**
-  - Idea Table: clay / clay ball + [heat items] (furnace / smoker / blast furnace / magma block / campfire / coal etc.)
-  - Puzzle (connect): terracotta → brick block
-- **Quartz**
-  - Idea Table: quartz + glowstone dust / magma block / magma cream
-- **Purpur**
-  - Idea Table: popped chorus fruit + purpur block/pillar/stairs/slab/end rod
-  - Puzzle (match):
-    ```
-    purpur slab   purpur slab   purpur slab
-    purpur pillar  end rod     purpur pillar
-    [purpur block/end bricks] purpur stairs [purpur block/end bricks]
-    ```
-- **Carpentry**
-  - Idea Table: wool (any color) + planks (any wood) + wooden slab (any wood) + wooden stairs (any wood)
-  - Puzzle (connect): planks → wool
-- **Glassworking**
-  - Idea Table: sand + glass block
-- **Prismarine**
-  - Idea Table: prismarine / sea lantern + prismarine shard + prismarine crystals
+- **Stoneworking** — Idea table: Stick or any wooden tool + Cobblestone
+  ```
+  .        [Rope]   Cobblestone
+  .        Stick    [Rope]
+  Stick    .        .
+  ```
+- **Construction** — Idea table: any cobblestone + Sand/Red Sand
+- **Stonemasonry** — Idea table: Stone (or Polished Granite/Diorite/Andesite/Deepslate/Tuff, Smooth Basalt, Polished Blackstone)
+  ```
+  [Roof]   [Roof]   [Roof]
+  [Wall]   .        [Wall]
+  [Wall]   [Steps]  [Wall]
+  ```
+  > `[Roof]` = any slab; `[Steps]` = any stairs; `[Wall]` = Stone/Polished Granite/Polished Diorite/Polished Andesite/Polished Deepslate/Polished Tuff/Smooth Basalt/Polished Blackstone.
+- **Brickwork** — Idea table: Clay/Clay Ball + a heat source; Research table (connect): Terracotta → Bricks
+- **Quartz** — Idea table: Nether Quartz + Glowstone Dust/Magma Block/Magma Cream
+- **Purpur** — Idea table: Popped Chorus Fruit + Purpur Block/Pillar/Stairs/Slab/End Rod
+  ```
+  [Roof]   [Roof]   [Roof]
+  [Pillar] [Light]  [Pillar]
+  [Wall]   [Steps]  [Wall]
+  ```
+  > `[Pillar]` = Purpur Pillar; `[Light]` = End Rod; `[Wall]` = Purpur Block/End Stone Bricks.
+- **Glazed Tiles** — Idea table: any terracotta + a heat source
+- **Ice Harvesting** — Idea table: Ice + Water Bucket/Bucket
+- **Carpentry** — Idea table: any wool + any planks + any wooden slab + any wooden stairs; Research table (connect): Oak Planks → White Wool
+- **Emblems** — Idea table: any banner/Shield + any flower/any dye + freeze-immune wearables (leather armor / turtle shell)
+- **Glassworking** — Idea table: Sand + Glass
+- **Prismarine** — Idea table: Prismarine/Sea Lantern + Prismarine Shard + Prismarine Crystals
 
 ### Power
 
-- **Power**
-  - Idea Table: redstone dust + any switch (button / pressure plate / lever / stick)
-  - Puzzle (match):
-    ```
-    redstone dust  .   .
-    stick      redstone dust  redstone dust
-    [circuit board] [circuit board] [circuit board]
-    ```
-    > `[circuit board]` = stone / stone slab / wool / terracotta / concrete, any one.
-- **Cartography**
-  - Idea Table: paper + redstone dust / feather / ink sac
-- **Circuitry**
-  - Idea Table: redstone dust / redstone torch + quartz / stone / stone slab
-  - Puzzle (match):
-    ```
-    .  .  .
-    redstone dust  stone  redstone torch
-    [circuit board] [circuit board] [circuit board]
-    ```
-- **Redstone Machinery**
-  - Idea Table: bow + redstone dust
-  - Puzzle (match):
-    ```
-    .  .  .
-    redstone dust  stone  repeater
-    [circuit board] sticky piston [circuit board]
-    ```
-- **Music**
-  - Idea Table: redstone dust + diamond + planks
-  - Puzzle (match):
-    ```
-    .  [iron nugget/gold nugget/diamond]  [stick/iron ingot]
-    .  music disc                    .
-    [planks/wooden slab] [planks/wooden slab] [planks/wooden slab]
-    ```
+- **Power** — Idea table: Redstone Dust + button/pressure plate/lever/stick
+  ```
+  [Power]  .        .
+  [Rod]    [Power]  [Power]
+  [Board]  [Board]  [Board]
+  ```
+  > `[Board]` = Stone/Stone Slab/any wool/any terracotta/any concrete.
+- **Activation** — Idea table: Stick + Redstone Dust + door/fence gate/trapdoor; Research table (connect): Iron Door → Lever
+- **Explosives** — Idea table: Gunpowder + Sand + Flint and Steel + any dye
+- **Cartography** — Idea table: Paper + Redstone Dust/Feather/Ink Sac
+- **Carts** — Idea table: Iron Ingot + Stick
+  ```
+  [Cart]   .        [Cart]
+  [Cart]   [Cart]   [Cart]
+  [Rail]   [Tie]    [Rail]
+  ```
+  > `[Cart]` = Iron Ingot/any planks; `[Rail]` = Iron Ingot; `[Tie]` = Stick/any wooden slab.
+- **Transportation** — Idea table: Redstone Dust + Minecart/Rail + Chest; Research table (connect): Rail → Redstone Dust
+- **Circuitry** — Idea table: Redstone Dust/Redstone Torch + Nether Quartz/Stone/Stone Slab
+  ```
+  .        .        .
+  [Input]  [NOT]    [NOT]
+  [Board]  [Board]  [Board]
+  ```
+  > `[Input]` = Redstone Dust; `[NOT]` = Stone (or Redstone Torch).
+- **Redstone Machinery** — Idea table: Bow + Redstone Dust
+  ```
+  .        .        .
+  [Input]  [Pulse]  [Pulse]
+  [Board]  [Pulse]  [Board]
+  ```
+  > `[Input]` = Redstone Dust; `[Pulse]` = Stone/Redstone Repeater/Sticky Piston.
+- **Music** — Idea table: Redstone Dust + Diamond + any planks
+  ```
+  .        [Stylus] [Tone Arm]
+  [Music]  .        .
+  [Table]  [Table]  [Table]
+  ```
+  > `[Tone Arm]` = Stick/Iron Ingot; `[Stylus]` = any nugget/Diamond; `[Music]` = any music disc; `[Table]` = any planks/any wooden slab.
 
 ### Research
 
-- **Bibliography**
-  - Idea Table: paper + leather
-- **Enchanting**
-  - Idea Table: enchanted item (any) + book + lapis lazuli
-  - Puzzle (connect): book → iron sword
-- **Glowing Eyes**
-  - Idea Table: ender pearl + blaze powder
-- **Ender Knowledge**
-  - Idea Table: [dragon egg / dragon's breath / dragon head] + nether star
-  - Puzzle (match):
-    ```
-    .  wither skeleton skull  .
-    .  [crafting table/bed]  .
-    .  [dragon egg/breath/head]  .
-    ```
-- **Brewing**
-  - Idea Table: [water bottle / water bucket] + [nether wart / sugar]
-  - Puzzle (match):
-    ```
-    .  sugar     .
-    .  nether wart  .
-    .  [water bottle/water bucket] .
-    ```
+- **Bibliography** — Idea table: Paper + Leather
+- **Enchanting** — Idea table: any enchanted item + Book + Lapis Lazuli; Research table (connect): Book → Iron Sword
+- **Glowing Eyes** — Idea table: Ender Pearl + Blaze Powder
+- **Ender Knowledge** — Idea table: Dragon Egg/Dragon's Breath/Dragon Head + Soul Sand + Wither Skeleton Skull
+  ```
+  .        [Wither] .
+  .        [Man]    .
+  .        [Dragon] .
+  ```
+  > `[Man]` = Crafting Table/any bed; `[Dragon]` = Dragon Egg/Dragon's Breath/Dragon Head.
+- **Brewing** — Idea table: Potion/Water Bucket + Nether Wart + Sugar
+  ```
+  .        [Swift]  .
+  .        [Awkward].
+  .        [Liquid] .
+  ```
+  > `[Liquid]` = Potion/Water Bucket.
 
 ### Survival
 
-- **Agriculture**
-  - Idea Table: crops / seeds / berries / fruits / mushrooms (any) + dirt
-  - Puzzle (match):
-    ```
-    .  .  .
-    stick  [crop type]  stick
-    dirt  dirt  dirt
-    ```
-    > `[crop type]` = any item under crops / seeds / berry / fruit / mushrooms tags.
-- **Cooking**
-  - Idea Table: heat item (magma cream / blaze powder / campfire / soul campfire etc.) + [meat/vegetables/grains]
-  - Puzzle (match):
-    ```
-    .  .  .
-    [vegetables]  raw meat (any)  [fruits]
-    .  bowl  .
-    ```
-    > `[vegetables]` = carrot / potato / beetroot / wheat / pumpkin / mushroom etc.; `[fruits]` = apple / melon / chorus_fruit / sweet_berries etc.
-- **Gilded Cuisine**
-  - Idea Table: [gold block/ingot/nugget] + [apple/carrot/melon slice]
-  - Puzzle (match):
-    ```
-    gold nugget  gold nugget  gold nugget
-    gold nugget  [apple/carrot/melon slice]  gold nugget
-    gold nugget  gold nugget  gold nugget
-    ```
-- **Dyes**
-  - Idea Table: flower + dye + cactus
-  - Puzzle (connect): flint → ink sac
-- **Refinement**
-  - Idea Table: ore (any raw ore / ore block) + heat item + pickaxe (any material)
-  - Puzzle (match):
-    ```
-    stone materials (stone/andesite/diorite/granite)  same  same
-    same  [ore type]  same
-    same  heat item  same
-    ```
-    > `[ore type]` = any raw ore or ore block.
-- **Smithing**
-  - Idea Table: metal ingot (any) / metal nugget (any) / [iron/gold/copper/netherite block]
-  - Puzzle (connect): planks → anvil
-- **Lapidary**
-  - Idea Table: diamond + emerald
-  - Puzzle (connect): iron ingot → diamond
-- **Explosives**
-  - Idea Table: gunpowder + sand + flint and steel + dye
-- **Carts**
-  - Idea Table: iron ingot + [stick/boat]
-  - Puzzle (match):
-    ```
-    [iron ingot/planks]  .  [iron ingot/planks]
-    [iron ingot/planks]  [iron ingot/planks]  [iron ingot/planks]
-    iron ingot  [stick/wooden slab]  iron ingot
-    ```
-- **Transportation**
-  - Idea Table: redstone dust + [minecart/boat/rail] + chest
-  - Puzzle (connect): rail → redstone dust
-- **Defense**
-  - Idea Table: sword (any material) + armor (any) / leather + iron ingot + planks (any wood)
-- **Metal Armor**
-  - Idea Table: armor + metal ingot (any) / metal nugget (any) etc.
-  - Puzzle (connect): armor stand → iron ingot
-- **Crystalline Armor**
-  - Idea Table: armor + gems
-  - Puzzle (connect): leather → diamond
-- **Boats**
-  - Idea Table: bowl
+- **Agriculture** — Idea table: crop/seed/berry/fruit/mushroom + Dirt
+  ```
+  .        .        .
+  [Leaning][Crop]   [Leaning]
+  [Soil]   [Soil]   [Soil]
+  ```
+  > `[Leaning]` = Stick; `[Crop]` = any item of the crop/seed/berry/fruit/mushroom tags; `[Soil]` = Dirt.
+- **Cooking** — Idea table: a heat source/Bowl + raw meat/Potato/Carrot/Wheat/Pumpkin/Beetroot/Mushroom/Kelp
+  ```
+  .        .        .
+  [Veggie] [Meat]   [Fruit]
+  .        [Bowl]   .
+  ```
+  > `[Veggie]` = Carrot/Potato/Beetroot/Wheat Crops/Pumpkin/Mushroom/Kelp; `[Meat]` = any raw meat; `[Fruit]` = Apple/Melon/Chorus Fruit/Sugar Cane/Sweet Berries/Glow Berries.
+- **Flower Language** — Idea table: mushroom/fungus + bowl/cauldron/bucket + any small flower
+- **Gilded Cuisine** — Idea table: Block of Gold/Gold Ingot/Gold Nugget + Apple/Carrot/Melon Slice
+  ```
+  [Gilded] [Gilded] [Gilded]
+  [Gilded] [Dish]   [Gilded]
+  [Gilded] [Gilded] [Gilded]
+  ```
+  > `[Gilded]` = Gold Nugget; `[Dish]` = Apple/Carrot/Melon Slice.
+- **Dyes** — Idea table: flower + dye + Cactus; Research table (connect): Flint → Ink Sac
+- **Refinement** — Idea table: ore/raw material + a heat source + pickaxe
+  ```
+  [Insulator][Insulator][Insulator]
+  [Insulator][Ore]     [Insulator]
+  [Insulator][Fuel]    [Insulator]
+  ```
+  > `[Insulator]` = Cobblestone/Blackstone/Cobbled Deepslate; `[Ore]` = any raw ore or raw material; `[Fuel]` = a heat source (furnace/smoker/blast furnace/magma block/campfire/coal...).
+- **Smithing** — Idea table: any ingot/nugget, Block of Copper/Gold/Iron/Netherite; Research table (connect): Oak Planks → Anvil
+- **Conduit Power** — Idea table: Nautilus Shell + Kelp + Prismarine Crystals/Shard/Prismarine/Dark Prismarine/Prismarine Bricks
+  ```
+  [Frame]  [Frame]  [Frame]
+  [Frame]  [Core]   [Frame]
+  [Frame]  [Frame]  [Frame]
+  ```
+  > `[Core]` = Nautilus Shell.
+- **Lapidary** — Idea table: any gem; Research table (connect): Iron Ingot → Diamond
+- **Boats** — Idea table: Bowl
+- **Defense** — Idea table: sword + Leather/armor + Iron Ingot + any planks
+- **Metal Armor** — Idea table: armor + any ingot/nugget; Research table (connect): Armor Stand → Iron Ingot
+- **Crystalline Armor** — Idea table: armor + any gem; Research table (connect): Leather → Diamond
+- **Turtle Hermit** — Idea table: Turtle Scute + Kelp + Leather Cap/Chainmail Helmet/Golden Helmet/Iron Helmet; Research table (connect): Rabbit Hide → Lectern
+- **Fishing Ballad** — Idea table: Stick/Bamboo/Blaze Rod/Breeze Rod + String + Spider Eye/Slimeball/Rotten Flesh/Sweet Berries/Apple/Glow Berries/Sea Pickle/Kelp/Egg/Totem of Undying
+- **The Carrot Protocol** — Idea table: Stick/String/Bamboo/Blaze Rod/Breeze Rod/Fishing Rod + Carrot/Potato/Beetroot
+- **Hunting** — Idea table: Fishing Rod/Stick/Bamboo/Blaze Rod/Breeze Rod + String + Flint/Prismarine Shard/Amethyst Shard/any nugget
+- **Clockwork Malice** — Idea table: Bow/Stick/Bamboo/Blaze Rod/Breeze Rod + Tripwire Hook + any ingot
 
-> **Survival** and **Research** are root technologies — they have no Idea Table / Research Table steps and unlock directly once their research criteria are met.
+> **Survival** and **Research** are the roots: no idea table or research table step, they unlock as soon as their criteria are met.
+
+---
+
+## Research Criteria & Triggers
+
+A technology's `criteria` are written exactly like vanilla advancement criteria, but **only the triggers below are actually evaluated** — anything else has no listener, so the condition can never be satisfied (the mod logs a warning when it loads such a file).
+
+| Trigger | Parameters | Meaning |
+|---|---|---|
+| `ftgumod:technology_unlocked` | `technology` (optional) | A technology becomes reachable; any technology if omitted |
+| `ftgumod:technology_researched` | `technology` (optional) | A technology is researched; **the only technology trigger usable by a vanilla advancement** |
+| `ftgumod:item_inventory` | `predicate` (an item predicate id, e.g. `ftgumod:enchantment`) | The player holds a matching item (technology-only, not for advancements) |
+| `ftgumod:block_inspected` | `block` (optional), `success` (optional) | A block was inspected with the magnifying glass (`success` tells a successful decipher apart) |
+| `ftgumod:recipe_locked` | — | A locked recipe was triggered |
+| `ftgumod:copy_research` | — | A research was copied |
+| `minecraft:location` | `player[].predicate.location` | Reaching a structure/place |
+| `minecraft:player_killed_entity` | `entity[]` | Killing a mob (can add equipment, location, ... predicates) |
+| `minecraft:effects_changed` | `effects` | Gaining a status effect |
+| `minecraft:started_riding` | `player[].predicate.vehicle` | Starting to ride a specific vehicle |
+
+Things worth knowing:
+
+- One technology can have several criteria; the vanilla `requirements` format decides whether they must all be met or just one. Without `requirements`, each criterion forms its own group (i.e. **all of them are required**).
+- Criteria **only decide whether the technology can be researched** — they do not decide whether it is drawn on the book. That is `display.hidden`'s job.
+- The in-game description of a criterion uses the language key `technology.criteria.<technology path with dots>.<criterion name>`, e.g. `technology.criteria.survival.conduit.wreck` (see [Custom Technologies](#custom-technologies-data-pack)).
 
 ---
 
 ## Command Reference
 
-All commands start with `/technology` (registered by this mod).
+All commands start with `/technology` (registered by the mod).
 
 ```
-/technology grant <player> everything                       grant all technologies
-/technology grant <player> only <tech>                      grant only the specified technology
-/technology grant <player> through <tech>                   grant the specified technology and all its prerequisites
-/technology grant <player> from <tech>                      grant the specified technology and all its successors
-/technology grant <player> until <tech>                     grant the specified technology and its intermediate related techs
+/technology grant <player> everything                    Grant every technology
+/technology grant <player> only <technology id>           Grant that technology only
+/technology grant <player> through <technology id>        Grant it and all of its prerequisites
+/technology grant <player> from <technology id>           Grant it and all of its dependents
+/technology grant <player> until <technology id>          Grant it and the technologies in between
 
-/technology revoke <player> everything                      revoke all technologies
-/technology revoke <player> only <tech>                     revoke only the specified technology
-/technology revoke <player> through <tech>                  revoke the specified technology and its prerequisites
-/technology revoke <player> from <tech>                     revoke the specified technology and its successors
-/technology revoke <player> until <tech>                    revoke the specified technology and its intermediate related techs
+/technology revoke <player> everything                    Revoke every technology
+/technology revoke <player> only <technology id>          Revoke that technology only
+/technology revoke <player> through <technology id>       Revoke it and its prerequisites
+/technology revoke <player> from <technology id>          Revoke it and its dependents
+/technology revoke <player> until <technology id>         Revoke it and the technologies in between
 
-/technology test <player> <tech> [criterion]                check whether a technology / criterion is satisfied
-/technology reload                                           reload technology data
+/technology test <player> <technology id> [criterion id]  Query whether a technology/criterion is met
+/technology reload                                        Reload the technology data
 ```
 
-- `<tech>` format looks like `ftgumod:survival/stoneworking`, `ftgumod:research/brewing`.
-- Use **Tab auto-completion** to browse available options.
-- The difference between the `only` / `through` / `from` / `until` modes:
-  - `only` affects only that technology itself
-  - `through` goes **up** the prerequisite chain (including all parent nodes)
-  - `from` goes **down** the successor chain (including all child nodes)
-  - `until` takes everything from the root to that technology (excluding the root)
+- `<technology id>` looks like `ftgumod:survival/stoneworking` or `ftgumod:research/brewing`.
+- **Tab completion** is word-boundary aware: `:`, `/`, `_` and `.` all count, so typing `st` suggests `ftgumod:construction/stonemasonry`, with the closest matches first.
+- The four modes:
+  - `only` affects that technology alone
+  - `through` walks up the **prerequisite** chain (including every parent)
+  - `from` walks down the **dependent** chain (including every child)
+  - `until` takes everything between a root and that technology (excluding the root)
 
 ---
 
 ## Custom Technologies (Data Pack)
 
-Technology definition files are located in `data/ftgumod/technologies/`. Players can override or add technologies via data packs.
+Technology definitions live in `data/<namespace>/technologies/`; players can override or add technologies through a data pack.
 
 ### Directory Structure
 
 ```
 data/
-└── ftgumod/
+└── ftgumod/                        # namespace
     └── technologies/
-        ├── survival/
-        │   ├── survival.json
+        ├── survival/               # category (group, the first half of the technology id)
+        │   ├── survival.json       # id = ftgumod:survival/survival
         │   ├── stoneworking.json
         │   └── ...
         ├── construction/
@@ -394,21 +446,92 @@ data/
         └── power/
 ```
 
-### Override Priority
+### Load Locations & Priority
 
-```
-world/technologies/  >  config/ftgumod/technologies/  >  Built-in (mod JAR)
+| Location | Purpose | Saved with the world |
+|------|------|-----------|
+| `config/ftgumod/technologies/<namespace>/<category>/<name>.json` | Global overrides/additions | No |
+| `<world folder>/technologies/<namespace>/<category>/<name>.json` | Per-world overrides/additions | Yes |
+| `<world folder>/datapacks/<pack>/data/<namespace>/technologies/<category>/<name>.json` | Data pack (`.zip` works too) | Yes |
+| Built in (mod JAR) | Technologies shipped with the mod | — |
+
+**Earlier wins**: `config/` > world folder > data pack > built in. A technology defined twice keeps the highest-priority copy; the others only fill in what is still missing. Run `/technology reload` to apply changes.
+
+> To override a built-in technology, use the `ftgumod` namespace (e.g. `config/ftgumod/technologies/ftgumod/survival/stoneworking.json`) and keep the same category and file name so the id matches.
+
+### Technology JSON Fields
+
+| Field | Type | Description |
+|------|------|------|
+| `parent` | technology id | Prerequisite; omit it for a root |
+| `display` | object | The vanilla `DisplayInfo` |
+| `display.icon` | `{"item": "..."}` or `{"id": "..."}` | Technology icon, both spellings accepted |
+| `display.title` / `display.description` | text component | Name and description, usually `{"translate": "technology.<name>.name"}` |
+| `display.frame` | `task` (default) / `goal` / `challenge` | Frame style; `challenge` plays a sound when the research is completed |
+| `display.hidden` | boolean, default `false` | `true` = not drawn on the research book until the criteria are met |
+| `display.x` / `display.y` | float, optional | **Both** are needed for a fixed position; writing only one is ignored with a warning. Otherwise the layout is automatic |
+| `criteria` | object | Research criteria, written as in the previous section |
+| `requirements` | 2D string array | Vanilla advancement format deciding AND/OR between criteria; omitted = each criterion is its own group |
+| `rewards` | object | Vanilla `AdvancementRewards`, optional |
+| `unlock` | array | Items unlocked once researched; each entry is an item id, a tag `{"tag": "..."}`, or `{"item": "…", "recipe_types": […]}` (see below) |
+| `idea` | object | Idea table recipe |
+| `idea.amount` | integer | How many ingredient groups must be filled |
+| `idea.ingredients` | array | Per group: an item id, an array of item ids (any of them), `{"tag": "..."}`, or a mod item predicate — `{"type": "ftgumod:enchantment"}` (enchanted items), `{"type": "ftgumod:fluid", "fluid": "…"}` (containers of a fluid), `{"type": "ftgumod:mod", "modid": "…"}` |
+| `research` | object | Research table puzzle |
+| `research.type` | `ftgumod:match` / `ftgumod:connect` | Match (3×3 grid) or connect (two items) |
+| `research.pattern` | 3 strings | `match` only; spaces leave a slot empty |
+| `research.key` | object | `match` only; keys are the letters in `pattern`, values are `{"item": …, "hint": {"translate": …}}` |
+| `research.left` / `research.right` | item | `connect` only; the two ends (an id or `{"item": …}`) |
+| `gamestage` | string, optional | Requires a GameStage before it can be researched |
+| `start` | boolean, default `false` | A root technology (researchable with no prerequisite) |
+| `copy` | boolean, default `true` | Whether the research may be copied with the research book |
+
+### Minimal Example
+
+```json
+{
+  "display": {
+    "icon": { "item": "minecraft:carrot_on_a_stick" },
+    "title": { "translate": "technology.carrot_protocol.name" },
+    "description": { "translate": "technology.carrot_protocol.desc" }
+  },
+  "parent": "ftgumod:survival/fishing",
+  "criteria": {
+    "ride_pig": {
+      "trigger": "minecraft:started_riding",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": { "vehicle": { "type": ["minecraft:pig"] } }
+          }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      ["minecraft:stick", "minecraft:string", "minecraft:fishing_rod"],
+      ["minecraft:carrot", "minecraft:potato", "minecraft:beetroot"]
+    ]
+  },
+  "unlock": ["minecraft:carrot_on_a_stick"]
+}
 ```
 
-| Directory | Purpose | Per-save? |
-|-----------|---------|-----------|
-| Built-in (JAR) | Mod's default technologies | — |
-| `config/ftgumod/technologies/` | Global overrides / additions | No |
-| `world/technologies/` | Per-save overrides / additions | Yes |
+### Language Keys
+
+| Key | Purpose |
+|----|------|
+| `technology.<technology>.name` / `.desc` | Name and description; `<technology>` is the file name without `.json`, e.g. `technology.stonemasonry.name` |
+| `technology.criteria.<category>.<technology>.<criterion>` | Description of a criterion; `/` in the path becomes `.`, e.g. `technology.criteria.survival.conduit.wreck` |
+| `technology.hint.<hint>` | The hint label referenced by `hint` inside `research.key`, shown on that slot of the research table |
 
 ### unlock recipe_types Filtering
 
-By default, unlock searches all recipe types. Use the `recipe_types` field to restrict the search scope:
+unlock searches every recipe type by default. Use `recipe_types` to narrow it down:
 
 ```json
 "unlock": [
@@ -417,7 +540,7 @@ By default, unlock searches all recipe types. Use the `recipe_types` field to re
 ]
 ```
 
-When `recipe_types` is omitted, all types (crafting, smelting, blasting, etc.) are searched.
+Without `recipe_types`, every type — crafting, smelting, blasting and so on — is searched.
 
 ---
 
@@ -426,14 +549,14 @@ When `recipe_types` is omitted, all types (crafting, smelting, blasting, etc.) a
 ### Requirements
 
 - Minecraft **1.21.1**
-- NeoForge **21.1.230** or later
+- NeoForge **21.1.230** or newer
 
 ### Installation
 
-1. Install [NeoForge](https://neoforged.net/) for 1.21.1.
-2. Download this mod's release jar.
-3. Place the `.jar` file in your `mods/` folder.
-4. Launch the game.
+1. Install [NeoForge](https://neoforged.net/) (1.21.1).
+2. Download the mod jar.
+3. Put the `.jar` into the `mods/` folder.
+4. Start the game.
 
 ### Building from source
 
@@ -443,41 +566,47 @@ When `recipe_types` is omitted, all types (crafting, smelting, blasting, etc.) a
 ./gradlew runServer     # launch a development server
 ```
 
-The artifact is output to `build/libs/`.
+The output goes to `build/libs/`.
 
 ---
 
 ## FAQ
 
-**Q: Why can't I craft many things at the start?**
-A: That's normal. You need to research first to unlock them. Open the Research Book (`R`) to see currently available research.
+**Q: I can't craft a lot of things at the start?**
+A: That is intended. You have to unlock them through research. Open the research book (`R`) to see what you can research.
 
-**Q: How do I open the Research Book?**
-A: Craft a Research Book and press `R`, or rebind the key in settings.
+**Q: How do I open the research book?**
+A: Craft one and press `R`, or rebind the key in the options.
+
+**Q: Something is missing from the technology tree?**
+A: Challenge technologies (ocean monument, end city, ender dragon, shipwreck, ...) are hidden by default and only appear once their criteria are met.
 
 **Q: How do I solve the puzzles?**
-A: For Match puzzles, place the correct items as the hint describes; for Connect puzzles, connect the related items into a line. Hints can be obtained by deciphering with the Magnifying Glass.
+A: Match puzzles want the right items on the grid; connect puzzles want two related items linked. Hints come from deciphering with the magnifying glass.
 
-**Q: What happens to old saves?**
-A: This is an alpha release; undiscovered bugs may remain — test before committing to a long-term world. Since v1.1, loot tables use data pack overrides; already-generated chests are not affected.
+**Q: What does JEI show?**
+A: Press `R` on an item to see its unlock requirements, prerequisite technology chain and how to research it. How much is shown is set by `researchGuideMode` in `config/ftgumod-common.toml`.
 
-**Q: Is it compatible with multiplayer?**
-A: Yes. Research progress is saved per-player.
+**Q: What happens to existing worlds?**
+A: This is an alpha, so there may be undiscovered bugs — test before committing a long-term world. Since v1.1 loot tables are overridden through a data pack, so already generated chests are unaffected.
 
-**Q: How do I quickly test all technologies?**
-A: Use the command `/technology grant <your name> everything`.
+**Q: Does it work in multiplayer?**
+A: Yes. Research progress is stored per player.
+
+**Q: How do I quickly test every technology?**
+A: Use `/technology grant <your name> everything`.
 
 **Q: Where is research progress stored?**
-A: In player data, saved with the world / player data.
+A: In the player data, so it is saved with the world/player.
 
 **Q: Can I customize the technology tree?**
-A: Yes. Technology definitions are in `data/ftgumod/technologies/` and can be overridden or added via data packs. See the "Custom Technologies (Data Pack)" section.
+A: Yes. Definitions live in `data/<namespace>/technologies/` and can be overridden or added through a data pack, `config/ftgumod/technologies/` or the world folder. See the "Custom Technologies (Data Pack)" section.
 
 ---
 
 ## License
 
 - **This port**: CC BY-NC 4.0 (Creative Commons Attribution-NonCommercial 4.0)
-- **Original mod**: *From the Ground Up* by Astavie, CC BY-NC 3.0
+- **Original**: *From the Ground Up* by Astavie, CC BY-NC 3.0
 
-This work is a modified adaptation of the original. The original author does not endorse this port. Build scaffolding files are MIT-licensed by the NeoForge MDK; see [MDK-LICENSE.txt](MDK-LICENSE.txt).
+This work is an adapted port of the original; the original author does not endorse it. The build scaffolding files are licensed MIT by the NeoForge MDK, see [MDK-LICENSE.txt](MDK-LICENSE.txt).
