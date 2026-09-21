@@ -65,6 +65,14 @@ public abstract class TriggerFTGU<T extends CriterionTriggerInstance> implements
 				.add(new ListenerTech<>(instance, listenerTech));
 	}
 
+	/**
+	 * /reload 时用：旧的 Technology 对象已经作废，tech 监听里挂的还是旧引用，全清掉等重新登记。
+	 * 只动 tech 监听，不碰原版成就挂在 listeners 里的那些。
+	 */
+	public void clearTechListeners(PlayerAdvancements playerAdvancements) {
+		techListeners.remove(playerAdvancements);
+	}
+
 	public void removeTechListener(PlayerAdvancements pa, T instance, ListenerTechnology listenerTech) {
 		Set<ListenerTech<T>> set = techListeners.get(pa);
 		if (set != null) {

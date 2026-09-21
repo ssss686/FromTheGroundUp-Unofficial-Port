@@ -23,11 +23,14 @@ import com.fuxingcheng.fromthegroundup.packet.PacketDispatcher;
 import com.fuxingcheng.fromthegroundup.packet.server.CopyTechMessage;
 import com.fuxingcheng.fromthegroundup.client.FTGUClient;
 import com.fuxingcheng.fromthegroundup.technology.Technology;
+import com.fuxingcheng.fromthegroundup.technology.TechnologyLayout;
 import com.fuxingcheng.fromthegroundup.technology.TechnologyManager;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.advancements.AdvancementWidgetType;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -52,6 +55,24 @@ public class GuiResearchBook extends Screen {
 			"textures/gui/achievement/achievement_background.png");
 	private static final ResourceLocation STAINED_CLAY = ResourceLocation.parse(
 			"textures/block/cyan_terracotta.png");
+	/** 详情面板里解锁物品槽的底框，用的就是原版 task 未完成那套边框 */
+	private static final ResourceLocation SLOT_FRAME = AdvancementWidgetType.UNOBTAINED
+			.frameSprite(AdvancementType.TASK);
+	/** 书页贴图里那块内窗：宽 224、高 155 行（内容只用得到上面 154 行，见 VIEW_H） */
+	private static final int VIEW_W = 224;
+	private static final int WINDOW_H = 155;
+	/**
+	 * 放内容能用的高度：内窗 155 行里最下面那一行是书页贴图的底色（贴图 y = 171，不透明）——
+	 * 贴图整张是最后一步盖在内容上面的（见 drawResearchScreen 末尾那个 blit）。所以排版、居中、
+	 * 滚动范围和剪切框一律按 154 行算，滚到底时最下面那个框的底边正好落在 154 行。
+	 *
+	 * 剪切框也得跟着按 154：贴图盖得住画在那一行的贴图，但盖不住 item —— 物品图标是带着深度写、
+	 * 在 z = 150 画的（GuiGraphics.renderItem，也就是上面画 tooltip 时特意抬到 z = 400 的那个原因），
+	 * 后面 z = 0 的书页贴图压不过它。剪切框要是留了第 155 行，就会出现"框被书页盖掉了、钻石图标
+	 * 却还露在书页底边上"。原版进度页的剪切框就是内窗本身的大小（AdvancementTab 里那个
+	 * enableScissor(x, y, x + 234, y + 113)，正好是它那块内窗），画不进去的 item 直接被裁掉。
+	 */
+	private static final int VIEW_H = WINDOW_H - 1;
 	public static Map<ResourceLocation, Double> xScrollO = new HashMap<>();
 	public static Map<ResourceLocation, Double> yScrollO = new HashMap<>();
 	private static boolean state = true;
@@ -76,6 +97,8 @@ public class GuiResearchBook extends Screen {
 	/** 原版 AdvancementScreen 的闸：第一次拖动只置位，从第二个事件开始才真的平移 */
 	private boolean isScrolling;
 	private int pages;
+	/** 打开书（init）时算好的"当前这一页画得出来的科技"，排版、连线、命中判定都按它走 */
+	private Set<Technology> visible;
 
 	public GuiResearchBook(Player player) {
 		super(Component.translatable("item.ftgumod.research_book"));
@@ -116,33 +139,28 @@ public class GuiResearchBook extends Screen {
 
 		clearWidgets();
 		if (state) {
-			Set<Technology> tree = new HashSet<>();
-			root.getChildren(tree, true);
+			// 先按"现在画得出来的科技"把这一页重排一遍再取范围：看不见的科技不占格子，
+			// 父科技才会落在唯一画得出来的孩子那一行上（见 TechnologyLayout.apply）
+			visible = visibleTechs();
+			TechnologyLayout.apply(root, visible::contains);
 
-			// 整块内容占的像素范围：图标框画在格原点 -2 的地方、26 像素见方（见
-			// drawResearchScreen 里那个 blit），所以最边上的框决定范围
-			int minX = (int) root.getDisplayInfo().getX();
-			int maxX = minX;
-			int minY = (int) root.getDisplayInfo().getY();
-			int maxY = minY;
+			// 整块内容占的像素范围。算式必须和 drawResearchScreen 里摆框的那两个一模一样
+			// （框画在格原点 -2 的位置、26 像素见方）：那边是先把格坐标乘成像素再取整，
+			// 这边要是先把坐标取整再乘格子大小，落在半格的科技（y = 4.5 那种）就会少算半格 ——
+			// 范围算小了，画面既会被往下怼、又会被当成"装得下"而锁死滚不动。
+			int left = Integer.MAX_VALUE;
+			int right = Integer.MIN_VALUE;
+			int top = Integer.MAX_VALUE;
+			int bottom = Integer.MIN_VALUE;
 
-			for (Technology technology : tree) {
-				int x = (int) technology.getDisplayInfo().getX();
-				int y = (int) technology.getDisplayInfo().getY();
-				if (x < minX)
-					minX = x;
-				else if (x > maxX)
-					maxX = x;
-				if (y < minY)
-					minY = y;
-				else if (y > maxY)
-					maxY = y;
+			for (Technology technology : visible) {
+				int x = (int) (technology.getDisplayInfo().getX() * 28);
+				int y = (int) (technology.getDisplayInfo().getY() * 27);
+				left = Math.min(left, x - 2);
+				right = Math.max(right, x + 24);
+				top = Math.min(top, y - 2);
+				bottom = Math.max(bottom, y + 24);
 			}
-
-			int left = minX * 28 - 2;
-			int right = maxX * 28 + 24;
-			int top = minY * 27 - 2;
-			int bottom = maxY * 27 + 24;
 
 			// x_min / y_min / x_max / y_max 就是滚动量（画面上的偏移）的允许范围，两头都算。
 			// 视口是页面里那块 224 × 155（见 drawResearchScreen 的 enableScissor）。
@@ -151,18 +169,21 @@ public class GuiResearchBook extends Screen {
 			// （原版是 scrollX = 117 - (maxX + minX) / 2，117 就是它视口宽度的一半），
 			// 而且哪根轴装得下就不让那根轴滚动（原版 scroll() 外面套的 if (maxX - minX > 234)）。
 			// 装不下时两头卡在内容边上，滚到头就停，不会把内容推出页面外。
-			if (right - left <= 224)
-				x_min = x_max = (left + right) / 2 - 112;
+			if (right - left <= VIEW_W)
+				x_min = x_max = (left + right) / 2 - VIEW_W / 2;
 			else {
 				x_min = left; // 滚到贴左
-				x_max = right - 224; // 滚到贴右
+				x_max = right - VIEW_W; // 滚到贴右
 			}
 
-			if (bottom - top <= 155)
-				y_min = y_max = (top + bottom) / 2 - 77;
+			// 纵向只按 154 行算：书页贴图是最后一步整张盖在内容上面的，那张图的内窗只有 154 行
+			// 是透明的，第 155 行是书页本身的底色 —— 按 155 算的话，滚到底时最下面那个框的底边
+			// 正好落在那一行上，会被书页盖掉一条，看着就像框压在书页边框上。
+			if (bottom - top <= VIEW_H)
+				y_min = y_max = (top + bottom) / 2 - VIEW_H / 2;
 			else {
 				y_min = top; // 滚到贴顶
-				y_max = bottom - 155; // 滚到贴底
+				y_max = bottom - VIEW_H; // 滚到贴底
 			}
 
 			xScrollP = xScrollTarget = Mth.clamp(xScrollP, (double) x_min, (double) x_max);
@@ -361,7 +382,7 @@ public class GuiResearchBook extends Screen {
 	private boolean inPage(double mouseX, double mouseY) {
 		int k = (width - imageWidth) / 2 + 16;
 		int l = (height - imageHeight) / 2 + 17;
-		return mouseX >= k && mouseX < k + 224 && mouseY >= l && mouseY < l + 155;
+		return mouseX >= k && mouseX < k + VIEW_W && mouseY >= l && mouseY < l + WINDOW_H;
 	}
 
 	@Override
@@ -420,7 +441,9 @@ public class GuiResearchBook extends Screen {
 				guiGraphics.blit(bg, x * 16, y * 16, 0, 0, 16, 16, 16, 16);
 
 		RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
-		guiGraphics.enableScissor(k + 16, l + 17, k + 16 + 224, l + 17 + 155);
+		// 高度按 VIEW_H（不是内窗的 155）：第 155 行是书页自己的底边，剪切框带上它的话，
+		// 物品图标会带着 z = 150 的深度从那一条里露出来（贴图盖不住 item），详见 VIEW_H 的注释
+		guiGraphics.enableScissor(k + 16, l + 17, k + 16 + VIEW_W, l + 17 + VIEW_H);
 
 		if (state) {
 			Double xScrollOld = xScrollO.get(root.getRegistryName());
@@ -433,20 +456,8 @@ public class GuiResearchBook extends Screen {
 			i = Mth.clamp(i, x_min, x_max);
 			j = Mth.clamp(j, y_min, y_max);
 
-			Set<Technology> tech = new HashSet<>();
-			root.getChildren(tech, true);
-
-			// Pre-compute techs that have at least one researched descendant,
-			// so intermediate techs on the path to a granted tech stay visible
-			Set<Technology> hasResearchedDescendant = new HashSet<>();
-			for (Technology t : tech) {
-				if (t.isResearched(player)) {
-					for (Technology p = t.getParent(); p != null && tech.contains(p); p = p.getParent()) {
-						if (!p.isResearched(player) && !p.isUnlocked(player))
-							hasResearchedDescendant.add(p);
-					}
-				}
-			}
+			// init() 里算好的那一份：画得出来的科技，判据见 isVisible
+			Set<Technology> tech = visible;
 
 			try {
 				// 连接线照原版 AdvancementWidget.drawConnectivity 画：从父图标中心横着出去，
@@ -459,12 +470,15 @@ public class GuiResearchBook extends Screen {
 				// 上去就是两条线压在一起（原版的线全是白的才看不出，这边有绿有白，一压就露馅）。
 				Map<Technology, List<Technology>> branches = new TreeMap<>(
 						Comparator.comparing(Technology::getRegistryName));
-				// 线得两头都画得出来：可见的子节点，配上同样可见的父节点（可见性见 isVisible）
+				// 线得两头都画得出来：画得出来的子节点，配上它往上数第一个画得出来的祖先。
+				//
+				// 中间夹着画不出来的科技（隐藏科技还没完成、或者那一层还没解锁）就跳过它接着往上找。
+				// 只看父节点是不行的：父节点画不出来的时候整条线会被丢掉，画面上就是一个框孤零零
+				// 杵在那儿没有线。跳过中间层之后，被跳过那层做完、变可见的那一刻，拐点自己就多长出
+				// 一条腿来 —— 腿的条数跟着看得见的子节点走，完成前不画，完成后自动变成多分枝。
 				for (Technology t1 : tech) {
-					if (!isVisible(t1, player, hasResearchedDescendant))
-						continue;
-					Technology parent = t1.getParent();
-					if (parent == null || !tech.contains(parent) || !isVisible(parent, player, hasResearchedDescendant))
+					Technology parent = visibleAncestor(t1, tech);
+					if (parent == null)
 						continue;
 					List<Technology> siblings = branches.get(parent);
 					if (siblings == null)
@@ -486,22 +500,17 @@ public class GuiResearchBook extends Screen {
 				float f4 = mouseY - j1;
 
 				for (Technology t2 : tech) {
-					if (!isVisible(t2, player, hasResearchedDescendant))
-						continue;
 					int l6 = (int) (t2.getDisplayInfo().getX() * 28 - i);
 					int j7 = (int) (t2.getDisplayInfo().getY() * 27 - j);
 					if (l6 < -28 || j7 < -27 || l6 > 224F || j7 > 155F)
 						continue;
 
-					RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
-					RenderSystem.enableBlend();
-					if (t2.hasCustomUnlock())
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, l6 - 2, j7 - 2, 26, 202, 26, 26,
-								256, 256);
-					else
-						guiGraphics.blit(ACHIEVEMENT_BACKGROUND, l6 - 2, j7 - 2, 0, 202, 26, 26,
-								256, 256);
-					RenderSystem.disableBlend();
+					// 边框用原版的三套（task / goal / challenge，由科技 json 的 display.frame 指定），
+					// 完成与否看研究状态 —— 原版是看进度做完没，语义对得上
+					AdvancementWidgetType widgetType = t2.isResearched(player) ? AdvancementWidgetType.OBTAINED
+							: AdvancementWidgetType.UNOBTAINED;
+					guiGraphics.blitSprite(widgetType.frameSprite(t2.getDisplayInfo().getType()), l6 - 2, j7 - 2,
+							26, 26);
 
 					guiGraphics.renderItem(t2.getDisplayInfo().getIcon(), l6 + 3, j7 + 3);
 
@@ -530,11 +539,7 @@ public class GuiResearchBook extends Screen {
 
 				ItemStack item = list[index];
 
-				RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
-				RenderSystem.enableBlend();
-				guiGraphics.blit(ACHIEVEMENT_BACKGROUND, 6, 37 + (pos * 28), 0, 202, 26, 26, 256,
-						256);
-				RenderSystem.disableBlend();
+				guiGraphics.blitSprite(SLOT_FRAME, 6, 37 + (pos * 28), 26, 26);
 
 				guiGraphics.renderItem(item, 11, 42 + (pos * 28));
 
@@ -599,43 +604,46 @@ public class GuiResearchBook extends Screen {
 			}
 		}
 
-		// Inner frame gradient shadow (vanilla advancement UI style)
+		// 内框渐变效果（在 scissor 区域内绘制，参考原版进度 UI）
+		// 原版风格：精简层次、柔和过渡、轻薄凹陷感
 		int left = 0;
 		int top = 0;
 		int right = 224;
 		int bottom = 155;
 
-		// Layer 1: innermost, alpha 80
+		// 5层半透明覆盖，alpha值低，营造柔和弱阴影
+		// 第1层：最内圈，alpha 80
 		guiGraphics.fill(left, top, right, top + 1, 0x50000000);
 		guiGraphics.fill(left, bottom - 1, right, bottom, 0x50000000);
 		guiGraphics.fill(left, top, left + 1, bottom, 0x50000000);
 		guiGraphics.fill(right - 1, top, right, bottom, 0x50000000);
 
-		// Layer 2: alpha 55
+		// 第2层：alpha 55
 		guiGraphics.fill(left, top + 1, right, top + 2, 0x37000000);
 		guiGraphics.fill(left, bottom - 2, right, bottom - 1, 0x37000000);
 		guiGraphics.fill(left + 1, top, left + 2, bottom, 0x37000000);
 		guiGraphics.fill(right - 2, top, right - 1, bottom, 0x37000000);
 
-		// Layer 3: alpha 35
+		// 第3层：alpha 35
 		guiGraphics.fill(left, top + 2, right, top + 3, 0x23000000);
 		guiGraphics.fill(left, bottom - 3, right, bottom - 2, 0x23000000);
 		guiGraphics.fill(left + 2, top, left + 3, bottom, 0x23000000);
 		guiGraphics.fill(right - 3, top, right - 2, bottom, 0x23000000);
 
-		// Layer 4: alpha 18
+		// 第4层：alpha 18
 		guiGraphics.fill(left, top + 3, right, top + 4, 0x12000000);
 		guiGraphics.fill(left, bottom - 4, right, bottom - 3, 0x12000000);
 		guiGraphics.fill(left + 3, top, left + 4, bottom, 0x12000000);
 		guiGraphics.fill(right - 4, top, right - 3, bottom, 0x12000000);
 
-		// Layer 5: outermost, alpha 8, nearly transparent
+		// 第5层：最外圈，alpha 8，几乎透明
 		guiGraphics.fill(left, top + 4, right, top + 5, 0x08000000);
 		guiGraphics.fill(left, bottom - 5, right, bottom - 4, 0x08000000);
 		guiGraphics.fill(left + 4, top, left + 5, bottom, 0x08000000);
 		guiGraphics.fill(right - 5, top, right - 4, bottom, 0x08000000);
 
 		guiGraphics.disableScissor();
+
 		poseStack.popPose();
 		RenderSystem.setShaderTexture(0, ACHIEVEMENT_BACKGROUND);
 		guiGraphics.blit(ACHIEVEMENT_BACKGROUND, k, l, 0, 0, imageWidth, imageHeight, 256, 256);
@@ -719,7 +727,47 @@ public class GuiResearchBook extends Screen {
 		}
 	}
 
-	/** 研究之书里这个科技画不画：能研究、或者通向某个已经研究过的科技；隐藏的科技自己没进度也不画 */
+	/**
+	 * 往上数第一个画得出来的祖先，跳过中间所有画不出来的。一个都没有 —— 比如中间整条链都是隐藏
+	 * 科技 —— 就返回 null，这条线干脆不画。visible 是 page 的子集，所以走到页外自然就断了。
+	 */
+	private static Technology visibleAncestor(Technology technology, Set<Technology> visible) {
+		for (Technology parent = technology.getParent(); parent != null; parent = parent.getParent())
+			if (visible.contains(parent))
+				return parent;
+		return null;
+	}
+
+	/**
+	 * 当前这一页里画得出来的科技（判据见 isVisible）。排版、连线、命中判定全用这一份，
+	 * 免得几处各算各的、算岔了就会留下一个画不出来的格子或者一条连不到头的线。
+	 * 页根自己永远算画得出来 —— 书本来就是挑一个能研究的根打开的。
+	 */
+	private Set<Technology> visibleTechs() {
+		Set<Technology> page = new HashSet<>();
+		root.getChildren(page, true);
+
+		// 通向某个已经研究过的科技的那几层得留着，不然路是断的。
+		// "本来画不出来"的判据跟 isVisible 的第一条对齐：自己没研究完、又没轮到自己出场（父科技还没研究完）
+		// 的祖先，才需要靠这条链补回来。原先这里是问 isUnlocked，那是把 isUnlocked 当可见性用了，
+		// 带 criteria 的祖先判据一达成，isUnlocked 就变 true，于是明明画不出来的那一层反而不补 —— 路照样断。
+		Set<Technology> hasResearchedDescendant = new HashSet<>();
+		for (Technology technology : page)
+			if (technology.isResearched(player))
+				for (Technology parent = technology.getParent(); parent != null && page.contains(parent); parent = parent
+						.getParent())
+					if (!parent.isResearched(player) && !parent.canResearchIgnoreResearched(player))
+						hasResearchedDescendant.add(parent);
+
+		page.removeIf(technology -> technology != root && !isVisible(technology, player, hasResearchedDescendant));
+		return page;
+	}
+
+	/**
+	 * 研究之书里这个科技画不画，两条跟原版进度页一样：
+	 * 一、父科技研究完了就画（判据做没做完不影响，见 {@link Technology#canResearchIgnoreResearched}）；
+	 * 二、json 里写了 display.hidden 的，得自己有进度才画 —— 原版 AdvancementWidget 也是这么分的。
+	 */
 	private static boolean isVisible(Technology technology, Player player, Set<Technology> hasResearchedDescendant) {
 		if (!technology.canResearchIgnoreResearched(player) && !hasResearchedDescendant.contains(technology))
 			return false;

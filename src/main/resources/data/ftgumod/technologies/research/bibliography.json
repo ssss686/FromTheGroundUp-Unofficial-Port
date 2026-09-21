@@ -21,6 +21,7 @@
   "unlock": [
     "minecraft:book",
     "minecraft:writable_book",
-    "minecraft:bookshelf"
+    "minecraft:bookshelf",
+    "minecraft:lectern"
   ]
 }

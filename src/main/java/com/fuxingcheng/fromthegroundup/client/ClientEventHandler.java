@@ -10,6 +10,7 @@ import com.fuxingcheng.fromthegroundup.item.ItemMagnifyingGlass;
 import com.fuxingcheng.fromthegroundup.packet.PacketDispatcher;
 import com.fuxingcheng.fromthegroundup.packet.server.RequestMessage;
 import com.fuxingcheng.fromthegroundup.technology.Technology;
+import com.fuxingcheng.fromthegroundup.util.RecipeHideHelper;
 import com.fuxingcheng.fromthegroundup.util.StackUtils;
 
 import net.fabricmc.api.EnvType;
@@ -17,9 +18,11 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
@@ -100,6 +103,16 @@ public final class ClientEventHandler {
 			if (entity == Minecraft.getInstance().player) {
 				PacketDispatcher.sendToServer(new RequestMessage());
 			}
+		});
+
+		// 切石机左边那排"能切出什么"不走配方书，客户端这份是本地现查的，得自己摘。
+		// 服务端那份在 CraftingListener 里摘，两边下标要对上，详见 RecipeHideHelper.filterStonecutterRecipes。
+		ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+			if (screen instanceof AbstractContainerScreen<?> containerScreen)
+				// 每帧都过一遍：原版换输入物时会重新查一份列表，缓存那份就作废了，
+				// 列表没变的话 RecipeHideHelper 里会直接跳过
+				ScreenEvents.beforeRender(screen).register((s, context, mouseX, mouseY, tickDelta) ->
+						RecipeHideHelper.filterStonecutterRecipes(containerScreen.getMenu(), client.player));
 		});
 	}
 

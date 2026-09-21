@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:turtle_helmet"
+    },
+    "title": {
+      "translate": "technology.turtles.name"
+    },
+    "description": {
+      "translate": "technology.turtles.desc"
+    }
+  },
+  "parent": "ftgumod:survival/metal_armor",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      "minecraft:turtle_scute",
+      "minecraft:kelp",
+      [
+        "minecraft:leather_helmet",
+        "minecraft:chainmail_helmet",
+        "minecraft:golden_helmet",
+        "minecraft:iron_helmet"
+      ]
+    ]
+  },
+  "research": {
+    "type": "ftgumod:connect",
+    "left": "minecraft:rabbit_hide",
+    "right": "minecraft:lectern"
+  },
+  "unlock": [
+    "minecraft:turtle_helmet"
+  ]
+}

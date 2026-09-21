@@ -10,7 +10,7 @@
       "translate": "technology.carts.desc"
     }
   },
-  "parent": "ftgumod:survival/boats",
+  "parent": "ftgumod:power/power",
   "idea": {
     "amount": 2,
     "ingredients": [

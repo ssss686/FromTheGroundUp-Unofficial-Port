@@ -10,7 +10,7 @@
       "translate": "technology.explosives.desc"
     }
   },
-  "parent": "ftgumod:survival/refinement",
+  "parent": "ftgumod:power/activation",
   "idea": {
     "amount": 3,
     "ingredients": [

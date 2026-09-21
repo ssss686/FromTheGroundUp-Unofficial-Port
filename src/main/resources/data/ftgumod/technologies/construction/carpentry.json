@@ -52,7 +52,11 @@
       "tag": "minecraft:signs"
     },
     "minecraft:chest",
+    "minecraft:barrel",
+    "minecraft:loom",
     "minecraft:ladder",
+    "minecraft:scaffolding",
+    "minecraft:item_frame",
     "minecraft:painting",
     {
       "tag": "minecraft:wool"

@@ -10,7 +10,7 @@
       "translate": "technology.transportation.desc"
     }
   },
-  "parent": "ftgumod:survival/carts",
+  "parent": "ftgumod:power/carts",
   "idea": {
     "amount": 2,
     "ingredients": [

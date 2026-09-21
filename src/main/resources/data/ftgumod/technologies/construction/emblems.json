@@ -1,0 +1,48 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:mojang_banner_pattern"
+    },
+    "title": {
+      "translate": "technology.emblems.name"
+    },
+    "description": {
+      "translate": "technology.emblems.desc"
+    }
+  },
+  "parent": "ftgumod:construction/carpentry",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        {
+          "tag": "minecraft:banners"
+        },
+        "minecraft:shield"
+      ],
+      [
+        {
+          "tag": "minecraft:flowers"
+        },
+        {
+          "tag": "c:dyes"
+        }
+      ],
+      [
+        {
+          "tag": "minecraft:freeze_immune_wearables"
+        }
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:flower_banner_pattern",
+    "minecraft:creeper_banner_pattern",
+    "minecraft:skull_banner_pattern",
+    "minecraft:mojang_banner_pattern",
+    "minecraft:globe_banner_pattern",
+    "minecraft:piglin_banner_pattern",
+    "minecraft:flow_banner_pattern",
+    "minecraft:guster_banner_pattern"
+  ]
+}

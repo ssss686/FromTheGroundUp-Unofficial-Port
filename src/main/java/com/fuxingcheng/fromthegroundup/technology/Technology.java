@@ -29,6 +29,7 @@ import com.fuxingcheng.fromthegroundup.event.TechnologyEvent;
 import com.fuxingcheng.fromthegroundup.util.ListenerTechnology;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.DisplayInfo;
@@ -252,8 +253,11 @@ public class Technology implements ITechnology {
 				if (child.isRoot() && child.isUnlocked(player))
 					player.sendSystemMessage(
 							Component.translatable("technology.complete.unlock.root", child.displayText));
-			player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
-					SoundSource.PLAYERS, 1.0F, 1.0F);
+			// 挑战科技不放这声：客户端那边 toast 弹出来时会放原版那个挑战完成音效
+			// （AdvancementToast 的做法，见 ToastTechnology），两声叠一起太糊
+			if (display.getType() != AdvancementType.CHALLENGE)
+				player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP,
+						SoundSource.PLAYERS, 1.0F, 1.0F);
 		}
 	}
 
@@ -284,8 +288,16 @@ public class Technology implements ITechnology {
 				if (progress.revokeCriterion(criterion))
 					cap.removeResearched(getRegistryName() + "#" + criterion);
 
-			if (player instanceof ServerPlayer)
-				registerListeners((ServerPlayer) player);
+			if (player instanceof ServerPlayer) {
+				ServerPlayer playerMP = (ServerPlayer) player;
+
+				// 原版那份假进度也得一起撤。这里不挑"已完成的"：判据没做完但原版已经记成 done 的
+				// （轮询还没轮到的那一 tick）同样会让撤销失败。必须先撤再重挂监听，见 revokeFakeAdvancement
+				for (String criterion : criteria.keySet())
+					TechnologyManager.INSTANCE.revokeFakeAdvancement(playerMP, this, criterion);
+
+				registerListeners(playerMP);
+			}
 		}
 	}
 
@@ -339,7 +351,12 @@ public class Technology implements ITechnology {
 		if (progress.revokeCriterion(name)) {
 			player.getAttachedOrCreate(CapabilityTechnology.TECH_CAP).removeResearched(getRegistryName() + "#" + name);
 			if (player instanceof ServerPlayer) {
-				registerListeners((ServerPlayer) player);
+				ServerPlayer playerMP = (ServerPlayer) player;
+
+				// 先撤原版那条假进度，再重挂监听（顺序反了撤掉的就是刚挂上的那条）
+				TechnologyManager.INSTANCE.revokeFakeAdvancement(playerMP, this, name);
+
+				registerListeners(playerMP);
 				if (done && !progress.isDone())
 					TechnologyEvent.Revoke.EVENT.invoker().accept(new TechnologyEvent.Revoke(player, this));
 			}
@@ -480,8 +497,15 @@ public class Technology implements ITechnology {
 		return !isResearched(player) && (parent == null || parent.isResearched(player));
 	}
 
+	/**
+	 * 研究之书里画不画这个科技：父科技研究完了它就出现在树上，跟自己的判据做没做完无关 ——
+	 * 这正是原版进度的算法（父进度做完就画，自己的判据只决定能不能"研究"）。
+	 * 所以这里不能拿 {@link #isUnlocked} 当条件：带 criteria 的科技靠达成判据自动解锁，
+	 * 解锁前 isUnlocked 一直是 false，那样它会整个从树上消失，玩家连要做什么都看不到。
+	 * 需要藏起来的科技由 json 的 display.hidden 指定，见 {@code GuiResearchBook.isVisible}。
+	 */
 	public boolean canResearchIgnoreResearched(Player player) {
-		return isResearched(player) || isUnlocked(player) && (parent == null || parent.isResearched(player));
+		return isResearched(player) || (parent == null || parent.isResearched(player));
 	}
 
 	@Override

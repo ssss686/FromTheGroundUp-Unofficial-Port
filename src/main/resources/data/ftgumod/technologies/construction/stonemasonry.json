@@ -80,8 +80,7 @@
           "minecraft:waxed_cut_copper_slab",
           "minecraft:waxed_exposed_cut_copper_slab",
           "minecraft:waxed_weathered_cut_copper_slab",
-          "minecraft:waxed_oxidized_cut_copper_slab",
-          "minecraft:petrified_oak_slab"
+          "minecraft:waxed_oxidized_cut_copper_slab"
         ],
         "hint": {
           "translate": "technology.hint.slab"
@@ -156,17 +155,66 @@
     }
   },
   "unlock": [
-    [
-      "minecraft:stone_slab",
-      "minecraft:stone_stairs"
-    ],
     "minecraft:stone_bricks",
+    "minecraft:cracked_stone_bricks",
     "minecraft:chiseled_stone_bricks",
+    [
+      "minecraft:stone_brick_stairs",
+      "minecraft:stone_brick_slab",
+      "minecraft:stone_brick_wall"
+    ],
+    [
+      "minecraft:stone_stairs",
+      "minecraft:stone_slab"
+    ],
+    "minecraft:smooth_stone",
+    "minecraft:smooth_sandstone",
+    "minecraft:cut_sandstone",
+    "minecraft:cut_sandstone_slab",
+    [
+      "minecraft:smooth_sandstone_stairs",
+      "minecraft:smooth_sandstone_slab"
+    ],
+    "minecraft:smooth_red_sandstone",
+    "minecraft:cut_red_sandstone",
+    "minecraft:cut_red_sandstone_slab",
+    [
+      "minecraft:smooth_red_sandstone_stairs",
+      "minecraft:smooth_red_sandstone_slab"
+    ],
     "minecraft:mossy_stone_bricks",
-    "minecraft:stone_brick_slab",
-    "minecraft:stone_brick_stairs",
-    "minecraft:cobblestone_wall",
-    "minecraft:mossy_cobblestone_wall",
+    [
+      "minecraft:mossy_stone_brick_stairs",
+      "minecraft:mossy_stone_brick_slab",
+      "minecraft:mossy_stone_brick_wall"
+    ],
+    [
+      "minecraft:granite_stairs",
+      "minecraft:granite_slab",
+      "minecraft:granite_wall"
+    ],
+    [
+      "minecraft:polished_granite_stairs",
+      "minecraft:polished_granite_slab"
+    ],
+    [
+      "minecraft:diorite_stairs",
+      "minecraft:diorite_slab",
+      "minecraft:diorite_wall"
+    ],
+    [
+      "minecraft:polished_diorite_stairs",
+      "minecraft:polished_diorite_slab"
+    ],
+    [
+      "minecraft:andesite_stairs",
+      "minecraft:andesite_slab",
+      "minecraft:andesite_wall"
+    ],
+    [
+      "minecraft:polished_andesite_stairs",
+      "minecraft:polished_andesite_slab"
+    ],
     {
       "tag": "c:concrete_powders"
     }

@@ -13,12 +13,6 @@
   },
   "parent": "ftgumod:research/research",
   "criteria": {
-    "construction_activation": {
-      "trigger": "ftgumod:technology_researched",
-      "conditions": {
-        "technology": "ftgumod:construction/activation"
-      }
-    },
     "construction_brickwork": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
@@ -37,10 +31,28 @@
         "technology": "ftgumod:construction/construction"
       }
     },
+    "construction_emblems": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/emblems"
+      }
+    },
     "construction_glassworking": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:construction/glassworking"
+      }
+    },
+    "construction_glazed_tiles": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/glazed_tiles"
+      }
+    },
+    "construction_ice_harvesting": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/ice_harvesting"
       }
     },
     "construction_prismarine": {
@@ -67,16 +79,34 @@
         "technology": "ftgumod:construction/stonemasonry"
       }
     },
+    "power_activation": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/activation"
+      }
+    },
     "power_cartography": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:power/cartography"
       }
     },
+    "power_carts": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/carts"
+      }
+    },
     "power_circuitry": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:power/circuitry"
+      }
+    },
+    "power_explosives": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/explosives"
       }
     },
     "power_music": {
@@ -95,6 +125,12 @@
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:power/redstone_machinery"
+      }
+    },
+    "power_transportation": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:power/transportation"
       }
     },
     "research_bibliography": {
@@ -145,10 +181,22 @@
         "technology": "ftgumod:survival/boats"
       }
     },
-    "survival_carts": {
+    "survival_carrot_protocol": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
-        "technology": "ftgumod:survival/carts"
+        "technology": "ftgumod:survival/carrot_protocol"
+      }
+    },
+    "survival_clockwork_malice": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/clockwork_malice"
+      }
+    },
+    "survival_conduit": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/conduit"
       }
     },
     "survival_cooking": {
@@ -169,10 +217,16 @@
         "technology": "ftgumod:survival/dyes"
       }
     },
-    "survival_explosives": {
+    "survival_fishing": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
-        "technology": "ftgumod:survival/explosives"
+        "technology": "ftgumod:survival/fishing"
+      }
+    },
+    "survival_flower_language": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/flower_language"
       }
     },
     "survival_gem_armor": {
@@ -185,6 +239,12 @@
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:survival/gilded_cuisine"
+      }
+    },
+    "survival_hunting": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/hunting"
       }
     },
     "survival_lapidary": {
@@ -223,10 +283,10 @@
         "technology": "ftgumod:survival/survival"
       }
     },
-    "survival_transportation": {
+    "survival_turtles": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
-        "technology": "ftgumod:survival/transportation"
+        "technology": "ftgumod:survival/turtles"
       }
     }
   }

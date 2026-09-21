@@ -29,6 +29,7 @@
     "minecraft:wooden_axe",
     "minecraft:crafting_table",
     "minecraft:torch",
-    "minecraft:bowl"
+    "minecraft:bowl",
+    "minecraft:campfire"
   ]
 }

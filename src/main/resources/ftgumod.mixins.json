@@ -5,7 +5,8 @@
 	"mixins": [
 		"MixinServerPlayer",
 		"MixinCraftingMenu",
-		"MixinResultContainer"
+		"MixinResultContainer",
+		"PlayerAdvancementsInvoker"
 	],
 	"injectors": {
 		"defaultRequire": 1

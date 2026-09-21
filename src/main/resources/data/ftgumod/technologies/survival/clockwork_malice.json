@@ -1,0 +1,61 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:crossbow"
+    },
+    "title": {
+      "translate": "technology.clockwork_malice.name"
+    },
+    "description": {
+      "translate": "technology.clockwork_malice.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:survival/hunting",
+  "criteria": {
+    "armed_pillager": {
+      "trigger": "minecraft:player_killed_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": [
+                "minecraft:pillager"
+              ],
+              "equipment": {
+                "mainhand": {
+                  "items": [
+                    "minecraft:crossbow"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:bow",
+        "minecraft:stick",
+        "minecraft:bamboo",
+        "minecraft:blaze_rod",
+        "minecraft:breeze_rod"
+      ],
+      "minecraft:tripwire_hook",
+      [
+        {
+          "tag": "c:ingots"
+        }
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:crossbow"
+  ]
+}

@@ -3,8 +3,8 @@ package com.fuxingcheng.fromthegroundup.compat.jei;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.fuxingcheng.fromthegroundup.ClientHooks;
 import com.fuxingcheng.fromthegroundup.Content;
-import com.fuxingcheng.fromthegroundup.FTGUConfig;
 import com.fuxingcheng.fromthegroundup.FromTheGroundUp;
+import com.fuxingcheng.fromthegroundup.FTGUConfig;
 import com.fuxingcheng.fromthegroundup.api.technology.puzzle.ResearchConnect;
 import com.fuxingcheng.fromthegroundup.api.technology.puzzle.ResearchMatch;
 import com.fuxingcheng.fromthegroundup.api.technology.recipe.IIdeaRecipe;
@@ -44,6 +44,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenPosition;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -59,7 +60,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -181,7 +181,7 @@ public class CompatJEI implements IModPlugin {
 					buildPrerequisites(tech),
 					buildIdeaDisplay(tech),
 					buildResearchDisplay(tech),
-					tech.hasCustomUnlock()));
+					buildCustomUnlock(tech)));
 		}
 
 		registration.addRecipes(researchGuideCategory.getRecipeType(), entries);
@@ -263,6 +263,36 @@ public class CompatJEI implements IModPlugin {
 		return null;
 	}
 
+	/**
+	 * 构建附加解锁条件（criteria）的说明。
+	 *
+	 * 条件本身是原版触发器，判据五花八门（击杀某生物、身处某结构、背包里有某物……），
+	 * 没有配方数据可展示，也没法自动拼出一句话，所以说明文字写在语言文件里：
+	 * {@code technology.criteria.<科技路径>.<条件名>}，路径里的 {@code /} 换成 {@code .}。
+	 * 哪条没写说明，整块就退回那句笼统的话：补上缺的那个键就行，不用改代码。
+	 *
+	 * getRequirements() 里的名字必然都在 criteria 里（解析时已经过滤过一遍），
+	 * 客户端加载时判据解析不了的话两边会一起为空，这里也不会多列。
+	 */
+	@Nullable
+	private static CustomUnlock buildCustomUnlock(Technology tech) {
+		if (!tech.hasCustomUnlock())
+			return null;
+
+		String prefix = "technology.criteria." + tech.getRegistryName().getPath().replace('/', '.') + ".";
+		List<List<String>> groups = new ArrayList<>();
+		for (String[] group : tech.getRequirements()) {
+			if (group.length == 0)
+				continue;
+			List<String> keys = new ArrayList<>(group.length);
+			for (String name : group)
+				keys.add(prefix + name);
+			groups.add(keys);
+		}
+
+		return groups.isEmpty() ? null : new CustomUnlock(groups);
+	}
+
 	public static IJeiRuntime getJeiRuntime() {
 		return jeiRuntime;
 	}
@@ -287,6 +317,37 @@ public class CompatJEI implements IModPlugin {
 		/** 科技名，保留 Component 以便渲染时按当前语言解析 */
 		public Component getName() {
 			return name;
+		}
+	}
+
+	/**
+	 * 附加解锁条件（criteria）。
+	 *
+	 * 外层是"且"、内层是"或"，与进度系统的 requirements 是同一套语义：
+	 * 每一组里满足任意一条算这组过了，所有组都过了才算达成。
+	 *
+	 * 存的是语言键而非 Component：说明有没有写要现查（切语言时会重排版），
+	 * 缺哪条就整块退回笼统的说法，免得只列一半条件把人带偏。
+	 */
+	public static class CustomUnlock {
+		private final List<List<String>> groups;
+
+		CustomUnlock(List<List<String>> groups) {
+			this.groups = groups;
+		}
+
+		/** 每条条件都写了说明 */
+		public boolean hasHints() {
+			for (List<String> group : groups)
+				for (String key : group)
+					if (!I18n.exists(key))
+						return false;
+			return true;
+		}
+
+		/** 条件分组，外层"且"、内层"或" */
+		public List<List<String>> getGroups() {
+			return groups;
 		}
 	}
 
@@ -390,11 +451,12 @@ public class CompatJEI implements IModPlugin {
 		private final IdeaDisplay idea;
 		@Nullable
 		private final ResearchDisplay research;
-		private final boolean customUnlock;
+		@Nullable
+		private final CustomUnlock customUnlock;
 
 		public ResearchGuideEntry(ItemStack item, ItemStack techIcon, Component techName,
 				List<Prerequisite> prerequisites, @Nullable IdeaDisplay idea,
-				@Nullable ResearchDisplay research, boolean customUnlock) {
+				@Nullable ResearchDisplay research, @Nullable CustomUnlock customUnlock) {
 			this.item = item;
 			this.techIcon = techIcon;
 			this.techName = techName;
@@ -435,8 +497,9 @@ public class CompatJEI implements IModPlugin {
 			return research;
 		}
 
-		/** 除创作台/研究台外还另有解锁条件 */
-		public boolean hasCustomUnlock() {
+		/** 除创作台/研究台外还另有解锁条件，没有则为 null */
+		@Nullable
+		public CustomUnlock getCustomUnlock() {
 			return customUnlock;
 		}
 	}
@@ -475,6 +538,8 @@ public class CompatJEI implements IModPlugin {
 		/** 纯文字行高，与 JEI 的 DrawableWrappedText 一致 */
 		private static final int TEXT_ROW_HEIGHT = 11;
 		private static final int SECTION_GAP = 3;
+		/** "任选其一"那一组里的条件相对组标题缩进的像素 */
+		private static final int CRITERIA_INDENT = 6;
 
 		// 滚动条整套照抄 JEI 的 AbstractScrollWidget：轨道 14 宽、滑块左右各内缩 1 像素、
 		// 滑块最小 14 高，连贴图也用 JEI 自己那两张，看着才是 JEI 原生的滚动条
@@ -779,26 +844,19 @@ public class CompatJEI implements IModPlugin {
 
 				// 前置科技链路
 				List<Prerequisite> prerequisites = entry.getPrerequisites();
-				boolean custom = methods && entry.hasCustomUnlock();
+				CustomUnlock custom = methods ? entry.getCustomUnlock() : null;
 				if (!prerequisites.isEmpty()) {
 					this.rows.add(Row.text(y,
 							textCell(Component.translatable("ftgu.jei.research_guide.prerequisites")
 									.withStyle(ChatFormatting.BLACK), font)));
 					y = appendPrerequisiteChain(y + LABEL_HEIGHT, prerequisites, font);
-					if (custom)
+					if (custom != null)
 						y += TEXT_ROW_HEIGHT;   // 与附加条件之间空一行
 				}
 
-				// 附加解锁条件（requirements）：不是靠创作台或研究台解锁的那部分，
-				// 没有配方数据可展示，只能照实说明
-				if (custom) {
-					Component line = Component.translatable("ftgu.jei.research_guide.custom")
-							.withStyle(ChatFormatting.DARK_GRAY);
-					for (FormattedCharSequence sequence : font.split(line, CONTENT_WIDTH)) {
-						this.rows.add(Row.text(y, new TextCell(sequence, font.width(sequence))));
-						y += TEXT_ROW_HEIGHT;
-					}
-				}
+				// 附加解锁条件（criteria）：不是靠创作台或研究台解锁的那部分
+				if (custom != null)
+					y = appendCustomUnlock(y, custom, font);
 
 				this.contentHeight = y + CONTENT_BOTTOM_GAP;
 			}
@@ -897,6 +955,51 @@ public class CompatJEI implements IModPlugin {
 					offset += height;
 				}
 				return HEADER_LINE2_Y + offset;
+			}
+
+			/**
+			 * 附加解锁条件：说明齐全就逐条列出来，缺一条就退回那句笼统的话。
+			 *
+			 * 条件组之间是"且"、组内是"或"，少列一条"或"的选项等于给了个错答案，
+			 * 所以宁可整块不列也不列一半（见 CustomUnlock.hasHints）。
+			 * 返回排完后的 y。
+			 */
+			private int appendCustomUnlock(int y, CustomUnlock custom, Font font) {
+				if (!custom.hasHints())
+					return appendTextRows(y, Component.translatable("ftgu.jei.research_guide.custom")
+							.withStyle(ChatFormatting.DARK_GRAY), font, 0);
+
+				y = appendTextRows(y, Component.translatable("ftgu.jei.research_guide.criteria")
+						.withStyle(ChatFormatting.BLACK), font, 0);
+
+				for (List<String> group : custom.getGroups()) {
+					// 组内多条 = 任选其一：加一句说明并缩进一级，把这组框在一起
+					int indent = group.size() > 1 ? CRITERIA_INDENT : 0;
+					if (indent > 0)
+						y = appendTextRows(y, Component.translatable("ftgu.jei.research_guide.criteria.any")
+								.withStyle(ChatFormatting.DARK_GRAY), font, 0);
+
+					for (String key : group) {
+						Component bullet = Component.literal("· ").withStyle(ChatFormatting.DARK_GRAY)
+								.append(Component.translatable(key).withStyle(ChatFormatting.BLACK));
+						y = appendTextRows(y, bullet, font, indent);
+					}
+				}
+
+				return y;
+			}
+
+			/** 折行的纯文字行，缩进 indent 像素，返回排完后的 y */
+			private int appendTextRows(int y, Component text, Font font, int indent) {
+				for (FormattedCharSequence sequence : font.split(text, Math.max(CONTENT_WIDTH - indent, 1))) {
+					List<Cell> cells = new ArrayList<>();
+					if (indent > 0)
+						cells.add(new SpacerCell(indent));
+					cells.add(new TextCell(sequence, font.width(sequence)));
+					this.rows.add(Row.of(y, cells, TEXT_ROW_HEIGHT));
+					y += TEXT_ROW_HEIGHT;
+				}
+				return y;
 			}
 
 			/**

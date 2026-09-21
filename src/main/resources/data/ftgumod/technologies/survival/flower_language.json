@@ -1,0 +1,46 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:suspicious_stew",
+      "components": {
+        "minecraft:suspicious_stew_effects": [
+          {
+            "id": "minecraft:regeneration",
+            "duration": 160
+          }
+        ]
+      }
+    },
+    "title": {
+      "translate": "technology.flower_language.name"
+    },
+    "description": {
+      "translate": "technology.flower_language.desc"
+    }
+  },
+  "parent": "ftgumod:survival/cooking",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:brown_mushroom",
+        "minecraft:red_mushroom",
+        "minecraft:crimson_fungus",
+        "minecraft:warped_fungus"
+      ],
+      [
+        "minecraft:bowl",
+        "minecraft:cauldron",
+        "minecraft:bucket",
+        "minecraft:water_bucket",
+        "minecraft:milk_bucket"
+      ],
+      {
+        "tag": "minecraft:small_flowers"
+      }
+    ]
+  },
+  "unlock": [
+    "minecraft:suspicious_stew"
+  ]
+}

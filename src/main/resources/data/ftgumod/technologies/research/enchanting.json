@@ -8,7 +8,9 @@
     },
     "description": {
       "translate": "technology.enchanting.desc"
-    }
+    },
+    "frame": "challenge",
+    "hidden": true
   },
   "parent": "ftgumod:research/bibliography",
   "criteria": {
@@ -36,6 +38,7 @@
   },
   "unlock": [
     "minecraft:enchanting_table",
-    "minecraft:spectral_arrow"
+    "minecraft:spectral_arrow",
+    "minecraft:grindstone"
   ]
 }

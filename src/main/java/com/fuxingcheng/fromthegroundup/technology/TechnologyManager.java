@@ -45,8 +45,11 @@ import com.fuxingcheng.fromthegroundup.api.util.JsonContextPublic;
 import com.fuxingcheng.fromthegroundup.packet.PacketDispatcher;
 import com.fuxingcheng.fromthegroundup.packet.client.TechnologyMessage;
 
+import com.fuxingcheng.fromthegroundup.criterion.TriggerFTGU;
+import com.fuxingcheng.fromthegroundup.mixin.PlayerAdvancementsInvoker;
 import com.fuxingcheng.fromthegroundup.util.StackUtils;
 import com.fuxingcheng.fromthegroundup.util.SubCollection;
+import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.MinecraftServer;
@@ -533,6 +536,9 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 		registerAll(technologies.values().toArray(new Technology[technologies.size()]));
 
+		// 对象换完了就把监听重挂一遍，见 refreshListeners
+		refreshListeners(ServerHelper.getCurrentServer());
+
 		int size = this.technologies.size();
 		info("Loaded " + size + " technolog" + (size != 1 ? "ies" : "y"));
 	}
@@ -685,6 +691,33 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 		fakeAdvancements.computeIfAbsent(player, k -> new HashMap<>()).put(holder, org.apache.commons.lang3.tuple.Pair.of(tech, criterionName));
 	}
 
+	/**
+	 * 把原版那条假进度一并撤掉，撤销判据时用。
+	 *
+	 * 每条判据挂的假进度只有一个 criterion，达成之后 {@code PlayerAdvancements} 会一直记着 done。
+	 * 只撤自己这份判据的话，{@code EventHandler} 每 tick 的轮询下一 tick 就照着那份 done 又补回来 ——
+	 * 表现出来就是"撤销科技"过一 tick 自己长回来，还再喊一遍"解锁了……"，撤多少次都撤不掉。
+	 *
+	 * 撤完就把 holder 摘掉（重挂监听会另建一个同 id 的），所以要赶在 registerListeners 之前调，
+	 * 反过来的话撤掉的就是刚挂上去的那条。
+	 */
+	public void revokeFakeAdvancement(ServerPlayer player, Technology tech, String criterionName) {
+		Map<AdvancementHolder, org.apache.commons.lang3.tuple.Pair<Technology, String>> map = fakeAdvancements.get(player);
+		if (map == null)
+			return;
+
+		// 边遍历边摘，先拷一份
+		for (Map.Entry<AdvancementHolder, org.apache.commons.lang3.tuple.Pair<Technology, String>> entry : new HashMap<>(map)
+				.entrySet()) {
+			org.apache.commons.lang3.tuple.Pair<Technology, String> pair = entry.getValue();
+			if (!pair.getRight().equals(criterionName) || !pair.getLeft().equals(tech))
+				continue;
+
+			player.getAdvancements().revoke(entry.getKey(), criterionName);
+			untrackFakeAdvancement(player, entry.getKey());
+		}
+	}
+
 	public void untrackFakeAdvancement(ServerPlayer player, AdvancementHolder holder) {
 		Map<AdvancementHolder, org.apache.commons.lang3.tuple.Pair<Technology, String>> map = fakeAdvancements.get(player);
 		if (map != null) {
@@ -700,6 +733,50 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 	public Map<ServerPlayer, List<PendingCriterion>> getPendingCriteria() {
 		return pendingCriteria;
+	}
+
+	/**
+	 * 把监听重挂一遍。reload 会换掉一整批 Technology 对象，而假进度表和 TriggerFTGU 的 tech 监听里
+	 * 挂的还是旧对象 —— 不清掉的话旧条目会一直按老定义判，新对象那边又没人再调 registerListeners，
+	 * 玩家会卡在"条件明明满足了、科技却不亮"。
+	 *
+	 * @param server 当前服务端；单机在标题界面 load() 的时候还没有，那就只清不挂
+	 */
+	public void refreshListeners(@Nullable MinecraftServer server) {
+		// 先把旧的那批假进度摘下来：它们连着自己的 Technology 一起作废，留着只会在 tick 里瞎判
+		Map<ServerPlayer, Map<AdvancementHolder, Pair<Technology, String>>> stale = new HashMap<>(fakeAdvancements);
+		fakeAdvancements.clear();
+
+		if (server == null)
+			return;
+
+		if (!server.isSameThread()) {
+			// 单机客户端那一份 load() 跑在渲染线程上，直接动 PlayerAdvancements 会和服务器线程打架，
+			// 排到服务器线程上再做。上来已经清过一次，重复执行只是白挂一遍，不会挂重。
+			server.execute(() -> refreshListeners(server));
+			return;
+		}
+
+		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+			PlayerAdvancements advancements = player.getAdvancements();
+
+			// TriggerFTGU 的 tech 监听存在触发器内部，得挨个清，否则会越积越多、且都指向旧 Technology
+			for (CriterionTrigger<?> trigger : BuiltInRegistries.TRIGGER_TYPES)
+				if (trigger instanceof TriggerFTGU<?> ftgu)
+					ftgu.clearTechListeners(advancements);
+
+			// 原版那批假进度挂的是真监听，认 AdvancementHolder 摘（见 PlayerAdvancementsInvoker）。
+			// 不摘的话每 reload 一次触发器上就多留一份：触发时老的那份也判一遍，判进的却是个没人看的
+			// 假进度，白费劲还一直吊着旧 Technology 不放。
+			Map<AdvancementHolder, Pair<Technology, String>> map = stale.get(player);
+			if (map != null)
+				for (AdvancementHolder holder : map.keySet())
+					((PlayerAdvancementsInvoker) advancements).ftgu$unregisterListeners(holder);
+
+			for (Technology tech : technologies.values())
+				if (tech.hasCustomUnlock() && tech.canResearchIgnoreCustomUnlock(player))
+					tech.registerListeners(player);
+		}
 	}
 
 	public static void autoResearch(Technology tech) {

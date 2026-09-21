@@ -61,6 +61,9 @@ public class FromTheGroundUp implements ModInitializer {
 		// Register capability/attachment
 		CapabilityTechnology.register();
 
+		// Register wandering trader trades
+		VillagerTradesHandler.register();
+
 		// Register event handler
 		EventHandler.register();
 

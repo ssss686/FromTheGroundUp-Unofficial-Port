@@ -1,5 +1,4 @@
 package com.fuxingcheng.fromthegroundup.api.technology.unlock;
-import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,16 +8,16 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import com.fuxingcheng.fromthegroundup.api.FTGUAPI;
+import com.fuxingcheng.fromthegroundup.util.ServerHelper;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-
 
 public class UnlockRecipe implements IUnlock {
 
@@ -89,8 +88,10 @@ public class UnlockRecipe implements IUnlock {
 
 	@Override
 	public void lock(ServerPlayer player) {
-		for (RecipeHolder<?> holder : getRecipeList())
-			player.getRecipeBook().remove(holder);
+		// 必须走 removeRecipes：它除了清服务端的 known，还会给客户端发 REMOVE 包。
+		// RecipeBook.remove 只改服务端那个集合，客户端配方书里的配方会一直留着，
+		// 于是撤销研究后配方看着还是解锁的（RecipeHideHelper 用的也是 removeRecipes）。
+		player.getRecipeBook().removeRecipes(getRecipeList(), player);
 	}
 
 }
