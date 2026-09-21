@@ -444,6 +444,14 @@ public class Technology implements ITechnology {
 		return isResearched(player) || isUnlocked(player) && (parent == null || parent.isResearched(player));
 	}
 
+	/**
+	 * 位置够不够得着：跟 canResearchIgnoreResearched 一样，但 criteria 那层自解锁不管。
+	 * criteria 只决定"能不能研究"（canResearch），画不画由科技 json 的 display.hidden 单独说了算。
+	 */
+	public boolean canResearchIgnoreResearchedAndCustomUnlock(Player player) {
+		return isResearched(player) || unlockedStage(player) && (parent == null || parent.isResearched(player));
+	}
+
 	@Override
 	public ResourceLocation getRegistryName() {
 		return id;

@@ -9,7 +9,8 @@
     "description": {
       "translate": "technology.enchanting.desc"
     },
-    "frame": "challenge"
+    "frame": "challenge",
+    "hidden": true
   },
   "parent": "ftgumod:research/bibliography",
   "criteria": {
