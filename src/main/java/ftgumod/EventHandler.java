@@ -9,14 +9,20 @@ import java.util.Set;
 
 import net.minecraft.advancements.critereon.EffectsChangedTrigger;
 import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.advancements.critereon.KilledTrigger;
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.advancements.critereon.StartRidingTrigger;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -60,6 +66,7 @@ import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class EventHandler {
@@ -68,6 +75,13 @@ public class EventHandler {
 
 	/** 上一 tick 骑上坐骑的玩家，延后一 tick 再判 started_riding，见 {@link #checkRideCriteria()} */
 	private final Set<ServerPlayer> pendingRideCheck = new HashSet<>();
+
+	/** 本 tick 对着方块用了物品的交互，延后一 tick 再判 item_used_on_block，见 {@link #checkUseOnBlockCriteria()} */
+	private final List<PendingUseOnBlock> pendingUseOnBlock = new ArrayList<>();
+
+	private record PendingUseOnBlock(ServerLevel level, ServerPlayer player, BlockPos pos, InteractionHand hand,
+			ItemStack tool, BlockState preState) {
+	}
 
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
@@ -264,6 +278,7 @@ public class EventHandler {
 	@SubscribeEvent
 	public void onServerTick(ServerTickEvent.Post event) {
 		checkRideCriteria();
+		checkUseOnBlockCriteria();
 
 		for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
 			var fakeMap = TechnologyManager.INSTANCE.getFakeAdvancements().get(player);
@@ -377,6 +392,31 @@ public class EventHandler {
 	}
 
 	@SubscribeEvent
+	public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+		if (event.isCanceled() || !(event.getEntity() instanceof ServerPlayer player))
+			return;
+		if (!(event.getLevel() instanceof ServerLevel level))
+			return;
+
+		List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
+		if (pending == null || pending.isEmpty())
+			return;
+
+		boolean relevant = false;
+		for (TechnologyManager.PendingCriterion pc : pending)
+			if (pc.instance() instanceof ItemUsedOnLocationTrigger.TriggerInstance) {
+				relevant = true;
+				break;
+			}
+		if (!relevant)
+			return;
+
+		BlockPos pos = event.getPos();
+		pendingUseOnBlock.add(new PendingUseOnBlock(level, player, pos.immutable(), event.getHand(),
+				event.getItemStack().copy(), level.getBlockState(pos)));
+	}
+
+	@SubscribeEvent
 	public void onEntityMount(EntityMountEvent event) {
 		if (event.getLevel().isClientSide() || !event.isMounting())
 			return;
@@ -419,6 +459,70 @@ public class EventHandler {
 		}
 
 		pendingRideCheck.clear();
+	}
+
+	/**
+	 * 判定 item_used_on_block 条件。
+	 *
+	 * 原版的 ITEM_USED_ON_BLOCK 是 ServerPlayerGameMode#useItemOn 在方块交互成功
+	 * （InteractionResult.consumesAction）之后抛的，那一刻读到的方块状态已经是交互之后的
+	 * —— 蜂箱的 honey_level 被重置成 0 了 —— 而手里的物品是交互前的 stack.copy()。
+	 * NeoForge 的 RightClickBlock 在交互之前抛，既拿不到返回值也没有"交互完成"事件，
+	 * 所以这里先把交互记下来，下一 tick 再看方块状态或手上的物品有没有变化来反推交互确实生效
+	 * （空蜂箱上用瓶子：两者都没变，不算数）。
+	 *
+	 * 判据的 LootContext 与原版 ItemUsedOnLocationTrigger#trigger 一致（ORIGIN 取方块中心、
+	 * BLOCK_STATE 取交互后的状态、TOOL 取交互前的物品），玩家谓词照原版用
+	 * EntityPredicate.createContext；所以原版 safely_harvest_honey 那种 predicate 可以原样抄。
+	 *
+	 * 已知差异：交互成功但既不改方块状态也不改物品的（例如开箱子这类只弹界面）不会触发。
+	 */
+	private void checkUseOnBlockCriteria() {
+		if (pendingUseOnBlock.isEmpty())
+			return;
+
+		for (PendingUseOnBlock use : pendingUseOnBlock) {
+			ServerPlayer player = use.player();
+			if (player.isRemoved())
+				continue;
+
+			BlockState state = use.level().getBlockState(use.pos());
+			ItemStack held = player.getItemInHand(use.hand());
+			if (state == use.preState() && held.getItem() == use.tool().getItem()
+					&& held.getDamageValue() == use.tool().getDamageValue())
+				continue;
+
+			List<TechnologyManager.PendingCriterion> pending = TechnologyManager.INSTANCE.getPendingCriteria().get(player);
+			if (pending == null || pending.isEmpty())
+				continue;
+
+			LootParams lootParams = new LootParams.Builder(use.level())
+				.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(use.pos()))
+				.withParameter(LootContextParams.THIS_ENTITY, player)
+				.withParameter(LootContextParams.BLOCK_STATE, state)
+				.withParameter(LootContextParams.TOOL, use.tool())
+				.create(LootContextParamSets.ADVANCEMENT_LOCATION);
+			LootContext ctx = new LootContext.Builder(lootParams).create(Optional.empty());
+			LootContext playerCtx = EntityPredicate.createContext(player, player);
+
+			List<TechnologyManager.PendingCriterion> matched = new ArrayList<>();
+			for (TechnologyManager.PendingCriterion pc : pending) {
+				if (pc.instance() instanceof ItemUsedOnLocationTrigger.TriggerInstance ui) {
+					var playerPred = ui.player();
+					if (playerPred.isPresent() && !playerPred.get().matches(playerCtx))
+						continue;
+					var locationPred = ui.location();
+					if (locationPred.isPresent() && !locationPred.get().matches(ctx))
+						continue;
+					matched.add(pc);
+				}
+			}
+
+			for (TechnologyManager.PendingCriterion pc : matched)
+				pc.tech().grantCriterion(player, pc.criterionName());
+		}
+
+		pendingUseOnBlock.clear();
 	}
 
 	// JEI research guide - no longer needs tick refresh
