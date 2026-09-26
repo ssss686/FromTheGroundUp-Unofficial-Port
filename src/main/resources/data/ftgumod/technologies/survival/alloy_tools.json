@@ -1,0 +1,45 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_pickaxe"
+    },
+    "title": {
+      "translate": "technology.alloy_tools.name"
+    },
+    "description": {
+      "translate": "technology.alloy_tools.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:survival/netherite",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:netherite_scrap",
+        "minecraft:ancient_debris",
+        "minecraft:netherite_ingot",
+        "minecraft:netherite_block"
+      ],
+      [
+        "minecraft:diamond_sword",
+        "minecraft:diamond_pickaxe",
+        "minecraft:diamond_axe",
+        "minecraft:diamond_shovel",
+        "minecraft:diamond_hoe"
+      ]
+    ]
+  },
+  "research": {
+    "type": "ftgumod:connect",
+    "left": "minecraft:furnace_minecart",
+    "right": "minecraft:stone_pressure_plate"
+  },
+  "unlock": [
+    "minecraft:netherite_sword",
+    "minecraft:netherite_pickaxe",
+    "minecraft:netherite_axe",
+    "minecraft:netherite_shovel",
+    "minecraft:netherite_hoe"
+  ]
+}

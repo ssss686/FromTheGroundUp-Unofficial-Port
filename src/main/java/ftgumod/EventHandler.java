@@ -9,6 +9,7 @@ import java.util.Set;
 
 import net.minecraft.advancements.critereon.EffectsChangedTrigger;
 import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.advancements.critereon.KilledTrigger;
 import net.minecraft.advancements.critereon.PlayerTrigger;
@@ -17,6 +18,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -46,19 +48,28 @@ import ftgumod.util.StackUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.SmithingScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ResultContainer;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.SmithingMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SmithingRecipe;
+import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ContainerScreenEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -72,6 +83,22 @@ import org.lwjgl.glfw.GLFW;
 public class EventHandler {
 
 	private ItemStack stack = ItemStack.EMPTY;
+
+	/** 锻造台箭头上那块 28×21 的报错位，数值抄自 SmithingScreen 的 ERROR_ICON_* */
+	private static final int SMITHING_ERROR_X = 65;
+	private static final int SMITHING_ERROR_Y = 46;
+	private static final int SMITHING_ERROR_WIDTH = 28;
+	private static final int SMITHING_ERROR_HEIGHT = 21;
+
+	/** 锻造台底图，SmithingScreen 构造时传给父类的就是这一张 */
+	private static final ResourceLocation SMITHING_TEXTURE = ResourceLocation
+			.withDefaultNamespace("textures/gui/container/smithing.png");
+
+	/** 本帧结果被锁定挡下来、于是被原版当成"配方无效"的锻造台；其它情况是 null，见 {@link #onPlayerInGui} */
+	private SmithingScreen lockedSmithingScreen;
+
+	/** 本帧那条报错提示还没被拦掉，拦过一次就收手，见 {@link #onRenderTooltip} */
+	private boolean lockedSmithingTooltip;
 
 	/** 上一 tick 骑上坐骑的玩家，延后一 tick 再判 started_riding，见 {@link #checkRideCriteria()} */
 	private final Set<ServerPlayer> pendingRideCheck = new HashSet<>();
@@ -232,6 +259,9 @@ public class EventHandler {
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
 	public void onPlayerInGui(ScreenEvent.Render.Pre evt) {
+		this.lockedSmithingScreen = null;
+		this.lockedSmithingTooltip = false;
+
 		if (evt.getScreen() instanceof AbstractContainerScreen<?> screen) {
 			AbstractContainerMenu menu = screen.getMenu();
 
@@ -254,10 +284,92 @@ public class EventHandler {
 							s.container.setItem(0, ItemStack.EMPTY);
 						this.stack = s.container.getItem(0);
 					}
-					return;
+					break;
 				}
 			}
+
+			// 结果刚被上面清掉，这时候问锻造台"是不是被锁下来的"才问得准
+			if (screen instanceof SmithingScreen smithing && isLockedSmithingResult(smithing)) {
+				this.lockedSmithingScreen = smithing;
+				this.lockedSmithingTooltip = isHoveringSmithingError(smithing, evt.getMouseX(), evt.getMouseY());
+			}
 		}
+	}
+
+	/**
+	 * 锻造台的结果槽空着，但配方其实查得到 —— 那这个空只可能是锁定挡的，
+	 * 不是原版那条"该物品无法使用此方法升级"要说的意思。
+	 *
+	 * 原版 SmithingMenu#createResult 查得到配方就会把结果填上，填不上只剩两种情况：
+	 * 配方被 {@link TechnologyManager#isLocked} 拦下，或者结果物品被特性开关禁用。
+	 * 所以这里照样拿配方自己算一遍，只有结果确实锁着才算数。
+	 */
+	@OnlyIn(Dist.CLIENT)
+	private static boolean isLockedSmithingResult(SmithingScreen screen) {
+		SmithingMenu menu = screen.getMenu();
+		if (!menu.getSlot(SmithingMenu.TEMPLATE_SLOT).hasItem()
+				|| !menu.getSlot(SmithingMenu.BASE_SLOT).hasItem()
+				|| !menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).hasItem()
+				|| menu.getSlot(menu.getResultSlot()).hasItem())
+			return false;
+
+		Minecraft minecraft = Minecraft.getInstance();
+		Player player = minecraft.player;
+		if (player == null || minecraft.level == null)
+			return false;
+
+		SmithingRecipeInput input = new SmithingRecipeInput(
+				menu.getSlot(SmithingMenu.TEMPLATE_SLOT).getItem(),
+				menu.getSlot(SmithingMenu.BASE_SLOT).getItem(),
+				menu.getSlot(SmithingMenu.ADDITIONAL_SLOT).getItem());
+		for (RecipeHolder<SmithingRecipe> recipe : minecraft.level.getRecipeManager()
+				.getRecipesFor(RecipeType.SMITHING, input, minecraft.level))
+			if (TechnologyManager.INSTANCE
+					.isLocked(recipe.value().assemble(input, minecraft.level.registryAccess()), player))
+				return true;
+		return false;
+	}
+
+	/** 鼠标是不是停在箭头上那块报错位，判法跟原版 AbstractContainerScreen#isHovering 一致（左右各放宽一格） */
+	@OnlyIn(Dist.CLIENT)
+	private static boolean isHoveringSmithingError(SmithingScreen screen, int mouseX, int mouseY) {
+		int x = mouseX - screen.getGuiLeft();
+		int y = mouseY - screen.getGuiTop();
+		return x >= SMITHING_ERROR_X - 1 && x < SMITHING_ERROR_X + SMITHING_ERROR_WIDTH + 1
+				&& y >= SMITHING_ERROR_Y - 1 && y < SMITHING_ERROR_Y + SMITHING_ERROR_HEIGHT + 1;
+	}
+
+	/**
+	 * 原版判"配方有错"只看三个输入放了没、结果槽空没空，锁定挡下来的结果正好落在里面，
+	 * 于是在箭头上盖一张红叉。可锁定不是"没法用这种方法升级"，这里把那一格底图重贴回来。
+	 */
+	@SubscribeEvent
+	@OnlyIn(Dist.CLIENT)
+	public void onContainerBackground(ContainerScreenEvent.Render.Background evt) {
+		if (evt.getContainerScreen() != this.lockedSmithingScreen)
+			return;
+
+		evt.getGuiGraphics().blit(SMITHING_TEXTURE,
+				evt.getContainerScreen().getGuiLeft() + SMITHING_ERROR_X,
+				evt.getContainerScreen().getGuiTop() + SMITHING_ERROR_Y,
+				SMITHING_ERROR_X, SMITHING_ERROR_Y, SMITHING_ERROR_WIDTH, SMITHING_ERROR_HEIGHT);
+	}
+
+	/**
+	 * 红叉上的那条提示也拦掉，只留 JEI 的"显示配方"。
+	 *
+	 * 拦法是在 {@link #onPlayerInGui} 里先备好"这一帧要拦一条"，拦到就把标记清掉：
+	 * 原版那条在 SmithingScreen#render 里画，JEI 的"显示配方"要等 ScreenEvent.Render.Post
+	 * 才画，而鼠标停在箭头上时那块报错位底下没有槽位，这一帧第一条过这里的就只有原版那条。
+	 */
+	@SubscribeEvent
+	@OnlyIn(Dist.CLIENT)
+	public void onRenderTooltip(RenderTooltipEvent.Pre evt) {
+		if (!this.lockedSmithingTooltip)
+			return;
+
+		this.lockedSmithingTooltip = false;
+		evt.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -302,19 +414,14 @@ public class EventHandler {
 					for (TechnologyManager.PendingCriterion pc : pending) {
 						if (pc.instance() instanceof PlayerTrigger.TriggerInstance pi) {
 							var playerPred = pi.player();
-							if (playerPred.isPresent()) {
-								LootParams lootParams = new LootParams.Builder(player.serverLevel())
-									.withParameter(LootContextParams.THIS_ENTITY, player)
-									.withParameter(LootContextParams.ORIGIN, player.position())
-									.withParameter(LootContextParams.BLOCK_STATE, player.getBlockStateOn())
-									.withParameter(LootContextParams.TOOL, player.getMainHandItem())
-									.create(LootContextParamSets.ADVANCEMENT_LOCATION);
-								LootContext ctx = new LootContext.Builder(lootParams).create(Optional.empty());
-								if (playerPred.get().matches(ctx))
-									matched.add(pc);
-							} else {
+							if (playerPred.isEmpty() || playerPred.get().matches(locationContext(player)))
 								matched.add(pc);
-							}
+						} else if (pc.instance() instanceof InventoryChangeTrigger.TriggerInstance ii) {
+							var playerPred = ii.player();
+							if (playerPred.isPresent() && !playerPred.get().matches(locationContext(player)))
+								continue;
+							if (matchesInventory(ii, player.getInventory()))
+								matched.add(pc);
 						}
 					}
 					for (TechnologyManager.PendingCriterion pc : matched)
@@ -523,6 +630,50 @@ public class EventHandler {
 		}
 
 		pendingUseOnBlock.clear();
+	}
+
+	/**
+	 * 玩家所在地点的 LootContext。ADVANCEMENT_LOCATION 参数集要的四个参数都填满
+	 * （THIS_ENTITY / ORIGIN / BLOCK_STATE / TOOL），location 与 inventory_changed
+	 * 的玩家谓词都拿它来判，跟原版 LocationTrigger#trigger 一致。
+	 */
+	private static LootContext locationContext(ServerPlayer player) {
+		LootParams lootParams = new LootParams.Builder(player.serverLevel())
+			.withParameter(LootContextParams.THIS_ENTITY, player)
+			.withParameter(LootContextParams.ORIGIN, player.position())
+			.withParameter(LootContextParams.BLOCK_STATE, player.getBlockStateOn())
+			.withParameter(LootContextParams.TOOL, player.getMainHandItem())
+			.create(LootContextParamSets.ADVANCEMENT_LOCATION);
+		return new LootContext.Builder(lootParams).create(Optional.empty());
+	}
+
+	/**
+	 * 判定 inventory_changed 的 items / slots 条件。
+	 *
+	 * 原版是在 Inventory 变动时把"刚变动的那一格"交给 TriggerInstance#matches 判的，
+	 * 这里没有那个时刻，所以照原版 trigger 的做法把整包装填状态统计出来，再逐格拿非空格
+	 * 去问 matches —— items 只有一项时它判的就是传进去的这格，语义正好落在
+	 * "背包里存在一格满足谓词"上；items 多于一项时它自己会扫全包，重复问结果也一样。
+	 */
+	private static boolean matchesInventory(InventoryChangeTrigger.TriggerInstance instance, Inventory inventory) {
+		int full = 0, empty = 0, occupied = 0;
+		for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+			ItemStack stack = inventory.getItem(slot);
+			if (stack.isEmpty()) {
+				empty++;
+			} else {
+				occupied++;
+				if (stack.getCount() >= stack.getMaxStackSize())
+					full++;
+			}
+		}
+
+		for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+			ItemStack stack = inventory.getItem(slot);
+			if (!stack.isEmpty() && instance.matches(inventory, stack, full, empty, occupied))
+				return true;
+		}
+		return false;
 	}
 
 	// JEI research guide - no longer needs tick refresh
