@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_upgrade_smithing_template"
+    },
+    "title": {
+      "translate": "technology.netherite_passport.name"
+    },
+    "description": {
+      "translate": "technology.netherite_passport.desc"
+    },
+    "frame": "task"
+  },
+  "parent": "ftgumod:survival/netherite",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      {
+        "tag": "minecraft:beacon_payment_items"
+      },
+      [
+        "minecraft:netherrack",
+        "minecraft:nether_brick"
+      ]
+    ]
+  },
+  "research": {
+    "type": "ftgumod:connect",
+    "left": "minecraft:smithing_table",
+    "right": "minecraft:netherite_upgrade_smithing_template"
+  },
+  "unlock": [
+    "minecraft:netherite_upgrade_smithing_template"
+  ]
+}
