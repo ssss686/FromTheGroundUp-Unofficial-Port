@@ -1,0 +1,40 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:oak_wood"
+    },
+    "title": {
+      "translate": "technology.barker.name"
+    },
+    "description": {
+      "translate": "technology.barker.desc"
+    }
+  },
+  "parent": "ftgumod:construction/carpentry",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        {
+          "tag": "ftgumod:minecraft_logs"
+        },
+        {
+          "tag": "ftgumod:minecraft_stripped_logs"
+        }
+      ],
+      [
+        {
+          "tag": "minecraft:axes"
+        }
+      ]
+    ]
+  },
+  "unlock": [
+    {
+      "tag": "ftgumod:minecraft_woods"
+    },
+    {
+      "tag": "ftgumod:minecraft_stripped_woods"
+    }
+  ]
+}
