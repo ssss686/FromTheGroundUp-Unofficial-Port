@@ -1,0 +1,52 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:warped_fungus_on_a_stick"
+    },
+    "title": {
+      "translate": "technology.warped_protocol.name"
+    },
+    "description": {
+      "translate": "technology.warped_protocol.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:survival/carrot_protocol",
+  "criteria": {
+    "ride_strider": {
+      "trigger": "minecraft:started_riding",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "vehicle": {
+                "type": [
+                  "minecraft:strider"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:stick",
+        "minecraft:string",
+        "minecraft:bamboo",
+        "minecraft:blaze_rod",
+        "minecraft:breeze_rod",
+        "minecraft:fishing_rod"
+      ],
+      "minecraft:warped_fungus"
+    ]
+  },
+  "unlock": [
+    "minecraft:warped_fungus_on_a_stick"
+  ]
+}
