@@ -1,0 +1,90 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:ancient_debris"
+    },
+    "title": {
+      "translate": "technology.netherite.name"
+    },
+    "description": {
+      "translate": "technology.netherite.desc"
+    },
+    "frame": "task"
+  },
+  "parent": "ftgumod:survival/lapidary",
+  "criteria": {
+    "escape": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "dimension": "minecraft:overworld"
+              }
+            }
+          }
+        ],
+        "items": [
+          {
+            "items": "minecraft:ancient_debris"
+          }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      "minecraft:ancient_debris",
+      "minecraft:netherite_scrap",
+      "minecraft:gold_ingot",
+      "minecraft:gilded_blackstone"
+    ]
+  },
+  "research": {
+    "type": "ftgumod:match",
+    "pattern": [
+      "SGS",
+      "G G",
+      "SGS"
+    ],
+    "key": {
+      "S": {
+        "item": [
+          "minecraft:netherite_scrap",
+          "minecraft:ancient_debris",
+          "minecraft:iron_ingot",
+          "minecraft:iron_nugget"
+        ],
+        "hint": {
+          "translate": "technology.hint.ore"
+        },
+        "decipher": {
+          "decipher": {
+            "block": "minecraft:ancient_debris"
+          },
+          "hint": {
+            "translate": "block.minecraft.ancient_debris"
+          }
+        }
+      },
+      "G": {
+        "item": [
+          "minecraft:gold_ingot",
+          "minecraft:gold_nugget"
+        ],
+        "hint": {
+          "translate": "technology.hint.gilded"
+        }
+      }
+    }
+  },
+  "unlock": [
+    "minecraft:netherite_scrap",
+    "minecraft:netherite_ingot",
+    "minecraft:netherite_block"
+  ]
+}

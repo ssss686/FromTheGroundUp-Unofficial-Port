@@ -39,6 +39,7 @@
   "unlock": [
     "minecraft:enchanting_table",
     "minecraft:spectral_arrow",
-    "minecraft:grindstone"
+    "minecraft:grindstone",
+    "minecraft:respawn_anchor"
   ]
 }

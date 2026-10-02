@@ -319,7 +319,9 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 				|| trigger == CriteriaTriggers.LOCATION
 				|| trigger == CriteriaTriggers.PLAYER_KILLED_ENTITY
 				|| trigger == CriteriaTriggers.EFFECTS_CHANGED
-				|| trigger == CriteriaTriggers.START_RIDING_TRIGGER;
+				|| trigger == CriteriaTriggers.START_RIDING_TRIGGER
+				|| trigger == CriteriaTriggers.ITEM_USED_ON_BLOCK
+				|| trigger == CriteriaTriggers.INVENTORY_CHANGED;
 	}
 
 	/** Load technologies from built-in mod resources on the client side. */
