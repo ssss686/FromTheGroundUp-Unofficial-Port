@@ -26,7 +26,6 @@
     "minecraft:compass",
     "minecraft:clock",
     "minecraft:map",
-    "minecraft:cartography_table",
-    "minecraft:lodestone"
+    "minecraft:cartography_table"
   ]
 }
