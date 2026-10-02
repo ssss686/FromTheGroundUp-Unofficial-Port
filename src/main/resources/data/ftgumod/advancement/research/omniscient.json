@@ -13,6 +13,12 @@
   },
   "parent": "ftgumod:research/research",
   "criteria": {
+    "construction_barker": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/barker"
+      }
+    },
     "construction_brickwork": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
@@ -29,6 +35,12 @@
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:construction/construction"
+      }
+    },
+    "construction_emberwisp_ignition": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:construction/emberwisp_ignition"
       }
     },
     "construction_emblems": {
@@ -175,6 +187,18 @@
         "technology": "ftgumod:survival/agriculture"
       }
     },
+    "survival_alloy_tools": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/alloy_tools"
+      }
+    },
+    "survival_apiculture": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/apiculture"
+      }
+    },
     "survival_boats": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
@@ -215,6 +239,12 @@
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:survival/dyes"
+      }
+    },
+    "survival_emberforged": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/emberforged"
       }
     },
     "survival_fishing": {
@@ -259,6 +289,18 @@
         "technology": "ftgumod:survival/metal_armor"
       }
     },
+    "survival_netherite": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/netherite"
+      }
+    },
+    "survival_netherite_passport": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/netherite_passport"
+      }
+    },
     "survival_refinement": {
       "trigger": "ftgumod:technology_researched",
       "conditions": {
@@ -287,6 +329,12 @@
       "trigger": "ftgumod:technology_researched",
       "conditions": {
         "technology": "ftgumod:survival/turtles"
+      }
+    },
+    "survival_warped_protocol": {
+      "trigger": "ftgumod:technology_researched",
+      "conditions": {
+        "technology": "ftgumod:survival/warped_protocol"
       }
     }
   }
