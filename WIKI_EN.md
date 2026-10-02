@@ -58,15 +58,17 @@ A technology's criteria are written exactly like vanilla advancement criteria. T
 
 - **effects_changed** — gain a status effect
 - **player_killed_entity** — kill a specific mob (a witch, a crossbow-wielding pillager, ...)
-- **started_riding** — start riding a specific vehicle (a pig)
-- **location** — visit a structure (an ocean monument, an end city)
+- **started_riding** — start riding a specific vehicle (a pig, a strider)
+- **location** — visit a structure or biome (an ocean monument, an end city, a soul sand valley)
+- **item_used_on_block** — use a specific item on a specific block (a glass bottle or shears on a beehive)
+- **inventory_changed** — your inventory changes (carrying ancient debris back to the Overworld)
 - **ftgumod:item_inventory** — hold a specific item
 
 See [Research Criteria & Triggers](#research-criteria--triggers) for the full list and its limits.
 
 ### Decipher
 
-Inspecting some blocks (beds, cauldrons, nether stars) with the magnifying glass does not reveal them directly — they must be **deciphered**. Inspect, then press the decipher key and follow the hint (it points at a specific block or place) to gain the knowledge.
+Inspecting some blocks (beds, cauldrons, nether stars, ancient debris) with the magnifying glass does not reveal them directly — they must be **deciphered**. Inspect, then press the decipher key and follow the hint (it points at a specific block or place) to gain the knowledge.
 
 ### JEI Research Guide
 
@@ -86,7 +88,7 @@ How much is shown is controlled by `researchGuideMode` in `config/ftgumod-common
 
 - `survival` (Survival) and `research` (Research) are the two root technologies — they have no prerequisites, everything else hangs below them.
 - Arrows mean **prerequisite → dependent**: you must research the former before the latter.
-- `[challenge]` marks a challenge-framed technology; `[hidden]` marks one that does not appear on the research book until its criteria are met.
+- `[challenge]` marks a challenge-framed technology and `[goal]` a goal-framed one; `[hidden]` marks one that does not appear on the research book until its criteria are met.
 
 ```
 survival (root)
@@ -94,15 +96,18 @@ survival (root)
 │   ├─ construction Construction
 │   │   ├─ stonemasonry Stonemasonry
 │   │   │   ├─ brickwork Brickwork
+│   │   │   │   ├─ emberwisp_ignition Emberwisp Ignition
 │   │   │   │   ├─ quartz Quartz
 │   │   │   │   │   └─ purpur Purpur  [challenge, hidden]
 │   │   │   │   └─ glazed_tiles Glazed Tiles
 │   │   │   └─ ice_harvesting Ice Harvesting
 │   │   └─ carpentry Carpentry
+│   │       ├─ barker Barker
 │   │       ├─ emblems Emblems
 │   │       └─ glassworking Glassworking
 │   │           └─ prismarine Prismarine  [challenge, hidden]
 │   ├─ agriculture Agriculture
+│   │   ├─ apiculture Apiculture
 │   │   ├─ cooking Cooking
 │   │   │   ├─ flower_language Flower Language
 │   │   │   └─ gilded_cuisine Gilded Cuisine
@@ -111,6 +116,9 @@ survival (root)
 │       ├─ smithing Smithing
 │       │   ├─ conduit Conduit Power  [challenge, hidden]
 │       │   └─ lapidary Lapidary
+│       │       └─ netherite Gold from the Embers
+│       │           ├─ alloy_tools Alloy Tools  [goal]
+│       │           └─ netherite_passport Netherite Passport
 │       └─ power Power
 │           ├─ activation Activation
 │           │   └─ explosives Explosives
@@ -124,9 +132,11 @@ survival (root)
 ├─ defense Defense
 │   └─ metal_armor Metal Armor
 │       ├─ gem_armor Crystalline Armor
+│       │   └─ emberforged Emberforged  [goal]
 │       └─ turtles Turtle Hermit
 ├─ fishing Fishing Ballad
 │   ├─ carrot_protocol The Carrot Protocol
+│   │   └─ warped_protocol Warped Protocol  [goal]
 │   └─ hunting Hunting
 │       └─ clockwork_malice Clockwork Malice  [goal]
 └─ research Research (root)
@@ -152,23 +162,29 @@ survival (root)
 | **Survival** | (root) | any planks, any wooden slab, any wooden stairs, Stick, Wooden Sword, Wooden Shovel, Wooden Pickaxe, Wooden Axe, Crafting Table, Torch, Bowl, Campfire |
 | **Stoneworking** | Survival | Stone Sword, Stone Shovel, Stone Pickaxe, Stone Axe |
 | **Agriculture** | Stoneworking | Wooden Hoe, Stone Hoe, Wheat Crops, Hay Bale, Melon, Melon Seeds, Pumpkin Seeds, Composter, Lead, Smoker, Coarse Dirt, Jack o'Lantern, Leather, Nether Wart Block |
+| **Apiculture** | Agriculture | Beehive, Honey Bottle, Honey Block, Honeycomb Block |
 | **Cooking** | Agriculture | Sugar, Mushroom Stew, Rabbit Stew, Beetroot Soup, Bread, Cookie, Cake, Pumpkin Pie, Dried Kelp |
 | **Flower Language** | Cooking | Suspicious Stew |
 | **Gilded Cuisine** | Cooking | Golden Apple, Golden Carrot, Glistering Melon Slice |
 | **Dyes** | Agriculture | Light Gray Dye, Gray Dye, Cyan Dye, Light Blue Dye, Purple Dye, Magenta Dye, Pink Dye, Orange Dye, Lime Dye |
 | **Refinement** | Stoneworking | Furnace, Iron Ingot, Iron Nugget, Block of Iron, Flint and Steel, Gold Ingot, Gold Nugget, Block of Gold, Diamond, Block of Diamond, Emerald, Block of Emerald, Coal, Block of Coal, Lapis Lazuli, Block of Lapis Lazuli, Redstone Dust, Block of Redstone, Slimeball, Slime Block, Nether Quartz, Bone Meal, Bone Block, Dried Kelp Block |
-| **Smithing** | Refinement | Anvil, Bucket, Smithing Table, Blast Furnace, Lantern, Iron Bars, Iron Door, Iron Trapdoor, Iron Sword, Iron Shovel, Iron Pickaxe, Iron Axe, Iron Hoe, Shears, Golden Sword, Golden Shovel, Golden Pickaxe, Golden Axe, Golden Hoe |
+| **Smithing** | Refinement | Anvil, Bucket, Smithing Table, Blast Furnace, Lantern, Iron Bars, Iron Door, Iron Trapdoor, Iron Chain, Iron Sword, Iron Shovel, Iron Pickaxe, Iron Axe, Iron Hoe, Shears, Golden Sword, Golden Shovel, Golden Pickaxe, Golden Axe, Golden Hoe |
 | **Conduit Power** `[challenge, hidden]` | Smithing | Conduit |
 | **Lapidary** | Smithing | Diamond Sword, Diamond Shovel, Diamond Pickaxe, Diamond Axe, Diamond Hoe |
+| **Gold from the Embers** | Lapidary | Ancient Debris, Netherite Scrap, Netherite Ingot, Block of Netherite |
+| **Netherite Passport** | Gold from the Embers | Netherite Upgrade Smithing Template |
+| **Alloy Tools** `[goal]` | Gold from the Embers | Netherite Sword, Netherite Shovel, Netherite Pickaxe, Netherite Axe, Netherite Hoe |
 | **Boats** | Survival | every boat (including the bamboo raft) |
 | **Defense** | Survival | Leather Cap, Leather Tunic, Leather Pants, Leather Boots, Leather Horse Armor, Armor Stand, Shield |
 | **Metal Armor** | Defense | Iron Helmet, Iron Chestplate, Iron Leggings, Iron Boots, Golden Helmet, Golden Chestplate, Golden Leggings, Golden Boots |
 | **Crystalline Armor** | Metal Armor | Diamond Helmet, Diamond Chestplate, Diamond Leggings, Diamond Boots |
+| **Emberforged** `[goal]` | Crystalline Armor | Netherite Helmet, Netherite Chestplate, Netherite Leggings, Netherite Boots |
 | **Turtle Hermit** | Metal Armor | Turtle Shell |
 | **Fishing Ballad** | Survival | Fishing Rod |
 | **The Carrot Protocol** | Fishing Ballad | Carrot on a Stick |
+| **Warped Protocol** `[goal]` | The Carrot Protocol | Warped Fungus on a Stick |
 | **Hunting** | Fishing Ballad | Bow, Arrow, Fletching Table |
-| **Clockwork Malice** `[goal]` | Hunting | Crossbow |
+| **Clockwork Malice** `[goal]` | Hunting | Crossbow, Target |
 
 ### Research
 
@@ -176,7 +192,7 @@ survival (root)
 |---|---|---|
 | **Research** | (root) | Paper, Empty Parchment, Idea Table, Research Table, Research Book, Magnifying Glass |
 | **Bibliography** | Research | Book, Book and Quill, Bookshelf, Lectern |
-| **Enchanting** `[challenge, hidden]` | Bibliography | Enchanting Table, Spectral Arrow, Grindstone |
+| **Enchanting** `[challenge, hidden]` | Bibliography | Enchanting Table, Spectral Arrow, Grindstone, Respawn Anchor |
 | **Glowing Eyes** `[challenge, hidden]` | Enchanting | Eye of Ender |
 | **Ender Knowledge** `[challenge, hidden]` | Glowing Eyes | End Crystal, Ender Chest, Beacon |
 | **Brewing** `[challenge, hidden]` | Research | Brewing Stand, Cauldron, Blaze Powder, Magma Cream, Fermented Spider Eye, Tipped Arrow |
@@ -185,9 +201,9 @@ survival (root)
 
 | Technology | Requires | Unlocks |
 |---|---|---|
-| **Construction** | Stoneworking | Granite/Polished Granite, Diorite/Polished Diorite, Andesite/Polished Andesite, Tuff/Polished Tuff, Deepslate/Polished Deepslate, Basalt/Polished Basalt, Mossy Cobblestone, Mossy Cobblestone Stairs/Slab/Wall, Cobblestone Stairs/Slab/Wall, Stone, Sandstone, Sandstone Stairs/Slab/Wall, Red Sandstone, Red Sandstone Stairs/Slab/Wall, Snow Block/Snow, Stonecutter |
-| **Stonemasonry** | Construction | Stone Bricks, Cracked Stone Bricks, Chiseled Stone Bricks, Stone Brick Stairs/Slab/Wall, Stone Stairs/Slab, Smooth Stone, Smooth Sandstone, Cut Sandstone, Cut Sandstone Slab, Smooth Sandstone Stairs/Slab, Smooth Red Sandstone, Cut Red Sandstone, Cut Red Sandstone Slab, Smooth Red Sandstone Stairs/Slab, Mossy Stone Bricks, Mossy Stone Brick Stairs/Slab/Wall, Granite Stairs/Slab/Wall, Polished Granite Stairs/Slab, Diorite Stairs/Slab/Wall, Polished Diorite Stairs/Slab, Andesite Stairs/Slab/Wall, Polished Andesite Stairs/Slab, any concrete powder |
-| **Brickwork** | Stonemasonry | Bricks, Brick Stairs, Brick Slab, Brick Wall, Flower Pot, Nether Brick, Nether Bricks, Nether Brick Stairs/Slab/Wall, Nether Brick Fence, Red Nether Bricks, Red Nether Brick Stairs/Slab/Wall, End Stone Bricks, End Stone Brick Stairs/Slab/Wall, Clay, any terracotta |
+| **Construction** | Stoneworking | Granite/Polished Granite, Diorite/Polished Diorite, Andesite/Polished Andesite, Tuff/Polished Tuff, Deepslate/Polished Deepslate, Basalt/Polished Basalt, Mossy Cobblestone, Mossy Cobblestone Stairs/Slab/Wall, Cobblestone Stairs/Slab/Wall, Stone, Sandstone, Sandstone Stairs/Slab/Wall, Red Sandstone, Red Sandstone Stairs/Slab/Wall, Snow Block/Snow, Blackstone, Polished Blackstone, Blackstone Stairs/Slab/Wall, Stonecutter |
+| **Stonemasonry** | Construction | Stone Bricks, Cracked Stone Bricks, Chiseled Stone Bricks, Stone Brick Stairs/Slab/Wall, Stone Stairs/Slab, Smooth Stone, Smooth Sandstone, Cut Sandstone, Cut Sandstone Slab, Smooth Sandstone Stairs/Slab, Smooth Red Sandstone, Cut Red Sandstone, Cut Red Sandstone Slab, Smooth Red Sandstone Stairs/Slab, Mossy Stone Bricks, Mossy Stone Brick Stairs/Slab/Wall, Granite Stairs/Slab/Wall, Polished Granite Stairs/Slab, Diorite Stairs/Slab/Wall, Polished Diorite Stairs/Slab, Andesite Stairs/Slab/Wall, Polished Andesite Stairs/Slab, any concrete powder, Smooth Basalt, Polished Blackstone Stairs/Slab/Wall, Polished Blackstone Bricks, Cracked Polished Blackstone Bricks, Chiseled Polished Blackstone, Polished Blackstone Brick Stairs/Slab/Wall |
+| **Brickwork** | Stonemasonry | Bricks, Brick Stairs, Brick Slab, Brick Wall, Flower Pot, Nether Brick, Nether Bricks, Nether Brick Stairs/Slab/Wall, Nether Brick Fence, Cracked Nether Bricks, Chiseled Nether Bricks, Red Nether Bricks, Red Nether Brick Stairs/Slab/Wall, End Stone Bricks, End Stone Brick Stairs/Slab/Wall, Clay, any terracotta |
 | **Quartz** | Brickwork | Block of Quartz, Chiseled Quartz Block, Quartz Pillar, Smooth Quartz Block, Quartz Bricks, Quartz Slab, Quartz Stairs, Smooth Quartz Stairs, Smooth Quartz Slab, Glowstone, Magma Block |
 | **Purpur** `[challenge, hidden]` | Quartz | Purpur Block, Purpur Pillar, Purpur Slab, Purpur Stairs, End Rod, any shulker box |
 | **Glazed Tiles** | Brickwork | 16 colors of glazed terracotta |
@@ -204,7 +220,7 @@ survival (root)
 | **Power** | Refinement | Redstone Torch, Tripwire Hook, Trapped Chest, Redstone Lamp |
 | **Activation** | Power | any wooden button, Stone Button/Polished Blackstone Button, any wooden pressure plate, Stone Pressure Plate/Polished Blackstone Pressure Plate, Light Weighted Pressure Plate, Heavy Weighted Pressure Plate, Lever |
 | **Explosives** | Activation | TNT, Minecart with TNT, Firework Rocket, Firework Star, Fire Charge |
-| **Cartography** | Power | Compass, Clock, Empty Map, Cartography Table |
+| **Cartography** | Power | Compass, Clock, Empty Map, Cartography Table, Lodestone |
 | **Carts** | Power | Minecart, Minecart with Furnace, Rail |
 | **Transportation** | Carts | Hopper, Powered Rail, Detector Rail, Activator Rail, Minecart with Chest, Minecart with Hopper |
 | **Circuitry** | Power | Redstone Repeater, Redstone Comparator, Piston, Sticky Piston |
@@ -239,6 +255,7 @@ Besides meeting the **criteria**, most technologies also need two "recipe" steps
   ```
   > `[Roof]` = any slab; `[Steps]` = any stairs; `[Wall]` = Stone/Polished Granite/Polished Diorite/Polished Andesite/Polished Deepslate/Polished Tuff/Smooth Basalt/Polished Blackstone.
 - **Brickwork** — Idea table: Clay/Clay Ball + a heat source; Research table (connect): Terracotta → Bricks
+- **Emberwisp Ignition** — Idea table: Torch/Lantern/Campfire + Soul Sand/Soul Soil (criteria: visit a soul sand valley)
 - **Quartz** — Idea table: Nether Quartz + Glowstone Dust/Magma Block/Magma Cream
 - **Purpur** — Idea table: Popped Chorus Fruit + Purpur Block/Pillar/Stairs/Slab/End Rod
   ```
@@ -250,6 +267,7 @@ Besides meeting the **criteria**, most technologies also need two "recipe" steps
 - **Glazed Tiles** — Idea table: any terracotta + a heat source
 - **Ice Harvesting** — Idea table: Ice + Water Bucket/Bucket
 - **Carpentry** — Idea table: any wool + any planks + any wooden slab + any wooden stairs; Research table (connect): Oak Planks → White Wool
+- **Barker** — Idea table: any log/stripped log + any axe; unlocks the Wood and Stripped Wood blocks of every wood type
 - **Emblems** — Idea table: any banner/Shield + any flower/any dye + freeze-immune wearables (leather armor / turtle shell)
 - **Glassworking** — Idea table: Sand + Glass
 - **Prismarine** — Idea table: Prismarine/Sea Lantern + Prismarine Shard + Prismarine Crystals
@@ -325,6 +343,7 @@ Besides meeting the **criteria**, most technologies also need two "recipe" steps
   [Soil]   [Soil]   [Soil]
   ```
   > `[Leaning]` = Stick; `[Crop]` = any item of the crop/seed/berry/fruit/mushroom tags; `[Soil]` = Dirt.
+- **Apiculture** — Idea table: Honeycomb/Honey Bottle + Shears/axe (criteria: bottle honey from a hive, or shear honeycomb off a hive)
 - **Cooking** — Idea table: a heat source/Bowl + raw meat/Potato/Carrot/Wheat/Pumpkin/Beetroot/Mushroom/Kelp
   ```
   .        .        .
@@ -357,13 +376,24 @@ Besides meeting the **criteria**, most technologies also need two "recipe" steps
   ```
   > `[Core]` = Nautilus Shell.
 - **Lapidary** — Idea table: any gem; Research table (connect): Iron Ingot → Diamond
+- **Gold from the Embers** — Idea table: any 2 of (Ancient Debris/Netherite Scrap/Gold Ingot/Gilded Blackstone); Research table (match):
+  ```
+  [Smeltable][Gilded] [Smeltable]
+  [Gilded]   .        [Gilded]
+  [Smeltable][Gilded] [Smeltable]
+  ```
+  > `[Smeltable]` = Netherite Scrap/Ancient Debris/Iron Ingot/Iron Nugget (inspect ancient debris to decipher this slot); `[Gilded]` = Gold Ingot/Gold Nugget. Criteria: carry ancient debris back from the Nether to the Overworld.
+- **Netherite Passport** — Idea table: any beacon payment item (Iron/Gold Ingot, Diamond, Emerald, Netherite Ingot) + Netherrack/Nether Brick; Research table (connect): Smithing Table → Netherite Upgrade Smithing Template
+- **Alloy Tools** — Idea table: Ancient Debris/Netherite Scrap/Netherite Ingot/Block of Netherite + any diamond tool; Research table (connect): Minecart with Furnace → Stone Pressure Plate
 - **Boats** — Idea table: Bowl
 - **Defense** — Idea table: sword + Leather/armor + Iron Ingot + any planks
 - **Metal Armor** — Idea table: armor + any ingot/nugget; Research table (connect): Armor Stand → Iron Ingot
 - **Crystalline Armor** — Idea table: armor + any gem; Research table (connect): Leather → Diamond
+- **Emberforged** — Idea table: Ancient Debris/Netherite Scrap/Netherite Ingot/Block of Netherite + any diamond armor; Research table (connect): Lodestone → Stone
 - **Turtle Hermit** — Idea table: Turtle Scute + Kelp + Leather Cap/Chainmail Helmet/Golden Helmet/Iron Helmet; Research table (connect): Rabbit Hide → Lectern
 - **Fishing Ballad** — Idea table: Stick/Bamboo/Blaze Rod/Breeze Rod + String + Spider Eye/Slimeball/Rotten Flesh/Sweet Berries/Apple/Glow Berries/Sea Pickle/Kelp/Egg/Totem of Undying
 - **The Carrot Protocol** — Idea table: Stick/String/Bamboo/Blaze Rod/Breeze Rod/Fishing Rod + Carrot/Potato/Beetroot
+- **Warped Protocol** — Idea table: Stick/String/Bamboo/Blaze Rod/Breeze Rod/Fishing Rod + Warped Fungus (criteria: ride a strider)
 - **Hunting** — Idea table: Fishing Rod/Stick/Bamboo/Blaze Rod/Breeze Rod + String + Flint/Prismarine Shard/Amethyst Shard/any nugget
 - **Clockwork Malice** — Idea table: Bow/Stick/Bamboo/Blaze Rod/Breeze Rod + Tripwire Hook + any ingot
 
@@ -387,6 +417,8 @@ A technology's `criteria` are written exactly like vanilla advancement criteria,
 | `minecraft:player_killed_entity` | `entity[]` | Killing a mob (can add equipment, location, ... predicates) |
 | `minecraft:effects_changed` | `effects` | Gaining a status effect |
 | `minecraft:started_riding` | `player[].predicate.vehicle` | Starting to ride a specific vehicle |
+| `minecraft:item_used_on_block` | `location[]` | Using a specific item on a specific block (combine with `minecraft:match_tool` to pin the held item) |
+| `minecraft:inventory_changed` | `items[]`, `player[]` | The inventory changes (can add player predicates such as the dimension) |
 
 Things worth knowing:
 
