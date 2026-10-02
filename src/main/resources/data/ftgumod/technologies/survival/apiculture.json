@@ -1,0 +1,85 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:beehive"
+    },
+    "title": {
+      "translate": "technology.apiculture.name"
+    },
+    "description": {
+      "translate": "technology.apiculture.desc"
+    }
+  },
+  "parent": "ftgumod:survival/agriculture",
+  "criteria": {
+    "honey_bottle": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": ["minecraft:bee_nest", "minecraft:beehive"]
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": ["minecraft:glass_bottle"]
+            }
+          }
+        ]
+      }
+    },
+    "honeycomb": {
+      "trigger": "minecraft:item_used_on_block",
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": ["minecraft:bee_nest", "minecraft:beehive"]
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": ["minecraft:shears"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "honey_bottle",
+      "honeycomb"
+    ]
+  ],
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:honeycomb",
+        "minecraft:honey_bottle"
+      ],
+      [
+        "minecraft:shears",
+        {
+          "tag": "minecraft:axes"
+        }
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:beehive",
+    "minecraft:honeycomb_block",
+    "minecraft:honey_bottle",
+    "minecraft:honey_block"
+  ]
+}

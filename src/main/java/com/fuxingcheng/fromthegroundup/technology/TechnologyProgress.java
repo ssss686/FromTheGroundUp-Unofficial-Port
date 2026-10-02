@@ -4,37 +4,30 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.advancements.Criterion;
 
 public class TechnologyProgress {
 
-	private final Map<String, Boolean> criteria = Maps.newHashMap();
-	private String[][] requirements = new String[0][];
+	// 单机里客户端和服务器共用一个 TechnologyManager，两份线程都会读这份进度
+	// （服务器：判据轮询、解锁判断；客户端：收包后的 grant/revoke、渲染进度页），
+	// 所以用 ConcurrentHashMap，别用普通 HashMap。
+	private final Map<String, Boolean> criteria = new ConcurrentHashMap<>();
+	private volatile String[][] requirements = new String[0][];
 
 	public void update(Map<String, Criterion<?>> p_update_1_, String[][] p_update_2_) {
 		Set<String> lvt_3_1_ = p_update_1_.keySet();
-		Iterator lvt_4_1_ = this.criteria.entrySet().iterator();
 
-		while (lvt_4_1_.hasNext()) {
-			Map.Entry<String, Boolean> lvt_5_1_ = (Map.Entry) lvt_4_1_.next();
-			if (!lvt_3_1_.contains(lvt_5_1_.getKey())) {
-				lvt_4_1_.remove();
-			}
-		}
+		// 原来是用迭代器边遍历边 remove，两个线程一起走就会抛 ConcurrentModificationException；
+		// 那一抛会顺着 refreshListeners 把整趟重挂监听带走，判据就再也挂不上了。
+		this.criteria.keySet().removeIf(key -> !lvt_3_1_.contains(key));
 
-		lvt_4_1_ = lvt_3_1_.iterator();
-
-		while (lvt_4_1_.hasNext()) {
-			String lvt_5_2_ = (String) lvt_4_1_.next();
-			if (!this.criteria.containsKey(lvt_5_2_)) {
-				this.criteria.put(lvt_5_2_, false);
-			}
-		}
+		for (String key : lvt_3_1_)
+			this.criteria.putIfAbsent(key, false);
 
 		this.requirements = p_update_2_;
 	}
@@ -54,13 +47,9 @@ public class TechnologyProgress {
 	}
 
 	public boolean grantCriterion(String p_grantCriterion_1_) {
-		Boolean lvt_2_1_ = this.criteria.get(p_grantCriterion_1_);
-		if (lvt_2_1_ != null && !lvt_2_1_) {
-			this.criteria.put(p_grantCriterion_1_, true);
-			return true;
-		} else {
-			return false;
-		}
+		// 原来是先 get 再 put，两个线程同时授同一条会各自读到 false、都返回 true；
+		// replace 是原子的，语义一样：键在、且当前是 false 才改成 true
+		return this.criteria.replace(p_grantCriterion_1_, false, true);
 	}
 
 	public Iterable<String> getCompletedCriteria() {
@@ -78,13 +67,8 @@ public class TechnologyProgress {
 	}
 
 	public boolean revokeCriterion(String p_revokeCriterion_1_) {
-		Boolean lvt_2_1_ = this.criteria.get(p_revokeCriterion_1_);
-		if (lvt_2_1_ != null && lvt_2_1_) {
-			this.criteria.put(p_revokeCriterion_1_, false);
-			return true;
-		} else {
-			return false;
-		}
+		// 同上，撤销也走原子的 CAS
+		return this.criteria.replace(p_revokeCriterion_1_, true, false);
 	}
 
 	public boolean isDone() {

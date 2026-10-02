@@ -6,7 +6,11 @@
 		"MixinServerPlayer",
 		"MixinCraftingMenu",
 		"MixinResultContainer",
+		"MixinItemCombinerMenu",
 		"PlayerAdvancementsInvoker"
+	],
+	"client": [
+		"client.MixinSmithingScreen"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -373,13 +373,22 @@ public class Technology implements ITechnology {
 		if (!progress.isDone()) {
 			for (Map.Entry<String, Criterion<?>> entry : criteria.entrySet()) {
 				Boolean criterionProgress = progress.getCriterionProgress(entry.getKey());
-				if (criterionProgress != null && !criterionProgress) {
+				if (criterionProgress == null) {
+					// 正常情况下 getProgress 建进度时会把 criteria 里每条都填上，走到这儿就说明这条判据
+					// 根本没进进度表（比如 json 里那条被当成非法数据丢掉了）。不说一声的话，
+					// 表现就是"科技永远不亮"，还查不出原因。
+					LOGGER.warn("[FTGU] Criterion '{}' of technology '{}' is not in its progress, skipped",
+							entry.getKey(), getRegistryName());
+					continue;
+				}
+				if (!criterionProgress) {
 					CriterionTriggerInstance instance = entry.getValue().triggerInstance();
 					if (instance != null) {
 						CriterionTrigger<CriterionTriggerInstance> trigger = (CriterionTrigger<CriterionTriggerInstance>) entry.getValue().trigger();
 						if (trigger instanceof TriggerFTGU) {
 							((TriggerFTGU) trigger).addTechListener(player.getAdvancements(), instance,
 									new ListenerTechnology(this, entry.getKey()));
+							LOGGER.info("[FTGU] Listening for '{}#{}' (TriggerFTGU)", getRegistryName(), entry.getKey());
 						} else {
 							// Create a fake advancement to hook into vanilla trigger system
 							ResourceLocation fakeId = ResourceLocation.fromNamespaceAndPath("ftgumod",
@@ -405,6 +414,9 @@ public class Technology implements ITechnology {
 											.put(entry.getKey(), listener);
 
 								TechnologyManager.INSTANCE.trackFakeAdvancement(player, holder, this, entry.getKey());
+
+								LOGGER.info("[FTGU] Listening for '{}#{}' (trigger '{}')", getRegistryName(), entry.getKey(),
+										net.minecraft.core.registries.BuiltInRegistries.TRIGGER_TYPES.getKey(trigger));
 							} catch (Exception e) {
 								LOGGER.error("[FTGU] Failed to register vanilla trigger '{}' for technology '{}'",
 										entry.getKey(), getRegistryName(), e);

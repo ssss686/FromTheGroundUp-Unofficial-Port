@@ -1,0 +1,43 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_chestplate"
+    },
+    "title": {
+      "translate": "technology.emberforged.name"
+    },
+    "description": {
+      "translate": "technology.emberforged.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "ftgumod:survival/gem_armor",
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:netherite_scrap",
+        "minecraft:ancient_debris",
+        "minecraft:netherite_ingot",
+        "minecraft:netherite_block"
+      ],
+      [
+        "minecraft:diamond_helmet",
+        "minecraft:diamond_chestplate",
+        "minecraft:diamond_leggings",
+        "minecraft:diamond_boots"
+      ]
+    ]
+  },
+  "research": {
+    "type": "ftgumod:connect",
+    "left": "minecraft:lodestone",
+    "right": "minecraft:stone"
+  },
+  "unlock": [
+    "minecraft:netherite_helmet",
+    "minecraft:netherite_chestplate",
+    "minecraft:netherite_leggings",
+    "minecraft:netherite_boots"
+  ]
+}

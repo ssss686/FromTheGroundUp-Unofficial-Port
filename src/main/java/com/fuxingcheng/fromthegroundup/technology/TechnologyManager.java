@@ -86,7 +86,10 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 		FTGUAPI.technologyManager = INSTANCE;
 	}
 
-	private final Map<UUID, Map<Technology, TechnologyProgress>> progress = new HashMap<>();
+	// 单机里客户端和服务器共用这一个实例：客户端收到包会在这里 grant/revoke 判据（见 ClientPacketHandlers），
+	// 渲染线程读进度，服务器线程同时也在写。普通 HashMap 一起改就会在 computeIfAbsent 里抛
+	// ConcurrentModificationException（整趟重挂监听会就此中断，见 refreshListeners），所以外层内层都用 CHM。
+	private final Map<UUID, Map<Technology, TechnologyProgress>> progress = new java.util.concurrent.ConcurrentHashMap<>();
 
 	private final Map<ResourceLocation, Technology> technologies = new LinkedHashMap<>();
 	private final Collection<Technology> roots = new SubCollection<>(technologies.values(), Technology::isRoot);
@@ -105,6 +108,13 @@ public class TechnologyManager implements ITechnologyManager, Iterable<Technolog
 private net.minecraft.core.RegistryAccess registryAccess = net.minecraft.core.RegistryAccess.EMPTY;
 
 public net.minecraft.core.RegistryAccess getRegistryAccess() {
+	// 判据里的 items / blocks / biomes 这些字段要靠注册表解析，tag（"#minecraft:beehives"）更是离了它
+	// 就整条解析失败（解析用的是 RegistryOps，没有注册表信息时原版 codec 会退化成"只认纯 id 列表"）。
+	// 而科技在 mod 初始化时就要加载一遍，那时还没有服务端，这里空着的话判据会被静悄悄丢掉，
+	// 表现就是"科技条件永远不满足"。所以兜底用内置注册表（BlockSerializable 里也是这么兜的）。
+	if (registryAccess == net.minecraft.core.RegistryAccess.EMPTY)
+		registryAccess = net.minecraft.core.RegistryAccess
+				.fromRegistryOfRegistries(net.minecraft.core.registries.BuiltInRegistries.REGISTRY);
 	return registryAccess;
 }
 
@@ -303,7 +313,8 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 	}
 
 	public TechnologyProgress getProgress(Player player, Technology technology) {
-		return progress.computeIfAbsent(player.getUUID(), uuid -> new HashMap<>()).computeIfAbsent(technology,
+		return progress.computeIfAbsent(player.getUUID(), uuid -> new java.util.concurrent.ConcurrentHashMap<>())
+				.computeIfAbsent(technology,
 				tech -> {
 					TechnologyProgress progress = new TechnologyProgress();
 
@@ -320,7 +331,10 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 
 	public void clear() {
 		progress.clear();
-		technologies.clear();
+		// 和 refreshListeners 里拷快照的那把锁是同一把：单机两边分别跑在渲染线程/服务器线程上
+		synchronized (technologies) {
+			technologies.clear();
+		}
 
 		createCallback.forEach(Runnable::run);
 	}
@@ -595,7 +609,10 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 		if (value.hasParent())
 			value.getParent().getChildren().add(value);
 
-		technologies.put(value.getRegistryName(), value);
+		// 和 refreshListeners 拷快照那把锁同一把：加载是一次一个塞进去的，别的线程正在遍历就会 CME
+		synchronized (technologies) {
+			technologies.put(value.getRegistryName(), value);
+		}
 		if (value.start)
 			autoResearch(value);
 		return true;
@@ -743,19 +760,29 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 	 * @param server 当前服务端；单机在标题界面 load() 的时候还没有，那就只清不挂
 	 */
 	public void refreshListeners(@Nullable MinecraftServer server) {
-		// 先把旧的那批假进度摘下来：它们连着自己的 Technology 一起作废，留着只会在 tick 里瞎判
-		Map<ServerPlayer, Map<AdvancementHolder, Pair<Technology, String>>> stale = new HashMap<>(fakeAdvancements);
-		fakeAdvancements.clear();
-
+		// server == null 是标题界面那种加载：没人在挂监听，动表也没用
 		if (server == null)
 			return;
 
 		if (!server.isSameThread()) {
-			// 单机客户端那一份 load() 跑在渲染线程上，直接动 PlayerAdvancements 会和服务器线程打架，
-			// 排到服务器线程上再做。上来已经清过一次，重复执行只是白挂一遍，不会挂重。
+			// 单机里客户端那一份 load() 跑在渲染线程上，直接动 PlayerAdvancements 会和服务器线程打架，
+			// 排到服务器线程上再做。清表和重挂都得在那一趟里完成：原来是先在调用线程上清表再排队，
+			// 只要那一趟中途抛了异常（比如 progress 正被别的线程改），表就永远空着 ——
+			// 之后所有判据一条都授不出去，而且一声不吭。
 			server.execute(() -> refreshListeners(server));
 			return;
 		}
+
+		// 遍历前取快照。单机里客户端那一份 load() 在渲染线程上 clear()+逐个注册，
+		// 直接遍历这个表就会撞出 CME，跟下面 progress 是同一个道理，所以在同一把锁上拷一份。
+		List<Technology> snapshot;
+		synchronized (technologies) {
+			snapshot = new ArrayList<>(technologies.values());
+		}
+
+		// 旧的那批假进度连着自己的 Technology 一起作废了，先摘下来，留着只会在 tick 里瞎判
+		Map<ServerPlayer, Map<AdvancementHolder, Pair<Technology, String>>> stale = new HashMap<>(fakeAdvancements);
+		fakeAdvancements.clear();
 
 		for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 			PlayerAdvancements advancements = player.getAdvancements();
@@ -773,9 +800,22 @@ public void setRegistryAccess(net.minecraft.core.RegistryAccess registryAccess) 
 				for (AdvancementHolder holder : map.keySet())
 					((PlayerAdvancementsInvoker) advancements).ftgu$unregisterListeners(holder);
 
-			for (Technology tech : technologies.values())
-				if (tech.hasCustomUnlock() && tech.canResearchIgnoreCustomUnlock(player))
-					tech.registerListeners(player);
+			// 一个科技出问题不该把后面的也一起带走：判据之间是各自独立的
+			int count = 0;
+			for (Technology tech : snapshot)
+				if (tech.hasCustomUnlock() && tech.canResearchIgnoreCustomUnlock(player)) {
+					try {
+						tech.registerListeners(player);
+						count++;
+					} catch (Exception e) {
+						FromTheGroundUp.LOGGER.error(
+								"[FTGU] Failed to register criteria listeners of technology '{}' for player '{}'",
+								tech.getRegistryName(), player.getName().getString(), e);
+					}
+				}
+
+			FromTheGroundUp.LOGGER.info("[FTGU] Criteria listeners registered: {} technologies for player '{}'", count,
+					player.getName().getString());
 		}
 	}
 

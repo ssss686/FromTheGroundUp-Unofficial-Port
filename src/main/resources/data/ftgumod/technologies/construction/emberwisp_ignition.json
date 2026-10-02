@@ -1,0 +1,51 @@
+{
+  "display": {
+    "icon": {
+      "id": "minecraft:soul_campfire"
+    },
+    "title": {
+      "translate": "technology.emberwisp_ignition.name"
+    },
+    "description": {
+      "translate": "technology.emberwisp_ignition.desc"
+    },
+    "frame": "task"
+  },
+  "parent": "ftgumod:construction/brickwork",
+  "criteria": {
+    "soul_sand_valley": {
+      "trigger": "minecraft:location",
+      "conditions": {
+        "player": [{
+          "condition": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "location": {
+              "biomes": ["minecraft:soul_sand_valley"]
+            }
+          }
+        }
+        ]
+      }
+    }
+  },
+  "idea": {
+    "amount": 2,
+    "ingredients": [
+      [
+        "minecraft:torch",
+        "minecraft:lantern",
+        "minecraft:campfire"
+      ],
+      [
+        "minecraft:soul_sand",
+        "minecraft:soul_soil"
+      ]
+    ]
+  },
+  "unlock": [
+    "minecraft:soul_torch",
+    "minecraft:soul_lantern",
+    "minecraft:soul_campfire"
+  ]
+}
