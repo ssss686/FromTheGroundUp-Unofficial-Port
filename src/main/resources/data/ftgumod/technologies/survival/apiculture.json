@@ -20,14 +20,14 @@
             "condition": "minecraft:location_check",
             "predicate": {
               "block": {
-                "blocks": "#minecraft:beehives"
+                "blocks": ["minecraft:bee_nest", "minecraft:beehive"]
               }
             }
           },
           {
             "condition": "minecraft:match_tool",
             "predicate": {
-              "items": "minecraft:glass_bottle"
+              "items": ["minecraft:glass_bottle"]
             }
           }
         ]
@@ -41,14 +41,14 @@
             "condition": "minecraft:location_check",
             "predicate": {
               "block": {
-                "blocks": "#minecraft:beehives"
+                "blocks": ["minecraft:bee_nest", "minecraft:beehive"]
               }
             }
           },
           {
             "condition": "minecraft:match_tool",
             "predicate": {
-              "items": "minecraft:shears"
+              "items": ["minecraft:shears"]
             }
           }
         ]
